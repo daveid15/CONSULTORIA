@@ -79,7 +79,7 @@ DATABASES = {
         'HOST': 'localhost',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': '',
-        'USER': '',
+        'USER': 'usuario',
         'PASSWORD': ''
         }
 }
