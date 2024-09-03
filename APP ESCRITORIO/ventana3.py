@@ -16,5 +16,5 @@ class Ventana3:
         btn_volver.place(x=100, y=100)
 
     def volver(self):
-        self.menu.withdraw()  
+        self.menu.withdraw()
         self.ventana_principal.deiconify()
