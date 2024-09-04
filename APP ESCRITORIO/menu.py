@@ -56,8 +56,8 @@ class Menu:
         nueva_ventana.protocol("WM_DELETE_WINDOW", self.cerrar_aplicacion)
 
     def cerrar_aplicacion(self):
-        self.menu.quit() 
-        self.menu.destroy()
+        self.main.quit() 
+        self.main.destroy()
     
 if __name__ == "__main__":
     main= tk.Tk()
