@@ -7,7 +7,7 @@ class Ventana3:
 
         self.menu = menu
         self.ventana_principal = ventana_principal
-        self.menu.title('Caracterización Magnotoeléctrica invertida')
+        self.menu.title('Caracterización Magnotoeléctrica invertida 02')
         self.menu.geometry('1000x600')
         self.menu.minsize(900, 500)  # HOTFIX
 
@@ -18,9 +18,6 @@ class Ventana3:
 
         # Titulo
         tk.Label(self.menu, text='Caracterización Magnotoeléctrica invertida', font=labelFont, bg='#D9D9D9').grid(row=0,
-                                                                                                                  column=0,
-                                                                                                                  columnspan=2,
-                                                                                                                  sticky='nsew')
 
         # Sidebar
         self.scrollable_frame = tk.Frame(self.menu, bg="#A6C3FF")
@@ -62,7 +59,7 @@ class Ventana3:
         # row btn
         button_frame = tk.Frame(self.scrollable_frame, bg="#A6C3FF")
         button_frame.grid(row=10, column=0, padx=10, pady=5, sticky="ew")
-        button_frame.grid_columnconfigure((0, 1, 2), weight=1)  # Allow buttons to resize equally
+        button_frame.grid_columnconfigure((0, 1, 2), weight=1)
 
         tk.Button(button_frame, text="Comenzar", width=10).grid(row=0, column=0, padx=5, pady=5, sticky="ew")
         tk.Button(button_frame, text="Guardar Sección", width=10).grid(row=0, column=1, padx=5, pady=5, sticky="ew")
