@@ -7,7 +7,7 @@ class Ventana3:
 
         self.menu = menu
         self.ventana_principal = ventana_principal
-        self.menu.title('Caracterización Magnotoeléctrica invertida 02')
+        self.menu.title('Caracterización Magnotoeléctrica invertida')
         self.menu.geometry('1000x600')
         self.menu.minsize(900, 500)  # HOTFIX
 
@@ -17,7 +17,7 @@ class Ventana3:
         self.menu.grid_rowconfigure(1, weight=1)
 
         # Titulo
-        tk.Label(self.menu, text='Caracterización Magnotoeléctrica invertida', font=labelFont, bg='#D9D9D9').grid(row=0,
+        tk.Label(self.menu, text='Caracterización Magnotoeléctrica invertida', font=labelFont, bg='#D9D9D9').grid(row=0, column=0,columnspan=2,sticky='nsew')
 
         # Sidebar
         self.scrollable_frame = tk.Frame(self.menu, bg="#A6C3FF")
@@ -25,7 +25,7 @@ class Ventana3:
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
         self.scrollable_frame.grid_rowconfigure(13, weight=1)  # Intento de Layoutresponsiva
 
-        # Add a canvas to enable scrolling in the sidebar
+        # el scrolling
         self.canvas = tk.Canvas(self.scrollable_frame, bg="#A6C3FF", highlightthickness=0)
         self.canvas.pack(side="left", fill="both", expand=True)
 
@@ -86,5 +86,5 @@ class Ventana3:
         self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def volver(self):
-        self.menu.withdraw()  
+        self.menu.withdraw()
         self.ventana_principal.deiconify()
