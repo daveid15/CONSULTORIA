@@ -1,0 +1,111 @@
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% load mathfilters %}
+{% block content %}
+{% block extrahead %}
+<script>
+    function confirmarCambio(event) {
+        // Mostrar la alerta de confirmación
+        var confirmacion = confirm("¿Estás seguro de que deseas realizar este cambio?");
+    
+        // Si el usuario no confirma, prevenir la acción por defecto
+        if (!confirmacion) {
+            event.preventDefault();
+            alert("Cambio cancelado.");
+        } else {
+            alert("Cambio realizado exitosamente.");
+        }
+    }
+</script>
+{% endblock %}
+<header class='mb-5'>
+    <div class="row">
+        <div class="col-12 col-sm-8 mb-3">
+            <h2 class='h2 medium text-blue'>Listado de Proveedores activos </h2>
+        </div>
+        <div class="col-12 col-sm-4 mb-3">
+            <button id="volverButton">Volver</button>
+        </div>
+    </div>
+    <div class="d-flex flex-column flex-lg-row mt-2">
+        <p class='body--normal text-gray'>
+            {% lorem 2 b random %}
+        </p>
+    </div>
+
+</header>
+<div class="d-flex flex-column flex-lg-row my-5">
+    <div class="my-auto d-flex flex-column flex-lg-row ms-lg-auto">
+        <div class="feedback body--small normal"></div>
+    </div>
+    <form method="post" action="" class='col-12 col-lg-6 input-container-search my-auto me-3'>
+        {% csrf_token %}
+        <input name="search" id="search" type="text" placeholder='Buscar por Rut,  Nombre'/>
+        <button type="submit" class="button button--gray">
+            <span class="material-icons-outlined">
+                search
+            </span>
+        </button>
+        
+    <form>       
+</div>
+<div class="table-container mt-5">
+    <table class="table table-user">
+
+        <thead>
+            <tr>
+                <th width="20%" scope="col">Admin</th>
+                <th width="20%" scope="col"></th>
+                <th width="30%" scope="col">Correo Proveedor</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for s in proveedor_list %}
+                <tr>
+                    <th scope="row">{{s.last_login}}</th>
+                    <th scope="row">{{s.nombre_proveedor}}</th>
+                    <th scope="row">{{s.correo_proveedor}}</th>
+                    <th scope="row">{{s.telefono_proveedor}}</th>                             
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- Paginación -->
+        {% if paginator.num_pages > 1 %}
+            <div class="d-flex">
+                <nav aria-label="Page navigation example" class="ms-auto">
+                    <ul class="pagination pagination-table">
+                        {% if proveedor_list.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ proveedor_list.previous_page_number}}&search={{search}}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">&laquo;</a>
+                            </li>                        
+                        {% endif %}
+                        {% for i in paginator.page_range %}
+                            {% if i >= page|sub:2  and i < page|add:3  %}
+                                <li class="page-item {% if proveedor_list.number == i %}active{% endif %}">
+                                    <a class="page-link" href="?page={{ i }}&search={{search}}">{{ i }}</a>
+                                </li>                        
+                            {% endif %}
+                        {% endfor %}
+                        {% if proveedor_list.has_next %}
+                            <li class="page-item ">
+                                <a class="page-link" href="?page={{ proveedor_list.next_page_number }}&search={{search}}">&raquo;</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">&raquo;</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}  
+    <!-- Paginación -->   
+{% endblock %}

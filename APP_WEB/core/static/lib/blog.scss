@@ -1,0 +1,288 @@
+.blog-container {
+  margin-left: 6vw;
+  margin-right: 6vw;
+}
+
+.card-blog-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: {
+    right: auto;
+    left: auto;
+  };
+}
+
+.read-more {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: #F77C64 !important;
+}
+
+.card-blog {
+  display: flex;
+  flex-direction: column;
+  min-height: 57.79vh;
+  width: 370px;
+  border-radius: 10px;
+  margin: 10px;
+
+  header {
+    height: 27.86vh;
+    width: 100%;
+
+    img {
+      object-fit: cover;
+      object-position: center;
+      width: 100%;
+      height: 100%;
+      border-radius: 10px 10px 0 0;
+    }
+  }
+
+  .card-blog-body {
+    height: 100%;
+    padding-top: 0.8rem;
+    padding-right: 0.8rem;
+    padding-left: 0.8rem;
+
+    h4 {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
+
+
+  }
+
+
+  .footer-card {
+    padding-left: 0.8rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    display: flex;
+    flex-direction: row;
+    margin-top: auto;
+  }
+
+}
+
+.avatar-sm-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 100%;
+
+  img {
+    object-fit: cover;
+    object-position: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+  }
+
+}
+
+.img-blog-container {
+  position: relative;
+  width: 570px;
+  height: 390px;
+  border-radius: 20px;
+  transform: translateY(15%);
+  z-index: 2;
+
+  img {
+    object-fit: cover;
+    object-position: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    z-index: 2;
+  }
+
+  &::after {
+    position: absolute;
+    content: "";
+    width: 100px;
+    height: 100px;
+    bottom: 10%;
+    background: url(../assets/svg/circle-green.svg) no-repeat;
+    left: -6%;
+    z-index: -1;
+  }
+
+}
+
+.img-post-container {
+  position: relative;
+
+  width: 1166px;
+  height: 470px;
+  border-radius: 20px;
+
+  img {
+    object-fit: cover;
+    object-position: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+  }
+
+  &::after {
+    position: absolute;
+    width: 100px;
+    height: 130px;
+    left: -3%;
+    top: 10%;
+    content: "";
+    background: url(../assets/svg/circle-orange.svg) no-repeat;
+    z-index: -1;
+  }
+
+  &::before {
+    position: absolute;
+    width: 100px;
+    height: 130px;
+    right: -3%;
+    bottom: 10%;
+    content: "";
+    background: url(../assets/svg/circle-green.svg) no-repeat;
+    z-index: -1;
+  }
+
+}
+
+.post-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.post-body {
+  margin: 20px 13.625vw;
+}
+
+.post-body p {
+  font-weight: 400;
+  font-size: 1rem;
+  color: #606274;
+}
+
+
+@media (min-width: 300px) {
+  .img-blog-container {
+    width: 270px;
+    height: 190px;
+    justify-content: center;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  .img-post-container {
+    position: relative;
+    width: 300px;
+    height: 170px;
+    border-radius: 20px;
+
+  }
+}
+
+// Small devices (landscape phones, 576px and up)
+@media (min-width: 576px) {
+  .img-post-container {
+    position: relative;
+    width: 556px;
+    height: 270px;
+  }
+
+}
+
+
+// Medium devices (tablets, 768px and up)
+@media (min-width: 768px) {
+  .img-blog-container {
+    width: 470px;
+    height: 290px;
+    justify-content: center;
+
+    &::after {
+      display: none;
+    }
+  }
+}
+
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) {
+
+  .card-blog-container {
+    justify-content: space-between;
+    margin: {
+      right: 0;
+      left: 0;
+    };
+  }
+
+}
+
+// X-Large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) {
+  .img-blog-container {
+    width: 570px;
+    height: 390px;
+
+    &::after {
+      display: initial;
+    }
+  }
+  .img-post-container {
+    position: relative;
+    width: 1166px;
+    height: 370px;
+  }
+}
+
+// XX-Large devices (larger desktops, 1400px and up)
+@media (min-width: 1400px) {
+  .img-blog-container {
+    width: 670px;
+    height: 390px;
+
+    &::after {
+      display: initial;
+    }
+  }
+}
+
+
+// X-Small devices (portrait phones, less than 576px)
+@media (max-width: 575.98px) {
+  .post-body {
+    margin: 20px 8.625vw;
+  }
+}
+
+// Small devices (landscape phones, less than 768px)
+@media (max-width: 767.98px) {
+
+}
+
+// Medium devices (tablets, less than 992px)
+@media (max-width: 991.98px) {
+
+}
+
+// Large devices (desktops, less than 1200px)
+@media (max-width: 1199.98px) {
+
+}
+
+// X-Large devices (large desktops, less than 1400px)
+@media (max-width: 1399.98px) {
+
+}
+
+// XX-Large devices (larger desktops)
+// No media query since the xxl breakpoint has no upper bound on its width

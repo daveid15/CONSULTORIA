@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Sharp" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Two+Tone" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="../dist/css/styles.css" rel="stylesheet">
+</head>
+<body>
+
+<!--SIDEBAR-->
+<nav id='sidebar' class='sidebar hide-sidebar'>
+    <header class='sidebar__header'>
+        <div class="logo">
+            <img src="https://facultades.unab.cl/enfermeria/wp-content/uploads/2016/09/FE-blanco-transparente.png"
+                 alt="logo"/>
+        </div>
+
+        <div class='avatar'>
+            <img src="https://picsum.photos/800/800" alt="avatar"/>
+        </div>
+
+        <div class='my-2'>
+            <h2>Lorem Ipsum</h2>
+        </div>
+        <span id='expand-sidebar' class="material-icons float">swap_horiz</span>
+    </header>
+
+    <div class='sidebar__container'>
+        <a href='dashboard-charts.html' class='sidebar__container__item'>
+            <div>
+                <span class="material-icons">pie_chart</span>
+                <span>Gráficos</span>
+            </div>
+        </a>
+
+        <a href='dashboard-tabla.html' class='sidebar__container__item'>
+            <div>
+                <span class="material-icons">toc</span>
+                <span>Tablas</span>
+            </div>
+        </a>
+
+        <a href='componentes.html' class='sidebar__container__item active'>
+            <div>
+                <span class="material-icons">dashboard</span>
+                <span>Componentes</span>
+            </div>
+        </a>
+
+        <a href='#' class='sidebar__container__item '>
+            <div>
+                <span class="material-icons">power_settings_new</span>
+                <span>Cerrar sesión</span>
+            </div>
+        </a>
+    </div>
+
+    <footer class='sidebar__footer'>
+        <a href="#" class='button icon'>
+            <span class="material-icons">contact_support</span>
+            <span>Contactanos</span>
+        </a>
+    </footer>
+
+</nav>
+<!--SIDEBAR-->
+
+<!--CONTAINER !OBLIGATORIO-->
+<div class="dashboard-container">
+
+    <div class="dashboard-card">
+        <p>Texto</p>
+        <h1>H1</h1>
+
+        <div class="d-flex flex-wrap my-2">
+            <div class="me-3">
+                <!--BUTTON-->
+                <a href="#" class="button">
+                    <span>Normal</span>
+                </a>
+                <!--BUTTON-->
+            </div>
+            <div class="me-3">
+                <!--BUTTON WITH ICON-->
+                <a href="#" class="button">
+                    <span class="material-icons">send</span>
+                    <span>Con icono</span>
+                </a>
+                <!--BUTTON WITH ICON-->
+            </div>
+
+            <div class="me-3">
+                <!--BUTTON WARN-->
+                <a href="#" class="button button--warn">
+                    <span>Advertencia</span>
+                </a>
+                <!--BUTTON WARN-->
+            </div>
+
+            <div class="me-3">
+                <!--BUTTON OUTLINED-->
+                <a href="#" class="button button--outlined">
+                    <span>Outlined</span>
+                </a>
+                <!--BUTTON OUTLINED-->
+            </div>
+
+            <div class="me-3">
+                <!--BUTTON OUTLINED WARN-->
+                <a href="#" class="button button--outlined--warn">
+                    <span>Outlined</span>
+                </a>
+                <!--BUTTON OUTLINED WARN-->
+            </div>
+        </div>
+
+        <div class="my-2">
+            <!--PAGER-->
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <!--PAGER-->
+        </div>
+
+
+    </div>
+
+    <div class="dashboard-card">
+        <div class="row">
+            <div class="mb-3 col-md-6">
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control" id="email"
+                       placeholder="Ej. +56 9 12345678">
+                <span class="feedback body-small text-regular"></span>
+            </div>
+            <div class="mb-3 col-md-6">
+                <label for="contactPhone" class="form-label">Número de contacto</label>
+                <input type="number" class="form-control" id="contactPhone"
+                       placeholder="Ej. +56 9 12345678">
+                <span class="feedback body-small text-regular"></span>
+            </div>
+            <div class="mb-3 col-md-6">
+                <label for="name" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="name"
+                       placeholder="Ej. +56 9 12345678">
+                <span class="feedback body-small text-regular"></span>
+            </div>
+            <div class="mb-3 col-md-6">
+                <label for="subSpecialty" class="form-label">Sub Especialidad</label>
+                <select id="subSpecialty" class="form-select">
+                    <option value="-1" selected>--Seleccione una opción--</option>
+                    <option value="1">One</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                </select>
+                <div class="feedback body-small text-regular"></div>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="termsAndConditions">
+                <span class="form-check-label body-normal text-gray">
+                            <label class="d-inline" for="termsAndConditions">Al hacer click en el botón “Postular”, declaro que estoy aceptando todos los </label> <span
+                        class="text-bold text-decoration-underline">Términos y Condiciones</span>
+                        </span>
+                <span class="feedback body-small text-regular d-block"></span>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!--CONTENEDOR-->
+
+<script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../dist/js/general.js"></script>
+</body>
+</html>

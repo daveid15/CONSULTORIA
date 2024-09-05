@@ -1,0 +1,1 @@
+(()=>{var e=document.getElementById("calendar-footer");document.querySelectorAll(".day.active").forEach((function(n){n.addEventListener("click",(function(n){e.innerHTML=n.target.innerHTML}))}))})();

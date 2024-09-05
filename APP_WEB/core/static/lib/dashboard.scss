@@ -1,0 +1,93 @@
+.advice-request-card {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  box-shadow: 0 33px 80px rgba(57, 62, 90, 0.05);
+  border-radius: 7px;
+  padding: 30px;
+  cursor: pointer;
+  transition: .2s;
+  margin: 20px 0;
+
+  &__alert {
+    padding: 5px 19px;
+    size: 12px;
+    line-height: 22px;
+    font-weight: 700;
+    border-radius: 8px;
+    margin: 30px 0 0 0;
+
+    &--rose {
+      background: var(--light-rose);
+      color: var(--rose);
+    }
+
+    &--green {
+      background: var(--light-green);
+      color: var(--green-secondary);
+    }
+  }
+
+  &:hover {
+    transform: scale(1.01, 1.03);
+  }
+}
+
+.purchase-navbar {
+  background: var(--light-yellow);
+  display: flex;
+  justify-content: center;
+  padding: 50px 0;
+}
+
+.purchase-form {
+  &__title {
+    position: relative;
+
+    &:after {
+      content: "";
+      background: url("../assets/svg/line-6.svg") no-repeat;
+      position: absolute;
+      height: 8px;
+      width: 100%;
+      left: 0;
+      bottom: -4px;
+    }
+  }
+}
+
+@media (min-width: 576px) {
+}
+
+// Medium devices (tablets, 768px and up)
+@media (min-width: 768px) {
+}
+
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) {
+  .advice-request-card {
+    &__alert {
+      margin: 20px 5px 0 5px;
+    }
+
+    &__alert:first-child {
+      margin-left: 0;
+    }
+  }
+}
+
+// X-Large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) {
+  .advice-request-card {
+    flex-direction: row;
+    justify-content: space-between;
+
+    &__alert {
+      margin-top: 0;
+    }
+  }
+}
+
+// XX-Large devices (larger desktops, 1400px and up)
+@media (min-width: 1400px) {
+}

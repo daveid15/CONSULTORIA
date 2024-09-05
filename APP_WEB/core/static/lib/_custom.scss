@@ -1,0 +1,681 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/utilities";
+@import "~bootstrap/scss/mixins";
+
+$grid-breakpoints: (
+        xs: 0,
+        sm: 576px,
+        md: 768px,
+        lg: 992px,
+        xl: 1200px,
+        xxl: 1400px,
+        xxxl: 2000px
+);
+
+$spacer: 1rem;
+$new-spacers: (
+        "0-25--custom": $spacer * 0.25,
+        "0-5--custom": $spacer * 0.5,
+        "0-75--custom": $spacer * 0.75,
+        "1--custom": $spacer,
+        "1-25--custom": $spacer * 1.25,
+        "1-5--custom": $spacer * 1.5,
+        "1-75--custom": $spacer * 1.75,
+        "2--custom": $spacer * 2,
+        "2-25--custom": $spacer * 2.25,
+        "2-5--custom": $spacer * 2.5,
+        "2-75--custom": $spacer * 2.75,
+        "3--custom": $spacer * 3,
+        "3-25--custom": $spacer * 3.25,
+        "3-5--custom": $spacer * 3.5,
+        "3-75--custom": $spacer * 3.75,
+        "4--custom": $spacer * 4,
+        "4-25--custom": $spacer * 4.25,
+        "4-5--custom": $spacer * 4.5,
+        "4-75--custom": $spacer * 4.75,
+        "5--custom": $spacer * 5,
+        "5-25--custom": $spacer * 5.25,
+        "5-5--custom": $spacer * 5.5,
+        "5-75--custom": $spacer * 5.75,
+        "6--custom": $spacer * 6,
+        "6-25--custom": $spacer * 6.25,
+        "6-5--custom": $spacer * 6.5,
+        "6-75--custom": $spacer * 6.75,
+        "7--custom": $spacer * 7,
+        "7-25--custom": $spacer * 7.25,
+        "7-5--custom": $spacer * 7.5,
+        "7-75--custom": $spacer * 7.75,
+        "8--custom": $spacer * 8,
+);
+
+$utilities: map-merge(
+                $utilities, (
+                "margin--custom": (
+                        responsive: true,
+                        property: margin,
+                        class: m,
+                        values: $new-spacers
+                ),
+                "margin-x--custom": (
+                        responsive: true,
+                        property: margin-right margin-left,
+                        class: mx,
+                        values: $new-spacers
+                ),
+                "margin-y--custom": (
+                        responsive: true,
+                        property: margin-top margin-bottom,
+                        class: my,
+                        values: $new-spacers
+                ),
+                "margin-top--custom": (
+                        responsive: true,
+                        property: margin-top,
+                        class: mt,
+                        values: $new-spacers
+                ),
+                "margin-end--custom": (
+                        responsive: true,
+                        property: margin-right,
+                        class: me,
+                        values: $new-spacers
+                ),
+                "margin-bottom--custom": (
+                        responsive: true,
+                        property: margin-bottom,
+                        class: mb,
+                        values: $new-spacers
+                ),
+                "margin-start--custom": (
+                        responsive: true,
+                        property: margin-left,
+                        class: ms,
+                        values: $new-spacers
+                ),
+          // Padding utilities
+                "padding--custom": (
+                        responsive: true,
+                        property: padding,
+                        class: p,
+                        values: $new-spacers
+                ),
+                "padding-x--custom": (
+                        responsive: true,
+                        property: padding-right padding-left,
+                        class: px,
+                        values: $new-spacers
+                ),
+                "padding-y--custom": (
+                        responsive: true,
+                        property: padding-top padding-bottom,
+                        class: py,
+                        values: $new-spacers
+                ),
+                "padding-top--custom": (
+                        responsive: true,
+                        property: padding-top,
+                        class: pt,
+                        values: $new-spacers
+                ),
+                "padding-end--custom": (
+                        responsive: true,
+                        property: padding-right,
+                        class: pe,
+                        values: $new-spacers
+                ),
+                "padding-bottom--custom": (
+                        responsive: true,
+                        property: padding-bottom,
+                        class: pb,
+                        values: $new-spacers
+                ),
+                "padding-start--custom": (
+                        responsive: true,
+                        property: padding-left,
+                        class: ps,
+                        values: $new-spacers
+                )
+        )
+);
+
+$btn-focus-width: 0;
+
+// Navbar
+
+$navbar-padding-y: $spacer / 2;
+$navbar-padding-x: null;
+
+$navbar-nav-link-padding-x: .5rem;
+
+$navbar-brand-font-size: $font-size-lg;
+// Compute the navbar-brand padding-y so the navbar-brand will have the same height as navbar-text and nav-link
+$nav-link-height: $font-size-base * $line-height-base + $nav-link-padding-y * 2;
+$navbar-brand-height: $navbar-brand-font-size * $line-height-base;
+$navbar-brand-padding-y: ($nav-link-height - $navbar-brand-height) / 2;
+$navbar-brand-margin-end: 1rem;
+
+$navbar-toggler-padding-y: .25rem;
+$navbar-toggler-padding-x: .75rem;
+$navbar-toggler-font-size: $font-size-lg;
+$navbar-toggler-border-radius: $btn-border-radius;
+$navbar-toggler-focus-width: $btn-focus-width;
+$navbar-toggler-transition: box-shadow .15s ease-in-out;
+
+$navbar-dark-color: rgba($white, .55);
+$navbar-dark-hover-color: rgba($white, .75);
+$navbar-dark-active-color: $white;
+$navbar-dark-disabled-color: rgba($white, .25);
+$navbar-dark-toggler-icon-bg: url('data:image/svg+xml,<svg width="27" height="21" viewBox="0 0 27 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 19.25H25M2 2H25H2ZM2 10.625H25H2Z" stroke="#1F2547" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+$navbar-dark-toggler-border-color: rgba($white, 0);
+
+$navbar-light-color: rgba($black, .55);
+$navbar-light-hover-color: rgba($black, .7);
+$navbar-light-active-color: rgba($black, .9);
+$navbar-light-disabled-color: rgba($black, .3);
+$navbar-light-toggler-icon-bg: url('data:image/svg+xml,<svg width="27" height="21" viewBox="0 0 27 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 19.25H25M2 2H25H2ZM2 10.625H25H2Z" stroke="#1F2547" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+$navbar-light-toggler-border-color: rgba($black, 0);
+
+$navbar-light-brand-color: $navbar-light-active-color;
+$navbar-light-brand-hover-color: $navbar-light-active-color;
+$navbar-dark-brand-color: $navbar-dark-active-color;
+$navbar-dark-brand-hover-color: $navbar-dark-active-color;
+
+.navbar-nav {
+  display: flex;
+  flex-direction: column; // cannot use `inherit` to get the `.navbar`s value
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+
+  .nav-link {
+    padding-right: 0;
+    padding-left: 0;
+    text-align: center;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--blue) !important;
+  }
+
+  .nav-link.active {
+    font-weight: 700;
+  }
+
+  .dropdown-menu {
+    position: static;
+  }
+}
+
+.navbar {
+  background-color: var(--light-yellow);
+}
+
+.navbar--white {
+  background-color: var(--white);
+}
+
+// Accordion
+
+$accordion-padding-y: 2rem;
+$accordion-padding-x: 0;
+$accordion-color: rgba(0, 0, 0, 0);
+$accordion-bg: rgba(0, 0, 0, 0);
+$accordion-border-width: $border-width;
+$accordion-border-color: rgba($black, .125);
+$accordion-border-radius: $border-radius;
+$accordion-inner-border-radius: subtract($accordion-border-radius, $accordion-border-width);
+
+$accordion-body-padding-y: $accordion-padding-y;
+$accordion-body-padding-x: $accordion-padding-x;
+
+$accordion-button-padding-y: $accordion-padding-y;
+$accordion-button-padding-x: $accordion-padding-x;
+$accordion-button-color: var(--blue-gray);
+$accordion-button-bg: rgba(0, 0, 0, 0);
+$accordion-button-active-bg: rgba(0, 0, 0, 0);
+$accordion-button-active-color: var(--blue-gray);
+
+$accordion-button-focus-border-color: rgba(0, 0, 0, 0);
+$accordion-button-focus-box-shadow: rgba(0, 0, 0, 0);
+
+$accordion-button-icon: url('data:image/svg+xml,<svg width="18" height="11" viewBox="0 0 18 11" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M1 1.17383L9 9.17236L17 1.17383" stroke="#F77C64" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/> </svg>');
+$accordion-button-active-icon: $accordion-button-icon;
+
+.accordion-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: $accordion-button-padding-y $accordion-button-padding-x;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 29.5px;
+  color: $accordion-button-color;
+  text-align: left; // Reset button style
+  background-color: $accordion-button-bg;
+  border: 0;
+  @include border-radius(0);
+  overflow-anchor: none;
+  @include transition($accordion-transition);
+
+
+  &:not(.collapsed) {
+    color: $accordion-button-active-color;
+    background-color: $accordion-button-active-bg;
+    box-shadow: inset 0 ($accordion-border-width * -1) 0 $accordion-border-color;
+
+    &::after {
+      background-image: escape-svg($accordion-button-active-icon);
+      transform: $accordion-icon-transform;
+    }
+  }
+}
+
+
+// Form Control
+$input-padding-y: 12px;
+$input-padding-x: 18px;
+$input-font-family: 'Rubik', sans-serif;
+$input-font-size: 16px;
+$input-font-weight: 400;
+$input-line-height: 1.625;
+
+$input-padding-y-sm: $input-btn-padding-y-sm;
+$input-padding-x-sm: $input-btn-padding-x-sm;
+$input-font-size-sm: $input-btn-font-size-sm;
+
+$input-padding-y-lg: $input-btn-padding-y-lg;
+$input-padding-x-lg: $input-btn-padding-x-lg;
+$input-font-size-lg: $input-btn-font-size-lg;
+
+$input-bg: var(--white);
+$input-disabled-bg: $gray-200;
+$input-disabled-border-color: null;
+
+$input-color: var(--blue);
+$input-border-color: #B0B0B7;
+$input-border-width: 1.4px;
+$input-box-shadow: null;
+
+$input-border-radius: 10px;
+$input-border-radius-sm: $border-radius-sm;
+$input-border-radius-lg: $border-radius-lg;
+
+$input-focus-bg: $input-bg;
+$input-focus-border-color: var(--blue-gray);
+$input-focus-border-width: 2px;
+$input-focus-font-weight: 500;
+$input-focus-color: null;
+$input-focus-width: 10px;
+$input-focus-box-shadow: none;
+
+$input-placeholder-color: var(--blue-gray);
+$input-plaintext-color: var(--blue);
+
+$input-height-border: $input-border-width * 2;
+
+$input-height-inner: add($input-line-height * 1em, $input-padding-y * 2);
+$input-height-inner-half: add($input-line-height * .5em, $input-padding-y);
+$input-height-inner-quarter: add($input-line-height * .25em, $input-padding-y / 2);
+
+$input-height: add($input-line-height * 1em, add($input-padding-y * 2, $input-height-border, false));
+$input-height-sm: add($input-line-height * 1em, add($input-padding-y-sm * 2, $input-height-border, false));
+$input-height-lg: add($input-line-height * 1em, add($input-padding-y-lg * 2, $input-height-border, false));
+
+$input-transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+
+$form-label-margin-bottom: .5rem;
+$form-label-font-size: 16px;
+$form-label-font-style: null;
+$form-label-font-weight: 500;
+$form-label-color: var(--blue);
+
+//
+// General form controls (plus a few specific high-level interventions)
+//
+
+.feedback, .helper {
+  margin: 6px 0 0 0;
+}
+
+.feedback {
+  color: red;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: $input-padding-y $input-padding-x;
+  font-family: $input-font-family;
+  @include font-size($input-font-size);
+  font-weight: $input-font-weight;
+  line-height: $input-line-height;
+  color: $input-color;
+  background-color: $input-bg;
+  background-clip: padding-box;
+  border: $input-border-width solid $input-border-color;
+  appearance: none; // Fix appearance for date inputs in Safari
+
+  // Note: This has no effect on <select>s in some browsers, due to the limited stylability of `<select>`s in CSS.
+  @include border-radius($input-border-radius, 0);
+
+  @include box-shadow($input-box-shadow);
+  @include transition($input-transition);
+
+  &[type="file"] {
+    overflow: hidden; // prevent pseudo element button overlap
+
+    &:not(:disabled):not([readonly]) {
+      cursor: pointer;
+    }
+  }
+
+  // Customize the `:focus` state to imitate native WebKit styles.
+  &:focus {
+    color: $input-focus-color;
+    font-weight: $input-focus-font-weight;
+    background-color: $input-focus-bg;
+    border-color: $input-focus-border-color;
+    border-width: $input-focus-border-width;
+    outline: 0;
+    @if $enable-shadows {
+      @include box-shadow($input-box-shadow, $input-focus-box-shadow);
+    } @else {
+      // Avoid using mixin so we can pass custom focus shadow properly
+      box-shadow: $input-focus-box-shadow;
+    }
+  }
+
+  // Add some height to date inputs on iOS
+  // https://github.com/twbs/bootstrap/issues/23307
+  &::-webkit-date-and-time-value {
+    // Multiply line-height by 1em if it has no unit
+    height: if(unit($input-line-height) == "", $input-line-height * 1em, $input-line-height);
+  }
+
+  // Placeholder
+  &::placeholder {
+    color: $input-placeholder-color;
+    // Override Firefox's unusual default opacity; see https://github.com/twbs/bootstrap/pull/11526.
+    opacity: 1;
+  }
+
+  // Disabled and read-only inputs
+  //
+  // HTML5 says that controls under a fieldset > legend:first-child won't be
+  // disabled if the fieldset is disabled. Due to implementation difficulty, we
+  // don't honor that edge case; we style them as disabled anyway.
+  &:disabled,
+  &[readonly] {
+    background-color: $input-disabled-bg;
+    border-color: $input-disabled-border-color;
+    // iOS fix for unreadable disabled content; see https://github.com/twbs/bootstrap/issues/11655.
+    opacity: 1;
+  }
+
+  // File input buttons theming
+  &::file-selector-button {
+    padding: $input-padding-y $input-padding-x;
+    margin: (-$input-padding-y) (-$input-padding-x);
+    margin-inline-end: $input-padding-x;
+    color: $form-file-button-color;
+    @include gradient-bg($form-file-button-bg);
+    pointer-events: none;
+    border-color: inherit;
+    border-style: solid;
+    border-width: 0;
+    border-inline-end-width: $input-border-width;
+    border-radius: 0; // stylelint-disable-line property-disallowed-list
+    @include transition($btn-transition);
+  }
+
+  &:hover:not(:disabled):not([readonly])::file-selector-button {
+    background-color: $form-file-button-hover-bg;
+  }
+
+  &::-webkit-file-upload-button {
+    padding: $input-padding-y $input-padding-x;
+    margin: (-$input-padding-y) (-$input-padding-x);
+    margin-inline-end: $input-padding-x;
+    color: $form-file-button-color;
+    @include gradient-bg($form-file-button-bg);
+    pointer-events: none;
+    border-color: inherit;
+    border-style: solid;
+    border-width: 0;
+    border-inline-end-width: $input-border-width;
+    border-radius: 0; // stylelint-disable-line property-disallowed-list
+    @include transition($btn-transition);
+  }
+
+  &:hover:not(:disabled):not([readonly])::-webkit-file-upload-button {
+    background-color: $form-file-button-hover-bg;
+  }
+}
+
+// Form Select
+$form-select-padding-y: $input-padding-y;
+$form-select-padding-x: $input-padding-x;
+$form-select-font-family: $input-font-family;
+$form-select-font-size: $input-font-size;
+$form-select-indicator-padding: $form-select-padding-x * 3; // Extra padding for background-image
+$form-select-font-weight: $input-font-weight;
+$form-select-line-height: $input-line-height;
+$form-select-color: $input-color;
+$form-select-bg: $input-bg;
+$form-select-disabled-color: null;
+$form-select-disabled-bg: $gray-200;
+$form-select-disabled-border-color: $input-disabled-border-color;
+$form-select-bg-position: right $form-select-padding-x center;
+$form-select-bg-size: 16px 12px; // In pixels because image dimensions
+$form-select-indicator-color: $gray-800;
+$form-select-indicator: url('data:image/svg+xml,<svg width="14" height="8" viewBox="0 0 14 8" fill="#{$input-color}" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" clip-rule="evenodd" d="M0.146894 0.146894C0.19334 0.10033 0.248515 0.0633873 0.30926 0.0381808C0.370005 0.0129744 0.435127 0 0.500894 0C0.566661 0 0.631782 0.0129744 0.692528 0.0381808C0.753273 0.0633873 0.808448 0.10033 0.854894 0.146894L6.50089 5.79389L12.1469 0.146894C12.1934 0.100406 12.2486 0.0635292 12.3093 0.0383701C12.37 0.013211 12.4352 0.000261784 12.5009 0.000261784C12.5666 0.000261784 12.6317 0.013211 12.6925 0.0383701C12.7532 0.0635292 12.8084 0.100406 12.8549 0.146894C12.9014 0.193381 12.9383 0.248571 12.9634 0.30931C12.9886 0.370049 13.0015 0.43515 13.0015 0.500894C13.0015 0.566637 12.9886 0.631738 12.9634 0.692477C12.9383 0.753217 12.9014 0.808406 12.8549 0.854894L6.85489 6.85489C6.80845 6.90146 6.75327 6.9384 6.69253 6.96361C6.63178 6.98881 6.56666 7.00179 6.50089 7.00179C6.43513 7.00179 6.37001 6.98881 6.30926 6.96361C6.24852 6.9384 6.19334 6.90146 6.14689 6.85489L0.146894 0.854894C0.100331 0.808448 0.0633878 0.753272 0.0381813 0.692527C0.0129749 0.631782 0 0.566661 0 0.500894C0 0.435126 0.0129749 0.370005 0.0381813 0.30926C0.0633878 0.248515 0.100331 0.193339 0.146894 0.146894Z" fill="#{$input-color}"/> </svg>');
+
+$form-select-feedback-icon-padding-end: $form-select-padding-x * 2.5 + $form-select-indicator-padding;
+$form-select-feedback-icon-position: center right $form-select-indicator-padding;
+$form-select-feedback-icon-size: $input-height-inner-half $input-height-inner-half;
+
+$form-select-border-width: $input-border-width;
+$form-select-border-color: $input-border-color;
+$form-select-border-radius: $input-border-radius;
+$form-select-box-shadow: none;
+
+$form-select-focus-border-color: $input-focus-border-color;
+$form-select-focus-width: $input-focus-width;
+$form-select-focus-box-shadow: none;
+
+$form-select-padding-y-sm: $input-padding-y-sm;
+$form-select-padding-x-sm: $input-padding-x-sm;
+$form-select-font-size-sm: $input-font-size-sm;
+
+$form-select-padding-y-lg: $input-padding-y-lg;
+$form-select-padding-x-lg: $input-padding-x-lg;
+$form-select-font-size-lg: $input-font-size-lg;
+
+// Select
+//
+// Replaces the browser default select with a custom one, mostly pulled from
+// https://primer.github.io/.
+
+
+.form-select {
+  display: block;
+  width: 100%;
+  padding: $form-select-padding-y $form-select-indicator-padding $form-select-padding-y $form-select-padding-x;
+  font-family: $form-select-font-family;
+  @include font-size($form-select-font-size);
+  font-weight: $form-select-font-weight;
+  line-height: $form-select-line-height;
+  color: $form-select-color;
+  background-color: $form-select-bg;
+  background-image: escape-svg($form-select-indicator);
+  background-repeat: no-repeat;
+  background-position: $form-select-bg-position;
+  background-size: $form-select-bg-size;
+  border: $form-select-border-width solid $form-select-border-color;
+  @include border-radius($form-select-border-radius, 0);
+  @include box-shadow($form-select-box-shadow);
+  appearance: none;
+
+  &:focus {
+    border-color: $form-select-focus-border-color;
+    border-width: $input-focus-border-width;
+    outline: 0;
+    @if $enable-shadows {
+      @include box-shadow($form-select-box-shadow, $form-select-focus-box-shadow);
+    } @else {
+      // Avoid using mixin so we can pass custom focus shadow properly
+      box-shadow: $form-select-focus-box-shadow;
+    }
+  }
+
+  &[multiple],
+  &[size]:not([size="1"]) {
+    padding-right: $form-select-padding-x;
+    background-image: none;
+  }
+
+  &:disabled {
+    color: $form-select-disabled-color;
+    background-color: $form-select-disabled-bg;
+    border-color: $form-select-disabled-border-color;
+  }
+
+  // Remove outline from select box in FF
+  &:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 $form-select-color;
+  }
+}
+
+// Checks & Radios
+
+$form-check-input-width: 1.125em;
+$form-check-min-height: $font-size-base * $line-height-base;
+$form-check-padding-start: $form-check-input-width + .5em;
+$form-check-margin-bottom: .125rem;
+$form-check-label-color: null;
+$form-check-label-cursor: null;
+$form-check-transition: null;
+
+$form-check-input-active-filter: brightness(90%);
+
+$form-check-input-bg: $input-bg;
+$form-check-input-border: 1px solid rgba($black, .25);
+$form-check-radio-border: 2px solid #606274;
+$form-check-input-border-radius: .25em;
+$form-check-radio-border-radius: 50%;
+$form-check-input-focus-border: $input-focus-border-color;
+$form-check-input-focus-box-shadow: none;
+
+$form-check-input-checked-color: $component-active-color;
+$form-check-input-checked-bg-color: var(--rose);
+$form-check-input-checked-border-color: $form-check-input-checked-bg-color;
+$form-check-radio-checked-border-color: var(--blue);
+$form-check-input-checked-bg-image: url('data:image/svg+xml,<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M13.47 4.97L7 11.44L4.53 8.97C4.38783 8.83752 4.19978 8.7654 4.00548 8.76882C3.81118 8.77225 3.62579 8.85097 3.48838 8.98838C3.35097 9.12579 3.27225 9.31118 3.26883 9.50548C3.2654 9.69978 3.33752 9.88782 3.47 10.03L6.47 13.03C6.61063 13.1705 6.80125 13.2493 7 13.2493C7.19875 13.2493 7.38937 13.1705 7.53 13.03L14.53 6.03C14.6625 5.88782 14.7346 5.69978 14.7312 5.50548C14.7277 5.31118 14.649 5.12579 14.5116 4.98838C14.3742 4.85097 14.1888 4.77225 13.9945 4.76883C13.8002 4.7654 13.6122 4.83752 13.47 4.97Z" fill="#{$form-check-input-checked-color}"/></svg>');
+$form-check-radio-checked-bg-image: url('data:image/svg+xml,<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 15C12.3137 15 15 12.3137 15 9C15 5.68629 12.3137 3 9 3C5.68629 3 3 5.68629 3 9C3 12.3137 5.68629 15 9 15Z" fill="#F77C64"/></svg>');
+
+$form-check-input-indeterminate-color: $component-active-color;
+$form-check-input-indeterminate-bg-color: $component-active-bg;
+$form-check-input-indeterminate-border-color: $form-check-input-indeterminate-bg-color;
+$form-check-input-indeterminate-bg-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path fill='none' stroke='#{$form-check-input-indeterminate-color}' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/></svg>");
+
+$form-check-input-disabled-opacity: .5;
+$form-check-label-disabled-opacity: $form-check-input-disabled-opacity;
+$form-check-btn-check-disabled-opacity: $btn-disabled-opacity;
+
+$form-check-inline-margin-end: 1rem;
+
+.form-check-input {
+
+  &[type="radio"] {
+    border: $form-check-radio-border;
+  }
+
+  &:checked {
+    &[type="radio"] {
+      border-color: $form-check-radio-checked-border-color;
+      background-color: transparent;
+    }
+  }
+}
+
+// Modal
+$modal-inner-padding: 64px 26px 26px 26px;
+
+$modal-footer-margin-between: .5rem;
+
+$modal-dialog-margin: .5rem;
+$modal-dialog-margin-y-sm-up: 1.75rem;
+
+$modal-title-line-height: $line-height-base;
+
+$modal-content-color: null;
+$modal-content-bg: var(--white);
+$modal-content-border-color: rgba(0, 0, 0, 0);
+$modal-content-border-width: $border-width;
+$modal-content-border-radius: $border-radius-lg;
+$modal-content-inner-border-radius: subtract($modal-content-border-radius, $modal-content-border-width);
+$modal-content-box-shadow-xs: $box-shadow-sm;
+$modal-content-box-shadow-sm-up: $box-shadow;
+
+$modal-backdrop-bg: $black;
+$modal-backdrop-opacity: .5;
+$modal-header-border-color: $border-color;
+$modal-footer-border-color: $modal-header-border-color;
+$modal-header-border-width: $modal-content-border-width;
+$modal-footer-border-width: $modal-header-border-width;
+$modal-header-padding-y: $modal-inner-padding;
+$modal-header-padding-x: $modal-inner-padding;
+$modal-header-padding: $modal-header-padding-y $modal-header-padding-x; // Keep this for backwards compatibility
+
+$modal-sm: none;
+$modal-md: none;
+$modal-lg: none;
+$modal-xl: none;
+
+$modal-fade-transform: translate(0, -50px);
+$modal-show-transform: none;
+$modal-transition: transform .3s ease-out;
+$modal-scale-transform: scale(1.02);
+
+.modal {
+  z-index: 2000!important;
+}
+
+.modal-dialog {
+  display: table!important;
+}
+
+@media (min-width: 576px) {
+  .modal {
+    padding: {
+      right: .5rem;
+      left: .5rem;
+    };
+  }
+}
+
+@media (min-width: 768px) {
+}
+
+@media (min-width: 992px) {
+  .navbar-nav {
+    .nav-link {
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 26px;
+    }
+  }
+  $modal-inner-padding: 60px 40px;
+  .modal-body {
+    padding: $modal-inner-padding!important;
+  }
+}
+
+@media (min-width: 1200px) {
+}
+
+@media (min-width: 1400px) {
+}

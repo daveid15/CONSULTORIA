@@ -1,0 +1,60 @@
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+{% block extrahead %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% endblock %}
+
+<div class="titu-mein">
+    <h2 class='h2 medium text-blue'>Carga Masiva Administrador</h2>
+</div>
+{%if profiles.group_id == 1 %}
+    <div class="botones-4">
+        <a href="{% url 'list_user_active2' %}" class="button button--gray form-control custom-button" title="Volver a Lista">Volver</a>
+    </div>
+    <div>
+        <form action="{% url 'carga_masiva_save' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="boton_carga1">
+                <div for="category_name" class="button button--gray form-control custom-button" title="Descarga Archivo de importación">
+                    <a href="{% url 'import_administrator'  %}" class="letra_color">Descarga</a>
+                    <i class="fa fa-download" ></i> <!-- Icono de descarga -->
+                </div>
+            </div>
+            <div class="boton_carga2">
+                <label for="file-upload" class="custom-file-upload button button--gray form-control custom-button" title="Seleccionar Archivo">
+                    <a> Seleccionar Archivo </a>
+                    <i class="fa fa-search"></i> 
+                </label>
+                <input id="file-upload" type="file" name="myfile" class="form-control" style="display: none;" required>
+            </div>
+            <div class="boton_carga3">
+                <button class="button button--gray form-control custom-button" type="submit" title="Cargar Archivo">Cargar 
+                <i class="fa fa-upload" ></i></button>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="col-12 col-sm-8 mb-3">
+        <p class='text-blue'>No cuenta con acceso a esta vista</p>
+    </div>
+    <div class="botones-4">
+    <a href="{% url 'list_user_active2' %}" class="button button--gray form-control" title="Volver a Lista">Volver</a>
+    </div>
+{% endif %}
+{% block scripts %}
+    {% if messages %}
+        <script>
+            {% for message in messages %}
+                Swal.fire({
+                    position: 'medium',
+                    icon: '{{ message.tags }}',
+                    title: '{{ message }}',
+                    showConfirmButton: true,
+                });
+            {% endfor %}
+        </script>
+    {% endif %}
+{% endblock %}
+{% endblock %}
+

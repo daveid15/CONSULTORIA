@@ -1,0 +1,15 @@
+{
+  "style.js": "/dist/style.js",
+  "app.js": "/dist/app.js",
+  "onboarding.js": "/dist/onboarding.js",
+  "login.js": "/dist/login.js",
+  "sidebar.js": "/dist/sidebar.js",
+  "calendar.js": "/dist/calendar.js",
+  "purchase.js": "/dist/purchase.js",
+  "pyme-data.js": "/dist/pyme-data.js",
+  "account-pyme.js": "/dist/account-pyme.js",
+  "password.js": "/dist/password.js",
+  "services.js": "/dist/services.js",
+  "inner-services.js": "/dist/inner-services.js",
+  "styles.scss": "/dist/styles.css"
+}

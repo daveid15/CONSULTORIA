@@ -1,0 +1,475 @@
+/*Sidebar {} base_admini*/
+@media (min-width: 1200px) {
+    .dashboard-container {
+        margin-right: 60px;
+        padding-left: 6.2rem;
+   
+    }
+}
+.upbar{
+    width: 100%;
+    background-color: #270F57;
+    height: 65px;
+    display: flex;
+    align-items: center;
+}
+.icon-border{
+    border-radius: 20px;
+    overflow: hidden; 
+    display: inline-block;
+} 
+.latbar{
+    background-color:#270F57;
+     width: 13%;
+     height: 100vh;
+} 
+.icon-lat{
+    color: white; 
+    display: flex; 
+    justify-content: left;  
+    margin-right: 53px;
+    font-size: 30px;
+    margin-top: 10%; 
+}  
+.icon-lat2{
+    color: white; 
+    display: flex; 
+    justify-content: left;  
+    margin-right: 53px;
+    font-size: 30px;
+}  
+/*Inventario inventario_listado_activo*/
+.titu{
+ position: absolute;
+ top: 5%;
+ left: 15%;
+ width: 70%;
+ height: 60%;
+
+}
+
+.barra-busqueda{ 
+    position: absolute;
+    top: 18%;
+    left: 15%;
+    width: 35%;
+    height: 10%; 
+    border-radius: 90px;
+}
+.barra-op{
+   position: absolute; 
+   top: 3%;
+   left: 105%; 
+   width: 150%; 
+   height: 60%; 
+   border-radius: 90px;
+}
+
+#productos-container {
+    width: 53%; /* Ajusta el ancho según sea necesario /
+    height: 32%; / Ajusta la altura según sea necesario /
+    overflow: auto; / Agrega la scrollbar cuando el contenido exceda el tamaño fijo /
+    border: 1px solid #ccc; / Agrega un borde para visualizar mejor el contenedor /
+    padding: 10px; / Espaciado interno /
+    box-sizing: border-box; / Incluye el padding y el borde dentro del tamaño total */
+    position: absolute;
+    margin-top: 23%;
+    margin-left: 44%;
+}
+
+#table-wrapper {
+    max-height: 80%; /* Ajusta este valor para que el contenedor del total quede visible */
+    overflow: auto; /* Agrega la scrollbar dentro del table-wrapper si la tabla es demasiado grande */
+}
+
+#total-container {
+    margin-top: 10px; /* Espacio entre la tabla y el contenedor total */
+}
+
+/*tablas*/
+.cont-table{ 
+    position: absolute; 
+    top: 30%; 
+    left: 15%; 
+    width: 83%; 
+    height: 40%;
+
+}
+
+
+.estilo-table{
+    background-color: #3A1B78; 
+    color: #ffffff;
+}
+.all-lightgray{
+    background-color: lightgray;
+
+}
+
+
+.redondeo{
+border-radius: 90px
+}
+/*Menus*/
+
+
+
+.titu-mein{ 
+    position: absolute; 
+    top: 5%; 
+    left: 15%; 
+    width: 50%; 
+    height: 5%; 
+    border-radius: 10px;
+}
+.titu-men{
+    position: absolute; 
+    top: 20%; 
+    left: 15%; 
+    width: 83%; 
+    height: 60%; 
+    background-color: #D9D9D9;
+    border-radius: 50px;
+}
+.titu-men-prov{
+    position: absolute; 
+    top: 110%; 
+    width: 100%; 
+    height: 60%; 
+    background-color: #D9D9D9;
+    border-radius: 50px;
+}
+
+
+
+
+.dato6prov{
+    position: absolute; 
+    top: 13%; 
+    left: 25%;  
+    width: 23%;  
+    height: 10%;
+}
+.dato7prov{
+    position: absolute; 
+    top: 13%; 
+    left: 67%;  
+    width: 23%; 
+    height: 10%;
+}
+
+
+.casilla6prov{
+    position: absolute; 
+    top: 15%; 
+    left: 5%; 
+    width: 23%; 
+    height: 10%;
+}
+.casilla7prov{
+    position: absolute; 
+    top: 15%; 
+    left: 50%; 
+    width: 23%; 
+    height: 10%;
+}
+
+
+
+.side-date6{
+    position: absolute; 
+    top: 14%; 
+    left: 91%;  
+
+}
+
+.volver2{
+    position: absolute; 
+    top: 116%; 
+    left: 65%;
+    width: 15%; 
+    height: 10%;
+
+}
+.create{
+    position: absolute; 
+    top: 116%; 
+    left: 45%; 
+    width: 15%; 
+    height: 10%;
+
+}
+
+
+/*color del banner*/
+/*color del banner*/
+/*color del banner*/
+
+
+/*color del banner*/
+/* para tablas */
+.user-action {
+    display: inline-block;
+   
+    font-size: 18px; /* Tamaño de fuente */
+    color: #000; /* Color del texto */
+    text-decoration: none; /* Sin subrayado */
+    background-color: lightgray; /* Fondo del enlace */
+    border-radius: 5px; /* Bordes redondeados */
+}
+
+.user-action:hover {
+    background-color: #B3B3B3; /* Cambio de color al pasar el cursor */
+}
+
+.user-action i {
+    margin-right: 5px; /* Espacio entre el icono y el texto */
+}
+.table-user th {
+    font-size: 20px; /* Tamaño de la fuente para los encabezados */
+    font-weight:inherit; /* Grosor de la fuente para los encabezados */
+    text-align:center; /* Alineación del texto en los encabezados */
+    padding: 10px; /* Espaciado interno en los encabezados */
+}
+
+.table-user td {
+    font-size: 20px; /* Tamaño de la fuente para las celdas */
+    color: #333; /* Color del texto para las celdas */
+    padding: 10px; /* Espaciado interno en las celdas */
+    background-color: lightgray; /* Fondo de las celdas */
+    text-align:center;/* Alineación del texto */
+}
+
+.table-user .user-actions {
+    display:block; /* Usar flexbox para alinear los elementos */
+    gap: 5px; /* Espacio entre los enlaces */
+}
+
+.table-user .action-link {
+    display: inline-block; /* Mostrar como bloque en línea */
+    font-size: 20px; /* Tamaño de la fuente para los enlaces */
+    color: #000; /* Color del texto para los enlaces */
+    text-decoration: none; /* Sin subrayado en los enlaces */
+    padding: 5px 10px; /* Espaciado interno en los enlaces */
+    background-color: lightgray; /* Fondo de los enlaces */
+    border-radius: 5px; /* Bordes redondeados */
+}
+
+.table-user .action-link:hover {
+    background-color: #d0d0d0; /* Cambio de color al pasar el cursor */
+}
+
+/* botones */
+.custom-button2 {
+    font-size: 20px; /* Tamaño de la fuente */
+    font-family: 'Nunito', sans-serif; /* Tipo de letra */
+    padding: 10px 10px 10px 10px; /* Espaciado interno */
+    background-color: #270F57; /* Fondo del botón */
+    border: none; /* Sin borde */
+    color: #ffffff; /* Color del texto */
+    border-radius: 50px; /* Bordes redondeados */
+    display: inline-block; /* Mostrar como bloque en línea */
+    text-align: center; /* Alineación del texto */
+    text-decoration: none; /* Sin subrayado */
+    width: 20%; /* Ancho del botón aumentado */
+    margin-top: 5px; /* Espacio superior */
+}
+
+
+.custom-button2:hover {
+    background-color: lightgray; /* Cambio de color al pasar el cursor */
+    color:#000 /* Color del texto */
+}
+
+/* Agregar cajas de texto*/
+.custom-label {
+    font-size: 22px; /* Tamaño de la fuente para las etiquetas */
+    font-family: 'Nunito', sans-serif; /* Tipo de letra para las etiquetas */
+    color: #000; /* Color del texto para las etiquetas */
+}
+
+.custom-input {
+    font-size: 20px; /* Tamaño de la fuente para las cajas de texto */
+    font-family: 'Nunito', sans-serif; /* Tipo de letra para las cajas de texto */
+    color: #333; /* Color del texto para las cajas de texto */
+    padding: 10px; /* Espaciado interno para las cajas de texto */
+    background-color: #f9f9f9; /* Fondo de las cajas de texto */
+    border: 1px solid #ccc; /* Borde de las cajas de texto */
+    border-radius: 10px; /* Bordes redondeados para las cajas de texto */
+    width: 100%; /* Ancho de las cajas de texto */
+    text-align: center
+}
+.custom-input2 {
+    font-size: 20px; /* Tamaño de la fuente para las cajas de texto */
+    font-family: 'Nunito', sans-serif; /* Tipo de letra para las cajas de texto */
+    color: #333; /* Color del texto para las cajas de texto */
+    padding: 50px; /* Espaciado interno para las cajas de texto */
+    background-color: #f9f9f9; /* Fondo de las cajas de texto */
+    border: 1px solid #ccc; /* Borde de las cajas de texto */
+    border-radius: 10px; /* Bordes redondeados para las cajas de texto */
+    width: 100%; /* Ancho de las cajas de texto */
+ 
+}
+.custom-input2:focus {
+    border-color: #3A1B78; /* Cambio de color del borde al enfocar */
+    box-shadow: 0 0 5px rgba(58, 27, 120, 0.5); /* Sombra al enfocar */
+    outline: none; /* Eliminar el contorno al enfocar */
+}
+
+.custom-input:focus {
+    border-color: #3A1B78; /* Cambio de color del borde al enfocar */
+    box-shadow: 0 0 5px rgba(58, 27, 120, 0.5); /* Sombra al enfocar */
+    outline: none; /* Eliminar el contorno al enfocar */
+}
+.center {
+
+    text-align: center;
+}
+
+		
+/*botones globales de cada main*/
+/*color del banner*/
+.boton_global1 {  
+/*color del banner*/
+    position: absolute;
+    top: 18%;
+    left: 15%;
+    width: 13%;
+    height: 10%;
+}
+.boton_global2 {
+    position: absolute;
+    top: 26%;
+    left: 15%;
+    width: 13%;
+    height: 10%;
+}
+/*botones globales CARGA MASIVA*/
+.boton_carga1 {   /*boton DESCARGA ARCHIVO*/
+    position: absolute;
+    top: 25%;
+    left: 15%;
+    width: 20%;
+    height: 10%;
+}
+.letra_color{ /* COLOR boton DESCARGA ARCHIVO*/
+    color: #ffff;
+}
+.boton_carga2 { /*boton SELECCIONA ARCHIVO*/
+    position: absolute;
+    top: 25%;
+    left: 42.5%;
+    width: 20%;
+    height: 10%;
+}
+.boton_carga3 { /*boton CARGAR ARCHIVO*/
+    position: absolute;
+    top: 25%;
+    left: 70%;
+    width: 20%;
+    height: 10%;
+    
+}
+/*Funciones CARRITO */
+.cont-table_producto{ /*TABLAS GENERALES */
+    position: absolute;
+    top: 30%;
+    left: 15%;
+    width: 53%;
+    height: 50%;
+    
+}
+.cont-table_carrito{ /*TABLAS GENERALES */
+    position: absolute;
+    top: 13%;
+    left: 70%;
+    width: 28%;
+    height: 70%;
+    
+}
+.cont-form{ 
+    position: absolute; 
+    top: 20%; 
+    left: 15%; 
+    width: 83%; 
+    height: 60%; 
+    background-color: #D9D9D9;
+    border-radius: 50px;
+}
+
+.boton_global1 {
+    position: absolute; 
+    top: 18%; 
+    left: 15%; 
+    width: 13%; 
+    height: 10%;
+}
+
+.boton_global2 {
+    position: absolute; 
+    top: 26%; 
+    left: 15%; 
+    width: 13%; 
+    height: 10%;
+}
+
+
+.boton_carga1 { 
+    position: absolute; 
+    top: 25%; 
+    left: 15%; 
+    width: 20%; 
+    height: 10%;
+}
+.letra_color{ 
+    color: #ffff;
+}
+
+.boton_carga2 { 
+    position: absolute; 
+    top: 25%; 
+    left: 42.5%; 
+    width: 20%; 
+    height: 10%;
+}
+
+.boton_carga3 { 
+    position: absolute; 
+    top: 25%; 
+    left: 70%; 
+    width: 20%; 
+    height: 10%;
+
+}
+
+
+.cont-table_producto{ 
+    position: absolute; 
+    top: 30%; 
+    left: 15%; 
+    width: 53%; 
+    height: 50%;
+
+}
+.cont-table_carrito{ 
+    position: absolute; 
+    top: 13%; 
+    left: 70%; 
+    width: 28%; 
+    height: 70%;
+
+}
+.button2 {
+    background-color: #270F57; /* Cambia a morado */
+    border: 2px solid var(--blue);
+    padding: 6px 17px 6px 17px;
+    color: white;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 26px;
+    text-align: center;
+    border-radius: 50rem;
+    transition: 0.5s;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif; /* Asegúrate de terminar la propiedad font-family */
+}

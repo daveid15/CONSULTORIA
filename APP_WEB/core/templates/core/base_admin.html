@@ -1,0 +1,130 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>TU PANEL</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Round" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Sharp" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Two+Tone" rel="stylesheet">
+  <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+  <link href="{% static 'css/index.css' %}" rel="stylesheet">
+  <link href="{% static 'css/styles2.css' %}" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
+
+  <link href="{% static 'css/styles4.css' %}" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    #sidebar.side-bar .menu .active {
+      background-color: #270f57;
+    }
+  </style>
+</head>
+<style>
+  #sidebar.side-bar .menu .active {
+    background-color: #270f57;
+  }
+</style>
+
+<body>
+  <nav id="sidebar" class='side-bar to-left'>
+    <header>
+
+
+    </header>
+    <div class="sidebar">
+      <div class="menu-btn">
+        <i class="ph-bold ph-caret-left"></i>
+      </div>
+      <div class="head">
+        <!--CCambiar proximamente -->
+        <div class="user-img">
+          <img src="{% static 'assets/img/icono.PNG' %}" alt="logo" />
+        </div>
+        <div class="user-details">
+          <p class="title"></p>
+          <p class="title">Computech</p>
+        </div>
+      </div>
+      <div class="nav">
+        <div class="menu">
+          <p class="title">Main</p>
+          <ul>
+            <!--Admin -->
+            <li>
+              <a href="#">
+                <span class="material-icons">admin_panel_settings</span>
+                <span class="text">Administrador</span>
+                <i class="arrow ph-bold ph-caret-down text-white"></i>
+              </a>
+              <ul class="sub-menu">
+                <li>
+                  <a href="{% url 'admin_dashboard' %}">
+
+                    <span class="text">Dashboard</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="{% url 'list_user_active2' %}">
+                    <span class="text">Lista de usuarios</span>
+                  </a>
+                </li>
+              </ul>
+            </li>
+        </div>
+        <div class="menu">
+          <p class="title">Settings</p>
+          <ul>
+            <li>
+              <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <i class="ph ph-sign-out"></i>
+                <span class="text">Cerrar Sesión</span>
+              </a>
+              <form id="logout-form" method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class='side-bar-footer mb-5'
+        style="color: white; display: flex; justify-content: center; align-items: center;">
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          {% if redirect_field_value %}
+          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <div class='dashboard-container'>
+    {% block content %}{% endblock %}
+  </div>
+
+  <script src="{% static 'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'js/script.js' %}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.js"
+    integrity="sha512-8Z5++K1rB3U+USaLKG6oO8uWWBhdYsM3hmdirnOEWp8h2B1aOikj5zBzlXs8QOrvY9OxEnD2QDkbSKKpfqcIWw=="
+    crossorigin="anonymous"></script>
+</body>
+
+</html>
