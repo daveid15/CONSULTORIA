@@ -1,0 +1,225 @@
+/*Listas GENERALES*/
+.dashboard-container {
+    margin-right: 60px;
+    padding-left: 6.2rem;
+
+}
+.titu-mein{ /*Titulos en general*/
+    position: absolute; 
+    top: 5%; 
+    left: 15%; 
+    width: 50%; 
+    height: 5%; 
+    border-radius: 10px;
+}
+/*Botones generales de cada lista de izquierda a derecha*/
+
+.botones-1{ /*boton lista block*/
+    position: absolute; 
+    top: 21%; 
+    left: 57.5%; 
+    width: 13%; 
+    height: 10%;
+}
+
+.botones-2{ /*boton nuevo usuario*/
+    position: absolute; 
+    top: 21%; 
+    left: 71%; 
+    width: 13%; 
+    height: 10%;
+}
+
+.botones-3{ /*boton carga masiva*/
+    position: absolute; 
+    top: 21%; 
+    left: 84.5%; 
+    width: 13%; 
+    height: 10%;
+}
+
+.botones-4{ /*boton VOLVER GENERAL IZQUIERDO*/
+    position: absolute; 
+    top: 90%; 
+    left: 15%; 
+    width: 13%; 
+    height: 10%;
+}
+.botones-5{ /*boton GUARDAR GENERAL DERECHO De Formularios*/
+    position: absolute; 
+    top: 117%; 
+    left: 84%; 
+    width: 16%; 
+    height: 10%;
+}
+.botones-6{ /*boton GUARDAR GENERAL DERECHO*/
+    position: absolute; 
+    top: 90%; 
+    left: 84%; 
+    width: 13%; 
+    height: 10%;
+}
+.botones-7{ /*boton GUARDAR GENERAL MEDIO DERECHO */
+    position: absolute; 
+    top: 90%; 
+    left: 57%; 
+    width: 13%; 
+    height: 10%;
+}
+
+
+
+
+/*FORMULARIOS GENERALES DE nuevo usuario, vista*/
+
+.cont-form{  /*Borde GENERAL DE FORMULARIOS*/
+    position: absolute; 
+    top: 20%; 
+    left: 15%; 
+    width: 83%; 
+    height: 60%; 
+    background-color: #D9D9D9;
+    border-radius: 50px;
+}
+
+.volver{
+    position: absolute; 
+    top: 120%; 
+    left: 85%;
+    width: 15%; 
+    height: 10%;
+}
+
+/*botones globales de cada main*/
+.boton_global1 {  
+    position: absolute; 
+    top: 18%; 
+    left: 15%; 
+    width: 13%; 
+    height: 10%;
+}
+
+.boton_global2 {
+    position: absolute; 
+    top: 26%; 
+    left: 15%; 
+    width: 13%; 
+    height: 10%;
+}
+
+/*botones globales CARGA MASIVA*/
+.boton_carga1 {   /*boton DESCARGA ARCHIVO*/
+    position: absolute; 
+    top: 25%; 
+    left: 15%; 
+    width: 20%; 
+    height: 10%;
+}
+.letra_color{ /* COLOR boton DESCARGA ARCHIVO*/
+    color: #ffff;
+}
+
+.boton_carga2 { /*boton SELECCIONA ARCHIVO*/
+    position: absolute; 
+    top: 25%; 
+    left: 42.5%; 
+    width: 20%; 
+    height: 10%;
+}
+
+.boton_carga3 { /*boton CARGAR ARCHIVO*/
+    position: absolute; 
+    top: 25%; 
+    left: 70%; 
+    width: 20%; 
+    height: 10%;
+    
+}
+
+/*Funciones CARRITO */
+.cont-table_producto{ /*TABLAS GENERALES */
+    position: absolute; 
+    top: 30%; 
+    left: 15%; 
+    width: 53%; 
+    height: 50%;
+    
+}
+.cont-table_carrito{ /*TABLAS GENERALES */
+    position: absolute; 
+    top: 13%; 
+    left: 70%; 
+    width: 28%; 
+    height: 70%;
+    
+}
+/*color del banner*/
+
+
+/*color del banner*/
+/* para tablas */
+aciado interno en los encabezados */
+
+
+
+
+/* botones */
+.custom-button {
+    font-size: 20px; /* Tamaño de la fuente */
+    font-family: 'Nunito', sans-serif; /* Tipo de letra */
+    padding: 10px 30px; /* Espaciado interno */
+    background-color: #270F57; /* Fondo del botón */
+    border: none; /* Sin borde */
+    color: #ffff; /* Color del texto */
+    border-radius: 50px; /* Bordes redondeados */
+    display: inline-block; /* Mostrar como bloque en línea */
+    text-align: center; /* Alineación del texto */
+    text-decoration: none; /* Sin subrayado */
+    width: 100%; /* Ancho del botón */
+}
+
+.custom-button:hover {
+    background-color: lightgray; /* Cambio de color al pasar el cursor */
+    color:#000 /* Color del texto */
+}
+
+/* Agregar cajas de texto*/
+.custom-label {
+    font-size: 22px; /* Tamaño de la fuente para las etiquetas */
+    font-family: 'Nunito', sans-serif; /* Tipo de letra para las etiquetas */
+    color: #000; /* Color del texto para las etiquetas */
+}
+
+.custom-input {
+    font-size: 20px; /* Tamaño de la fuente para las cajas de texto */
+    font-family: 'Nunito', sans-serif; /* Tipo de letra para las cajas de texto */
+    color: #333; /* Color del texto para las cajas de texto */
+    padding: 10px; /* Espaciado interno para las cajas de texto */
+    background-color: #f9f9f9; /* Fondo de las cajas de texto */
+    border: 1px solid #ccc; /* Borde de las cajas de texto */
+    border-radius: 10px; /* Bordes redondeados para las cajas de texto */
+    width: 100%; /* Ancho de las cajas de texto */
+}
+.custom-input2 {
+    font-size: 20px; /* Tamaño de la fuente para las cajas de texto */
+    font-family: 'Nunito', sans-serif; /* Tipo de letra para las cajas de texto */
+    color: #333; /* Color del texto para las cajas de texto */
+    padding: 50px; /* Espaciado interno para las cajas de texto */
+    background-color: #f9f9f9; /* Fondo de las cajas de texto */
+    border: 1px solid #ccc; /* Borde de las cajas de texto */
+    border-radius: 10px; /* Bordes redondeados para las cajas de texto */
+    width: 100%; /* Ancho de las cajas de texto */
+ 
+}
+.custom-input2:focus {
+    border-color: #3A1B78; /* Cambio de color del borde al enfocar */
+    box-shadow: 0 0 5px rgba(58, 27, 120, 0.5); /* Sombra al enfocar */
+    outline: none; /* Eliminar el contorno al enfocar */
+}
+
+.custom-input:focus {
+    border-color: #3A1B78; /* Cambio de color del borde al enfocar */
+    box-shadow: 0 0 5px rgba(58, 27, 120, 0.5); /* Sombra al enfocar */
+    outline: none; /* Eliminar el contorno al enfocar */
+}
+

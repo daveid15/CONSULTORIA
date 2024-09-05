@@ -1,0 +1,279 @@
+{% extends 'core/base_admin.html' %}
+{% load manifest %}
+{% load static %}
+{% block content %}
+
+
+{% block extra_css %}
+{% endblock extra_css %}
+
+<!DOCTYPE html>
+<html lang="es">
+    <header class='mb-5'>
+        <style>
+            .upbar {
+                width: 7000px;
+                background-color: #270F57;
+                height: 65px;
+                display: flex;
+                align-items: center;
+            }
+    
+        </style>
+        <div class="row">
+            <div class="col-12 col-sm-8 mb-3">
+                <h2 class='h2 medium text-blue'>DASHBOARD y REPORTERIA</h2>
+            </div>
+        </div>
+        <link href="{% manifest 'styles.scss' %}" rel="stylesheet">
+    </header>
+<body>
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="card mr-2" style="width: 100%;">
+                    
+                    <h5 class="card-header">Empleados</h5>
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-12 text-center" style="font-size: 50px">
+                                {{usuarios_count}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 text-center">
+                                <p class="card-text mb-2">Cantidad de Empleados</p>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <div class="col-sm-4">
+                <div class="card mr-2" style="width: 100%;">
+                    <h5 class="card-header">Empleados Activos</h5>
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-12 text-center" style="font-size: 50px">
+                                {{usuarios_activos_count}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 text-center">
+                                <p class="card-text mb-2">Cantidad de Empleados activos</p>
+                            </div>
+                            <div class="col-sm-12 text-center">
+                                <a href="{% url 'list_user_active2' %}" class="btn btn-primary">Detalle</a>
+                            </div>        
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <div class="col-sm-4">    
+                <div class="card mr-2" style="width: 100%;">
+                    <h5 class="card-header">Empleados bloqueados</h5>
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-sm-12 text-center" style="font-size: 50px">
+                                {{usuarios_baneados_count}}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 text-center">
+                                <p class="card-text mb-2">Cantidad de Empleados despedidos</p>
+                            </div>
+                            
+                            <div class="col-sm-12 text-center">
+                                <a href="{% url 'list_user_block2' %}" class="btn btn-primary">Detalle</a>
+                            </div>        
+                        </div>
+                    </div>
+                </div>
+            </div>                       
+        </div>
+        <div class="row">
+            <div class="col-sm-4 mb-4">
+                <div class="card">
+                    <h5 class="card-header">Empleados inactivos por más de un mes</h5>
+                    <div class="card-body">
+                        <div class="text-center" style="font-size: 50px;">
+                            {{ user_login }}
+                        </div>
+                        <p class="card-text text-center mb-2">Cantidad de Empleados inactivos</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-header">Tabla de empleados inactivos por mas de un mes</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Usuario</th>
+                                        <th>Última conexión</th>
+                                        <th>Funciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for us in pagina %}
+                                    <tr>
+                                        <td>{{ us.id }}</td>
+                                        <td>{{ us.username }}</td>
+                                        
+                                        {% if us.last_login %}
+                                            <td>{{ us.last_login }}</td>
+                                            
+                                            <td class="all-lightgray">
+                                                <a href="{% url 'user_block' us.id %}" title="Bloquear Usuario" class="btn btn-primary">
+                                                Bloquear
+                                            </a></td>
+                                        {% else %}
+                                            <td>No ha iniciado sesión</td>
+                                            <td class="all-lightgray">
+                                                <a href="{% url 'user_block' us.id %}" title="Bloquear Usuario" class="btn btn-primary">
+                                                Bloquear
+                                            </a></td>
+                                        {% endif %}
+                                    </tr>
+                                    
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Paginación -->
+                        <div class="text-center">
+                            <ul class="pagination">
+                                {% if pagina.has_previous %}
+                                    <a class="page-link"  href="?page={{ pagina.previous_page_number }}">Anterior</a>
+                                </li>
+                                {% endif %}
+                                {% if pagina.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ pagina.next_page_number }}">Siguiente</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>                       
+        <div class="row mt-2">
+            <div class="col-sm-6">    
+                <div class="card mr-2" style="width: 100%;">
+                    <h5 class="card-header">Gráfico de cargos</h5>
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <canvas id="chart_one"></canvas>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <p class="card-text mb-2">Trabajadores según el area de trabajo</p>
+                            </div>
+                            <div class="col-sm-12 text-center">
+                                <a href="{% url 'list_user_active2' %}" class="btn btn-primary">Detalle</a>
+                            </div>        
+                        </div>
+                    </div>
+                </div>
+            </div>  
+            <div class="col-sm-6">    
+                <div class="card mr-2" style="width: 100%;">
+                    <h5 class="card-header">Gráfico de usuarios</h5>
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <canvas id="chart_two"></canvas>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <p class="card-text mb-2">Porcentaje de usuarios bloqueados</p>
+                            </div>
+                            <div class="col-sm-12 text-center">
+                                <a href="{% url 'list_user_block2' %}" class="btn btn-primary">Detalle</a>
+                            </div>        
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+    {% block extrajs %}    
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+        <script>
+            //Grafico 1
+            const $chart_one = document.querySelector("#chart_one");
+            new Chart($chart_one, {
+                type: 'bar',
+                data: {
+                    labels: {{data_label|safe}},
+                    datasets: [{
+                        label: 'Cargos',
+                        data: {{data_set|safe}},
+                        backgroundColor: {{data_color|safe}},
+                        hoverOffset: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    legend: {
+                        display: false,
+                    },  
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    },     
+                },
+            });
+
+            //Grafico 2
+            const $chart_two = document.querySelector("#chart_two");
+            new Chart($chart_two, {
+                type: 'doughnut',
+                data: {
+                    labels: {{data_label_us|safe}},
+                    datasets: [{
+                        label: 'Cargos',
+                        data: {{data_set_us|safe}},
+                        backgroundColor: {{data_color|safe}},
+                        hoverOffset: 0
+                    }]
+                },
+                options: {
+                    progress_label: {{data_rate_actVSbloq|safe}},
+                    cutoutPercentage: 50,
+                    responsive: true,
+                    legend: {
+                        display: false,
+                    },  
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    },     
+                            
+                },
+                plugins: [{
+                    id: 'total',
+                    beforeDraw: function(chart) {
+                        const width = chart.chart.width;
+                        const height = chart.chart.height;
+                        const ctx = chart.chart.ctx;
+                        ctx.restore();
+                        const fontSize = (height / 114).toFixed(2);
+                        ctx.font = fontSize + "em sans-serif";
+                        ctx.textBaseline = 'middle';
+                        var total =  chart.options.progress_label+'%';
+                        const text = total;
+                        const textX = Math.round((width - ctx.measureText(text).width) / 2);
+                        const textY = height / 2;
+                        ctx.fillText(text, textX, textY);
+                        ctx.save();
+                    }
+                }],
+            });
+
+            //Fin graficos   
+        </script>
+    {% endblock extrajs %}        
+{% endblock %}

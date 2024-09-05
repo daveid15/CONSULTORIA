@@ -1,0 +1,64 @@
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+<script scr="{% static 'lib/highcharts-8.1.2/highcharts.js' %}"></script>
+<script scr="{% static 'lib/highcharts-8.1.2/modules/exporting.js' %}"></script>
+<script scr="{% static 'lib/highcharts-8.1.2/modules/export-data.js' %}"></script>
+<script scr="{% static 'lib/highcharts-8.1.2/modules/accessibility.js' %}"></script>
+
+
+{% block extrahead %}
+<script>
+    // Función para mostrar la alerta cuando se envía el formulario
+    function mostrarAlerta() {
+        alert("¡El Usuario fue modificado con exito!");
+    }
+</script>
+{% endblock %}
+    <main role="main">
+        <div class="titu-mein">
+            <h3 class='h2 medium text-blue'>Información de Usuario</h3>
+        </div>  
+        <div class="col-md-11 cont-form">
+            <form action="" method="post" onsubmit="mostrarAlerta()">
+                {% csrf_token %}
+                <input type="hidden" value="{{ user_data.id }}" name="user_id" id="user_id">
+                <input type="hidden" value="{{ groups.id }}" name="grupo" id="grupo">
+                <div class="col-12 col-sm-8 mb-3 casilla1">
+                    <label for="rut" class="custom-label">Rut: </label>
+                </div>
+                <div class="col-12 col-sm-8 mb-3 dato1">
+                    <input type="text" name="rut" id="id_rut"  value="{{user_data.username}}" class="form-control border custom-input" readonly/>
+                </div>
+                <div class="row col-md-11 casilla2">
+                    <label for="name" class="custom-label">Nombre: </label>
+                </div>
+                <div class="row col-md-11 dato2">   
+                    <input type="text"  id="name" name="name" value="{{user_data.first_name}}" class="form-control border custom-input" required readonly/>
+                </div> 
+                <div class="row col-md-11 casilla3">
+                    <label for="last_name" class="custom-label">Apellidos: </label>
+                </div>
+                <div class="row col-md-11 dato3">
+                    <input type="text" id="last_name1" name="last_name1" value="{{user_data.last_name}}" class="form-control border custom-input" required readonly/>                      
+                </div>
+                <div class="row col-md-11 casilla4">
+                    <label for="email" class="custom-label">Correo: </label>
+                </div>
+                <div class="row col-md-11 dato4">
+                    <input type="email" id="email" name="email" value="{{user_data.email}}" class="form-control border custom-input" required readonly/>
+                </div>
+                <div class="col-12 col-sm-4 mb-3 casilla5">
+                    <label for="grupo" class="custom-label">Perfil: </label>
+                </div>
+                <div class="col-12 col-sm-4 mb-3 dato5">
+                    <input type="text" name="group" id="group" class="form-control border custom-input" value="{% for p in profile_list %}{% if p.id == groups.id %}{{p.name}}{% endif %}{% endfor %}" readonly>
+                    <input type="hidden" name="group_id" value="{{ groups.id }}">
+                </div>
+            </form>
+        </div>
+        <div class="botones-4">
+            <a href="{% url 'list_user_active2' %}" class="button button--gray form-control custom-button" title="Volver a Lista">Volver</a>
+        </div>
+    </main>
+{% endblock %}
