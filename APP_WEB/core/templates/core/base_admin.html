@@ -84,36 +84,36 @@
                 </li>
               </ul>
             </li>
-
-            <div class="menu">
-              <p class="title">Settings</p>
-              <ul>
-                <li>
-                  <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    <i class="ph ph-sign-out"></i>
-                    <span class="text">Cerrar Sesión</span>
-                  </a>
-                  <form id="logout-form" method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    {% if redirect_field_value %}
-                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-                    {% endif %}
-                  </form>
-                </li>
-              </ul>
-            </div>
         </div>
-        <!--=== Fin Menú venta ===-->
-        <div class='side-bar-footer mb-5'
-          style="color: white; display: flex; justify-content: center; align-items: center;">
-          <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            {% if redirect_field_value %}
-            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-            {% endif %}
-          </form>
+        <div class="menu">
+          <p class="title">Settings</p>
+          <ul>
+            <li>
+              <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <i class="ph ph-sign-out"></i>
+                <span class="text">Cerrar Sesión</span>
+              </a>
+              <form id="logout-form" method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+              </form>
+            </li>
+          </ul>
         </div>
       </div>
+
+      <div class='side-bar-footer mb-5'
+        style="color: white; display: flex; justify-content: center; align-items: center;">
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          {% if redirect_field_value %}
+          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+          {% endif %}
+        </form>
+      </div>
+    </div>
   </nav>
 
   <div class='dashboard-container'>
