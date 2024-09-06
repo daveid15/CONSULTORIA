@@ -10,6 +10,7 @@ django-mathfilters
 djangorestframework
 psycopg2==2.8.5
 djangorestframework==3.11.2
+#astroid==2.11.7
 
 
 
