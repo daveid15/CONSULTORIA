@@ -20,7 +20,7 @@ class Ventana1:
         left_frame.place(x=10, y=45, relheight=0.90, relwidth=0.275)
 
         #Botones
-        btn_volver = tk.Button(self.menu, text="volver a menu", command=self.volver)
+        btn_volver = tk.Button(self.menu, font=bottonFont, text="volver a menu", command=self.volver)
         btn_volver.place(x=100, y=100)
 
     def volver(self):

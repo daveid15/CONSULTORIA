@@ -3,7 +3,7 @@ import tkinter as tk
 from ventana1 import Ventana1
 from ventana2 import Ventana2
 from ventana3 import Ventana3
-from ventana4 import Ventana4            
+#from ventana4 import Ventana4            
 
 class Menu:
     def __init__(self, main):
@@ -20,6 +20,14 @@ class Menu:
         right_frame.place(x=0.275, y=30, relheight=1, relwidth=1)
         left_frame = tk.Frame(self.main, bg="#A6C3FF")
         left_frame.place(x=10, y=45, relheight=0.90, relwidth=0.275)
+
+        #Imagenes
+        fuentePoder=PhotoImage("fotos/FuentePoder.png")
+        foto_fuente=Label(main, image=fuentePoder)
+        foto_fuente.pack()
+        multimetro=PhotoImage("fotos/multimetro.png")
+        foto_multi=Label(main, image=multimetro)
+        foto_multi.pack()
 
         #Botones
         boton1=tk.Button(left_frame, text='Caracterización Eléctrica',bg="#FDFDFD", font=bottonFont, width=24, height=4, command=self.abrir_ventana1)
