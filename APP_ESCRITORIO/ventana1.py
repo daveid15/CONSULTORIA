@@ -1,7 +1,12 @@
 from tkinter import *
 import tkinter as tk
 from datetime import datetime
-
+import numpy as np
+import pyvisa
+import time
+import matplotlib.pyplot as plt
+import threading
+from validacion import *
 class Ventana1:
     def __init__(self, menu, ventana_principal):
         labelFont = ("Bold Italic", 20, 'bold')
@@ -37,7 +42,7 @@ class Ventana1:
         btn_guardar_seccion = tk.Button(self.menu, text="Guardar Sección", command=self.guardar_seccion)
         btn_guardar_seccion.place(x=25, y=350)
 
-        btn_iniciar = tk.Button(self.menu, text="Iniciar", command=self.iniciar)
+        btn_iniciar = tk.Button(self.menu, text="Iniciar", command=self.medir_IV_curve)
         btn_iniciar.place(x=25, y=400)
 
         btn_guardar_prueba = tk.Button(self.menu, text="Guardar Prueba", command=self.guardar_prueba)
@@ -61,6 +66,9 @@ class Ventana1:
         fecha_actual = datetime.now().strftime("%d-%m-%Y")
         etiqueta_fecha = tk.Label(self.menu, text=f"Fecha: {fecha_actual}", font=("Arial", 10))
         etiqueta_fecha.place(x=800, y=5)
+        
+        self.rm = None
+        self.corrientes = None
 
     # Obtención de entradas
     @property
@@ -93,3 +101,66 @@ class Ventana1:
     def volver(self):
         self.menu.withdraw()
         self.ventana_principal.deiconify()
+        
+        
+    def medir_IV_curve(self):
+        def ejecutar_medicion():
+            rm = pyvisa.ResourceManager()
+            print(self._intervalo_simetrico.get())
+            # Obtener los valores de corriente desde los inputs del usuario
+            start_current_str = self._intervalo_simetrico.get()
+            step_size_str = self._intervalos_corriente.get()
+            delay_str = self._tiempo_entre_mediciones.get()
+
+            # Validar que todos los valores sean válidos
+            if verificar_inputs(start_current_str, step_size_str, delay_str, self.menu):
+                # Continúa con el proceso si no hay errores
+                print("Todos los inputs son válidos. Continuar con el proceso...")
+                start_current = float(start_current_str)
+                step_size = int(step_size_str)
+                delay = float(delay_str)
+            else:
+                # Se mostrarán los errores en una ventana emergente
+                print("Hay errores en los inputs.")
+
+
+            # Crear el rango de corrientes a medir
+            self.corrientes = np.linspace(start_current, start_current*(-1), num=step_size)
+            self.resultados = []
+
+            # Abrir la conexión con el multímetro
+            verificar_dispositivo("9", self.menu)
+
+            multimetro = rm.open_resource('GPIB0::9::INSTR')  # Dirección GPIB
+
+            # Realizar el barrido IV
+            for corriente in self.corrientes:
+                try:
+                    # Configurar el multímetro para enviar corriente
+                    multimetro.write(":SOUR:FUNC CURR")
+                    multimetro.write(f":SOUR:CURR {corriente}")
+                    time.sleep(delay)
+
+                    # Configurar el multímetro para medir voltaje
+                    multimetro.write("CONF:VOLT:DC")
+                    time.sleep(delay)
+
+                    # Medir el voltaje
+                    medida_voltaje = multimetro.query("MEAS:VOLT:DC?")
+                    self.resultados.append((corriente, float(medida_voltaje.strip())))
+                    #self.actualizar_interfaz_despues_de_medir()
+
+                except pyvisa.errors.VisaIOError as e:
+                    print(f"Error de VISA: {e}")
+                    self.resultados.append((corriente, None))
+
+                except ValueError as e:
+                    print(f"Error en los valores obtenidos: {e}")
+                    self.resultados.append((corriente, None))
+
+            multimetro.write("OUTPUT OFF")
+            multimetro.close()
+
+        # Ejecutar la medición en un hilo separado
+        self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
+        self.hilo_medicion.start()
