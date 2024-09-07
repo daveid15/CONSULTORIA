@@ -1,25 +1,31 @@
 body {
     background-color: #2B6E99; /* Fondo azul */
+    background-image: url("{% static 'assets/img/barbie.jpg' %}");
+    background-size: cover; /* La imagen cubrirá toda la pantalla */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat;
     font-family: Arial, sans-serif;
     color: white;
     text-align: center;
 }
 .login-container {
-    width: 300px;
+    width: 400px;
     margin: 0 auto;
     padding-top: 100px;
 }
 .login-form {
-    background-color: #2B6E99; /* Fondo blanco del formulario */
-    padding: 20px;
+    background-color: #F4F6F9; /* Fondo blanco del formulario */
+    padding: 40px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: left;
     color: black;
 }
 .login-form h1 {
+    margin-top: 10px;
+    text-align: center;
     margin-bottom: 20px;
-    font-size: 24px;
+    font-size: 28px;
     color: #333;
 }
 .login-form label {
@@ -27,50 +33,64 @@ body {
 }
 .login-form input[type="text"],
 .login-form input[type="password"] {
-    width: calc(100% - 22px);;
-    padding: 10px;
-    margin: 10px 0;
+    /* width: calc(100% - 22px);;*/
+    width: 90%;
+    padding: 15px;
+    margin: 15px 0;
     border-radius: 5px;
     border: 1px solid #ccc;
-    box-sizing: border-box;
+    /*box-sizing: border-box;*/
+    font-size: 18px;
 }
 .login-form input[type="submit"] {
     width: 100%;
-    padding: 10px;
+    padding: 15px;
     background-color: #C3F885; /* Fondo verde del botón */
     border: none;
     border-radius: 5px;
     color: black;
     font-weight: bold;
     cursor: pointer;
+    font-size: 18px;
 }
 .login-form input[type="submit"]:hover {
     background-color: #98D24A; /* Color verde más oscuro al pasar el cursor */
 }
 .header {
     background-color: #D3D3D3; /* Color gris claro para el encabezado */
-    padding: 10px;
+    padding: 20px;
     text-align: center;
     font-weight: bold;
 }
 .header img {
     vertical-align: middle;
-    margin-right: 10px;
+    margin-right: 30px;
 }
 .header-title {
-    font-size: 24px;
+    font-size: 40px;
     display: inline;
     vertical-align: middle;
+    color:#333
 }
 .footer {
     margin-top: 20px;
-    font-size: 12px;
+    margin-bottom: 15px;
+    font-size: 18px;
+    text-align: center;
 }
 .footer a {
-    color: white;
-    text-decoration: none;
+    color: rgb(22, 3, 3);
+    text-decoration:underline;
+    
 }
 
+
+.Logo {
+    height: 100px; /* Ajusta el tamaño de la altura */
+    width: auto; /* Mantiene la proporción de la imagen */
+    margin-right: 20px; /* Espacio a la derecha del logo */
+    vertical-align: middle; /* Alinea verticalmente el logo con el texto */
+}
 
 /* Contenedor de la alerta */
 .alert-container {
