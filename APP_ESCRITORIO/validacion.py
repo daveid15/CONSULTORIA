@@ -34,7 +34,7 @@ def verificar_dispositivo(resource_address, parent_window):
     rm = pyvisa.ResourceManager()
     try:
         # Intenta abrir el recurso
-        instrumento = rm.open_resource(f"GPIB0::{resource_address}::INSTR")
+        """instrumento = rm.open_resource(f"GPIB0::{resource_address}::INSTR")
         messagebox.showinfo("Conexión exitosa", 
                             f"El dispositivo GPIB0::{resource_address}::INSTR está conectado.",
                             parent=parent_window)
@@ -43,7 +43,7 @@ def verificar_dispositivo(resource_address, parent_window):
         respuesta = instrumento.query("*IDN?")
         messagebox.showinfo("Respuesta del dispositivo", 
                             f"Respuesta del dispositivo: {respuesta}",
-                            parent=parent_window)
+                            parent=parent_window)"""
         return True
     except pyvisa.VisaIOError as e:
         messagebox.showerror("Error de conexión", 
@@ -64,17 +64,31 @@ def verificar_inputs(start_current_str, step_size_str, delay_str, parent_window)
     start_current = validar_float(start_current_str)
     if start_current is None or start_current <= 0:
         errores.append("El valor de 'Intervalo Simétrico ' debe ser un número mayor a cero.")
-
+    elif validar_intervalo_simetrico(start_current):
+        errores.append("El valor del intervalo simétrico debe estar entre 1 pA y 1.05 A")
     step_size = validar_int(step_size_str)
     if step_size is None or step_size <= 0:
+
         errores.append("El valor de 'Intervalos de Corriente' debe ser un número entero mayor a cero.")
 
     delay = validar_float(delay_str)
     if delay is None or delay <= 0:
         errores.append("El valor de 'Tiempo entre Mediciones' debe ser un número flotante mayor a cero.")
 
+
     if errores:
         # Mostrar errores
         mensaje_error = "\n".join(errores)
         messagebox.showerror("Errores de Validación", mensaje_error, parent=parent_window)
         return False
+    else:
+        return True
+    
+    
+def validar_intervalo_simetrico(start_current):
+    min_current = 1e-12
+    max_current = 1.05
+    if ( start_current >=min_current and start_current <= max_current):
+        return False
+    else:
+        return True
