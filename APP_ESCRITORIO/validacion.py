@@ -34,8 +34,8 @@ def verificar_dispositivo(resource_address, parent_window):
     rm = pyvisa.ResourceManager()
     try:
         # Intenta abrir el recurso
-        """instrumento = rm.open_resource(f"GPIB0::{resource_address}::INSTR")
-        messagebox.showinfo("Conexión exitosa", 
+        instrumento = rm.open_resource(f"GPIB0::{resource_address}::INSTR")
+        """messagebox.showinfo("Conexión exitosa", 
                             f"El dispositivo GPIB0::{resource_address}::INSTR está conectado.",
                             parent=parent_window)
         
