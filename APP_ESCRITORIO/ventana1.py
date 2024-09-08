@@ -1,7 +1,12 @@
 from tkinter import *
 import tkinter as tk
 from datetime import datetime
-
+import numpy as np
+import pyvisa
+import time
+import matplotlib.pyplot as plt
+import threading
+from validacion import *
 class Ventana1:
     def __init__(self, menu, ventana_principal):
         labelFont = ("Bold Italic", 20, 'bold')
@@ -9,9 +14,9 @@ class Ventana1:
 
         #Variables
         self._nombre = tk.StringVar()
-        self._intervalo_simetrico = tk.IntVar()
-        self._intervalos_corriente = tk.IntVar()
-        self._tiempo_entre_mediciones = tk.DoubleVar()
+        self._intervalo_simetrico = tk.StringVar()
+        self._intervalos_corriente = tk.StringVar()
+        self._tiempo_entre_mediciones = tk.StringVar()
         self.LineaTendencia = tk.BooleanVar()
 
         #Diseño Ventana
@@ -37,7 +42,7 @@ class Ventana1:
         btn_guardar_seccion = tk.Button(self.menu, text="Guardar Sección", command=self.guardar_seccion)
         btn_guardar_seccion.place(x=25, y=350)
 
-        btn_iniciar = tk.Button(self.menu, text="Iniciar", command=self.iniciar)
+        btn_iniciar = tk.Button(self.menu, text="Iniciar", command=self.medir_IV_curve)
         btn_iniciar.place(x=25, y=400)
 
         btn_guardar_prueba = tk.Button(self.menu, text="Guardar Prueba", command=self.guardar_prueba)
@@ -61,6 +66,9 @@ class Ventana1:
         fecha_actual = datetime.now().strftime("%d-%m-%Y")
         etiqueta_fecha = tk.Label(self.menu, text=f"Fecha: {fecha_actual}", font=("Arial", 10))
         etiqueta_fecha.place(x=800, y=5)
+        
+        self.rm = None
+        self.corrientes = None
 
     # Obtención de entradas
     @property
@@ -93,3 +101,69 @@ class Ventana1:
     def volver(self):
         self.menu.withdraw()
         self.ventana_principal.deiconify()
+        
+    def medir_IV_curve(self):
+        def ejecutar_medicion():
+            start_current_str = self._intervalo_simetrico.get()
+            step_size_str = self._intervalos_corriente.get()
+            delay_str = self._tiempo_entre_mediciones.get()
+
+            # Validar que todos los valores sean válidos
+            if verificar_inputs(start_current_str, step_size_str, delay_str, self.menu):
+                # Continúa con el proceso si no hay errores
+                start_current = float(start_current_str)
+                step_size = int(step_size_str)
+                delay = float(delay_str)
+                self.corrientes = np.linspace(start_current, -start_current, num=step_size)
+                self.resultados = []
+
+                # Inicializar el gestor de recursos VISA
+                self.rm = pyvisa.ResourceManager()
+
+                # Abrir la conexión con el multímetro y realizar la medición
+                if verificar_dispositivo("9", self.menu):
+                    try:
+                        with self.rm.open_resource('GPIB0::9::INSTR') as multimetro:
+                            # Configurar el multímetro para ser una fuente de corriente y medir voltaje
+                            multimetro.write("*RST")  # Resetear el equipo
+                            multimetro.write(":SOUR:FUNC CURR")  # Configurar como fuente de corriente
+                            multimetro.write(":SENS:FUNC 'VOLT'")  # Configurar para medir voltaje
+                            multimetro.write(":SENS:VOLT:DC")  # Configurar para medir voltaje en DC
+                            multimetro.write(":SENS:VOLT:RANG 10")  # Rango de voltaje de 10V
+
+                            # Encender la salida
+                            multimetro.write(":OUTP ON")
+
+                            for corriente in self.corrientes:
+                                try:
+                                    # Aplicar la corriente
+                                    multimetro.write(f":SOUR:CURR {corriente}")
+                                    time.sleep(delay)
+
+                                    # Medir el voltaje mientras se aplica la corriente
+                                    medida_voltaje = multimetro.query(":MEAS:VOLT?")
+                                    self.resultados.append((corriente, float(medida_voltaje.strip())))
+
+                                except pyvisa.errors.VisaIOError as e:
+                                    print(f"Error de VISA: {e}")
+                                    self.resultados.append((corriente, None))
+
+                                except ValueError as e:
+                                    print(f"Error en los valores obtenidos: {e}")
+                                    self.resultados.append((corriente, None))
+
+                            # Apagar la salida después de las mediciones
+                            multimetro.write(":OUTP OFF")
+
+                    except pyvisa.errors.VisaIOError as e:
+                        if 'VI_ERROR_LIBRARY_NFOUND' in str(e):
+                            print("Error: No se pudo localizar o cargar la biblioteca requerida por VISA. Verifique que los controladores VISA estén instalados correctamente.")
+                            print("Solución recomendada: Asegúrese de que el software NI-VISA (o su equivalente) esté instalado y correctamente configurado.")
+                        else:
+                            print(f"Error inesperado de VISA: {e}")
+            else:
+                print("Entradas no válidas, verifique los datos.")
+
+        # Ejecutar la medición en un hilo separado
+        self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
+        self.hilo_medicion.start()
