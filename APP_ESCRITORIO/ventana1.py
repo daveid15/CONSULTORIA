@@ -1,5 +1,6 @@
 from tkinter import *
 import tkinter as tk
+from tkinter import filedialog
 from datetime import datetime
 import numpy as np
 import pyvisa
@@ -94,14 +95,16 @@ class Ventana1:
     def iniciar(self):
         print("Iniciado")
 
-    def guardar_prueba(self):
-        print("Prueba Guardada")
+
 
     # Volver al menú
     def volver(self):
         self.menu.withdraw()
         self.ventana_principal.deiconify()
-        
+
+
+
+
     def medir_IV_curve(self):
         def ejecutar_medicion():
             start_current_str = self._intervalo_simetrico.get()
@@ -170,3 +173,40 @@ class Ventana1:
         self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
         self.hilo_medicion.start()
 
+    def browse_file(self):
+        file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")])
+        self.entry_start.delete(0, tk.END)
+        self.entry_end.delete(0, tk.END)
+        self.entry_step.delete(0, tk.END)
+        self.entry_start.insert(0, file_path)
+    def guardar_prueba(self, event=None):  # Accept the event argument from Tkinter
+        # DummyDATA
+        # Uncomment para probar
+'''
+        self.corrientes = [-0.11111111111111116, -0.33333333333333326, -0.5555555555555554,
+                           -0.7777777777777777, -1.0, 1.0, 0.7777777777777778,
+                           0.5555555555555556, 0.33333333333333337, 0.11111111111111116,
+                           -0.11111111111111116, -0.33333333333333326, -0.5555555555555554,
+                           -0.7777777777777777]
+
+        self.resultados = [-0.3675143, -0.6042286, -0.7581041, -1.006485, -1.28413, 1.486708,
+                           1.236044, 0.7464486, 0.541992, 0.2420748, -0.2402514, -0.5855981,
+                           -0.7390758, -0.9960487]
+
+'''
+        if self.corrientes is not None and self.resultados is not None:
+            # Obtener el título actual de la ventana como sugerencia de nombre
+            proyecto_titulo = "algo"
+
+            file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")],initialfile=proyecto_titulo)
+
+            if file_path:  # Si el usuario no cancela la selección del archivo
+                with open(file_path, 'w') as file:
+                    file.write("Corriente (A)\tVoltaje (V)\n\n")
+                    for corriente, voltaje in zip(self.corrientes, self.resultados):
+                        file.write(f"{corriente:.3f}\t\t{voltaje}\n")
+                messagebox.showinfo("Información", f"Datos guardados en: {file_path}")
+            else:
+                print("Guardado cancelado.")
+        else:
+            messagebox.showwarning("Advertencia", "No hay datos para guardar. Realiza la medición primero.")
