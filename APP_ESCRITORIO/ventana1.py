@@ -127,22 +127,24 @@ class Ventana1:
                             # Configurar el multímetro para ser una fuente de corriente y medir voltaje
                             multimetro.write("*RST")  # Resetear el equipo
                             multimetro.write(":SOUR:FUNC CURR")  # Configurar como fuente de corriente
-                            multimetro.write(":SENS:FUNC 'VOLT'")  # Configurar para medir voltaje
-                            multimetro.write(":SENS:VOLT:DC")  # Configurar para medir voltaje en DC
-                            multimetro.write(":SENS:VOLT:RANG 10")  # Rango de voltaje de 10V
-
+                            multimetro.write("CONF:VOLT:DC")  # Configurar para medir voltaje
                             # Encender la salida
-                            multimetro.write(":OUTP ON")
+                            multimetro.write("OUTPUT ON")
 
                             for corriente in self.corrientes:
                                 try:
                                     # Aplicar la corriente
                                     multimetro.write(f":SOUR:CURR {corriente}")
+
                                     time.sleep(delay)
 
                                     # Medir el voltaje mientras se aplica la corriente
-                                    medida_voltaje = multimetro.query(":MEAS:VOLT?")
-                                    self.resultados.append((corriente, float(medida_voltaje.strip())))
+                                    medida_voltaje = multimetro.query(":MEAS:VOLT:DC?")
+                                    valores = medida_voltaje.strip().split(',')
+                                    
+                                    V = float(valores[0])
+                                    self.resultados.append((corriente, V))
+                                    print(f"{corriente}, {V}")
 
                                 except pyvisa.errors.VisaIOError as e:
                                     print(f"Error de VISA: {e}")
@@ -153,7 +155,7 @@ class Ventana1:
                                     self.resultados.append((corriente, None))
 
                             # Apagar la salida después de las mediciones
-                            multimetro.write(":OUTP OFF")
+                            multimetro.write("OUTPUT OFF")
 
                     except pyvisa.errors.VisaIOError as e:
                         if 'VI_ERROR_LIBRARY_NFOUND' in str(e):
@@ -167,3 +169,4 @@ class Ventana1:
         # Ejecutar la medición en un hilo separado
         self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
         self.hilo_medicion.start()
+
