@@ -35,10 +35,6 @@ def admin_main(request):
     profiles = Profile.objects.get(user_id = request.user.id)
     pre_check_profile(request)
     return redirect('admin_dashboard')
-    #check_profile_admin(request,profiles)
-    template_name = 'administrator/admin_main.html'
-    return render(request,template_name,{'profiles':profiles})
-
 #Flujo usuarios
 @login_required
 def users_main(request):
@@ -77,7 +73,7 @@ def new_user(request):
             validar=False
             messages.add_message(request, messages.INFO, 'Error en Apellido: invalido')
         if validacion.validar_soloString(cargo)==False: #<- de validaciones Strings
-            validar=False                               #cargo     QUIZAS SE VA
+            validar=False                               
             messages.add_message(request, messages.INFO, 'Error en cargo: invalido')
 
         
@@ -162,7 +158,7 @@ def edit_user(request,user_id):
                     #que es page
                     messages.add_message(request, messages.INFO, 'El correo '+str(email)+' ya existe en nuestros registros asociado a otro usuario, por favor utilice otro ')       
                     return redirect('list_user_active2')
-            #Si se cumple Todas las especificaciones lleva aca -Enzo
+            #Si se cumple Todas las especificaciones lleva aca 
             if validar == True:
                 User.objects.filter(pk = user_id).update(first_name = first_name.capitalize())
                 User.objects.filter(pk = user_id).update(last_name = last_name.capitalize())  
@@ -170,7 +166,7 @@ def edit_user(request,user_id):
                 Profile.objects.filter(user_id = user_id).update(group_id = group)                
                 messages.success(request, 'Usuario '+user_data.first_name +' '+user_data.last_name+' editado con éxito')                             
                 return redirect('list_user_active2')
-            #Si no se cumple alguna de las especificaciones lleva aca -Enzo
+            #Si no se cumple alguna de las especificaciones lleva aca 
             else:
                 messages.error(request, 'Complete segun lo pedido') 
                 return redirect('list_user_active2')
@@ -345,7 +341,6 @@ def user_delete(request,user_id):
     user_data_count = User.objects.filter(pk=user_id).count()
     user_data = User.objects.get(pk=user_id)       
     if user_data_count == 1:
-        #Profile.objects.filter(user_id=user_id).delete()
         Profile.objects.filter(user_id=user_id).delete()
         User.objects.filter(pk=user_id).delete()
         messages.success(request,'Usuario '+user_data.first_name +' '+user_data.last_name+' eliminado con éxito')
@@ -396,30 +391,6 @@ def ejemplo_query_set(request):
 
     print(user_data_count)
     return redirect('login')
-    chile_tz = pytz.timezone('Chile/Continental')
-    profiles = Profile.objects.get(user_id=request.user.id)
-    user_data = profiles.user
-    last_login = user_data.last_login
-    fecha_hora = timezone.datetime.strptime(str(last_login), "%Y-%m-%d %H:%M:%S.%f%z")
-    last_login_chile = fecha_hora.replace(tzinfo=pytz.utc).astimezone(chile_tz)
-    hora_exacta1 = int(last_login_chile.strftime("%H"))
-    hora_exacta_dia = int(last_login_chile.strftime("%d"))
-    
-    hora_actual = datetime.now()
-    hora_actual_dia = int(hora_actual.strftime("%d"))
-    hora_exacta = int(hora_actual.strftime("%H"))
-    
-    if hora_exacta_dia != hora_actual_dia:
-        hora_exacta = abs(hora_exacta - 24)  # Ajuste para calcular correctamente las horas trabajadas si cambia el día
-        horas_trabajadas2 = hora_exacta + hora_exacta1
-    else:
-        horas_trabajadas2 = abs(hora_exacta - hora_exacta1)
-        horast = profiles.horas_trabajadas
-        horast += horas_trabajadas2
-    
-    profiles.horas_trabajadas = horast  # Actualizar las horas trabajadas en el perfil
-    profiles.save()  # Guardar el perfil actualizado
-    return redirect('login')  # Redirigir a la página de inicio de sesión
 
 #CARGA MASIVA
 @login_required

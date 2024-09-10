@@ -32,7 +32,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  background-color: #270F57;
+  background-color: #001F3F;
   padding: 12px;
   border-radius: 0px;
   transition: all 0.3s;
@@ -312,7 +312,7 @@ textarea {
 .custom-file-upload {
     cursor: pointer;
     padding: 10px 20px;
-    background-color: #270F57; /* Color del botón */
+    background-color: #001F3F; /* Color del botón */
     color: white;
     border: none;
     border-radius: 5px;
@@ -323,7 +323,7 @@ textarea {
     background-color: #3b1958; /* Color del botón al pasar el ratón */
 }
 .button {
-    background-color: #270F57; /* Cambia a morado */
+    background-color: #001F3F; /* Cambia a morado */
     border: 2px solid var(--blue);
     padding: 12px 34px 12px 34px;
     color: white;

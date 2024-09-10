@@ -33,7 +33,7 @@
             <div class="col-sm-4">
                 <div class="card mr-2" style="width: 100%;">
                     
-                    <h5 class="card-header">Empleados</h5>
+                    <h5 class="card-header">Usuarios</h5>
                     <div class="card-body">
                         <div class="row mb-2">
                             <div class="col-sm-12 text-center" style="font-size: 50px">
@@ -42,7 +42,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-12 text-center">
-                                <p class="card-text mb-2">Cantidad de Empleados</p>
+                                <p class="card-text mb-2">Cantidad de Usuarios</p>
                             </div> 
                         </div>
                     </div>
@@ -50,7 +50,7 @@
             </div> 
             <div class="col-sm-4">
                 <div class="card mr-2" style="width: 100%;">
-                    <h5 class="card-header">Empleados Activos</h5>
+                    <h5 class="card-header">Usuarios Activos</h5>
                     <div class="card-body">
                         <div class="row mb-2">
                             <div class="col-sm-12 text-center" style="font-size: 50px">
@@ -59,7 +59,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-12 text-center">
-                                <p class="card-text mb-2">Cantidad de Empleados activos</p>
+                                <p class="card-text mb-2">Cantidad de Usuarios activos</p>
                             </div>
                             <div class="col-sm-12 text-center">
                                 <a href="{% url 'list_user_active2' %}" class="btn btn-primary">Detalle</a>
@@ -70,7 +70,7 @@
             </div> 
             <div class="col-sm-4">    
                 <div class="card mr-2" style="width: 100%;">
-                    <h5 class="card-header">Empleados bloqueados</h5>
+                    <h5 class="card-header">Usuarios bloqueados</h5>
                     <div class="card-body">
                         <div class="row mb-2">
                             <div class="col-sm-12 text-center" style="font-size: 50px">
@@ -79,7 +79,7 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-12 text-center">
-                                <p class="card-text mb-2">Cantidad de Empleados despedidos</p>
+                                <p class="card-text mb-2">Cantidad de Usuarios despedidos</p>
                             </div>
                             
                             <div class="col-sm-12 text-center">
@@ -93,19 +93,19 @@
         <div class="row">
             <div class="col-sm-4 mb-4">
                 <div class="card">
-                    <h5 class="card-header">Empleados inactivos por más de un mes</h5>
+                    <h5 class="card-header">Usuarios inactivos por más de un mes</h5>
                     <div class="card-body">
                         <div class="text-center" style="font-size: 50px;">
                             {{ user_login }}
                         </div>
-                        <p class="card-text text-center mb-2">Cantidad de Empleados inactivos</p>
+                        <p class="card-text text-center mb-2">Cantidad de Usuarios inactivos</p>
                     </div>
                 </div>
             </div>
             <div class="col-sm-8 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-header">Tabla de empleados inactivos por mas de un mes</h5>
+                        <h5 class="card-header">Tabla de Usuarios inactivos por mas de un mes</h5>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
