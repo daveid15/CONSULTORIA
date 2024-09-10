@@ -8,7 +8,7 @@
 }
 .upbar{
     width: 100%;
-    background-color: #270F57;
+    background-color: #001F3F;
     height: 65px;
     display: flex;
     align-items: center;
@@ -19,7 +19,7 @@
     display: inline-block;
 } 
 .latbar{
-    background-color:#270F57;
+    background-color:#001F3F;
      width: 13%;
      height: 100vh;
 } 
@@ -98,7 +98,7 @@
 
 
 .estilo-table{
-    background-color: #3A1B78; 
+    background-color: #001F3F; 
     color: #ffffff;
 }
 .all-lightgray{
@@ -264,7 +264,7 @@ border-radius: 90px
     font-size: 20px; /* Tamaño de la fuente */
     font-family: 'Nunito', sans-serif; /* Tipo de letra */
     padding: 10px 10px 10px 10px; /* Espaciado interno */
-    background-color: #270F57; /* Fondo del botón */
+    background-color: #001F3F; /* Fondo del botón */
     border: none; /* Sin borde */
     color: #ffffff; /* Color del texto */
     border-radius: 50px; /* Bordes redondeados */
@@ -460,7 +460,7 @@ border-radius: 90px
 
 }
 .button2 {
-    background-color: #270F57; /* Cambia a morado */
+    background-color: #001F3F; /* Cambia a morado */
     border: 2px solid var(--blue);
     padding: 6px 17px 6px 17px;
     color: white;

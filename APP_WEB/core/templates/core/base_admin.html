@@ -27,17 +27,13 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link href="{% static 'css/sidebar.css' %}" rel="stylesheet">
   <style>
     #sidebar.side-bar .menu .active {
-      background-color: #270f57;
+      background-color: #001F3F;
     }
   </style>
 </head>
-<style>
-  #sidebar.side-bar .menu .active {
-    background-color: #270f57;
-  }
-</style>
 
 <body>
   <nav id="sidebar" class='side-bar to-left'>
@@ -52,16 +48,15 @@
       <div class="head">
         <!--CCambiar proximamente -->
         <div class="user-img">
-          <img src="{% static 'assets/img/icono.PNG' %}" alt="logo" />
+          <img src="{% static 'assets/img/logou.PNG' %}" alt="logo" />
         </div>
         <div class="user-details">
           <p class="title"></p>
-          <p class="title">Computech</p>
+          <p class="title">Magneto</p>
         </div>
       </div>
       <div class="nav">
         <div class="menu">
-          <p class="title">Main</p>
           <ul>
             <!--Admin -->
             <li>

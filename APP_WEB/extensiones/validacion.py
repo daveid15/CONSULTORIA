@@ -60,10 +60,3 @@ def validar_email(email):
         return True
     else:
         return False
-
-def validar_depto(departamento):
-    if departamento=="":
-        return False
-    else:
-
-        return False
