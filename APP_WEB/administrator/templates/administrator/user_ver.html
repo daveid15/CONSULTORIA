@@ -42,23 +42,23 @@
                 <div class="row col-md-11 dato3">
                     <input type="text" id="last_name1" name="last_name1" value="{{user_data.last_name}}" class="form-control border custom-input" required readonly/>                      
                 </div>
-                <div class="row col-md-11 casilla4">
+                <div class="row col-md-11 casilla5">
                     <label for="email" class="custom-label">Correo: </label>
                 </div>
-                <div class="row col-md-11 dato4">
+                <div class="row col-md-11 dato5">
                     <input type="email" id="email" name="email" value="{{user_data.email}}" class="form-control border custom-input" required readonly/>
                 </div>
-                <div class="col-12 col-sm-4 mb-3 casilla5">
+                <div class="col-12 col-sm-4 mb-3 casilla6">
                     <label for="grupo" class="custom-label">Perfil: </label>
                 </div>
-                <div class="col-12 col-sm-4 mb-3 dato5">
+                <div class="col-12 col-sm-4 mb-3 dato6">
                     <input type="text" name="group" id="group" class="form-control border custom-input" value="{% for p in profile_list %}{% if p.id == groups.id %}{{p.name}}{% endif %}{% endfor %}" readonly>
                     <input type="hidden" name="group_id" value="{{ groups.id }}">
                 </div>
             </form>
         </div>
-        <div class="botones-4">
-            <a href="{% url 'list_user_active2' %}" class="button button--gray form-control custom-button" title="Volver a Lista">Volver</a>
+        <div class="botones-4-crear">
+            <a href="{% url 'list_user_active2' %}" class="button button--gray_volver form-control custom-button_ver" title="Volver a Lista">Volver</a>
         </div>
     </main>
 {% endblock %}

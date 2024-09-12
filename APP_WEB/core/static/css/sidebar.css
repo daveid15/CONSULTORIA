@@ -275,12 +275,27 @@ body {
     height: 10%;
 }
 
+.botones-4-crear{ /*boton VOLVER CREAR USUARIO*/
+  position: absolute; 
+  top: 60%; 
+  left: 60%; 
+  width: 13%; 
+  height: 10%;
+}
+
 .botones-4{ /*boton VOLVER GENERAL IZQUIERDO*/
     position: absolute; 
     top: 90%; 
     left: 15%; 
     width: 13%; 
     height: 10%;
+}
+.botones-5-crear{ /*boton GUARDAR GENERAL DERECHO De Formularios*/
+  position: absolute; 
+  top: 71%; 
+  left: 77%; 
+  width: 16%; 
+  height: 10%;
 }
 .botones-5{ /*boton GUARDAR GENERAL DERECHO De Formularios*/
     position: absolute; 
@@ -360,8 +375,8 @@ border-radius: 90px
     top: 20%; 
     left: 15%; 
     width: 83%; 
-    height: 60%; 
-    background-color: #D9D9D9;
+    height: 520px; 
+    background-color: #001f3f;
     border-radius: 50px;
 }
 
@@ -376,14 +391,14 @@ border-radius: 90px
 
 .casilla2{
     position: absolute; 
-    top: 35%; 
+    top: 40%; 
     left: 5%; 
     width: 23%; 
     height: 70%;
 }
 .casilla3{
     position: absolute; 
-    top: 55%; 
+    top: 70%; 
     left: 5%; 
     width: 23%; 
     height: 70%;
@@ -404,7 +419,7 @@ border-radius: 90px
 }
 .casilla6{
     position: absolute; 
-    top: 35%; 
+    top: 40%; 
     left: 50%; 
     width: 23%; 
     height: 10px;
@@ -434,7 +449,7 @@ border-radius: 90px
 }
 .dato2{
     position: absolute; 
-    top: 33%; 
+    top: 38%; 
     left: 17%; 
     width: 23%; 
     height: 70%;
@@ -442,7 +457,7 @@ border-radius: 90px
 
 .dato3{
     position: absolute; 
-    top: 53%; 
+    top: 67%; 
     left: 17%; 
     width: 23%; 
     height: 70%;
@@ -463,7 +478,7 @@ border-radius: 90px
 }
 .dato6{
     position: absolute; 
-    top: 33%; 
+    top: 38%; 
     left: 67%;  
     width: 23%; 
     height: 70%;
@@ -612,6 +627,32 @@ border-radius: 90px
 }
 
 /* botones */
+.custom-button_ver {
+  font-size: 20px; /* Tamaño de la fuente */
+  font-family: 'Nunito', sans-serif;/* Tipo de letra */
+  padding: 10px 30px; /* Espaciado interno */
+  background-color: #d9d9d9; /* Fondo del botón */
+  border: none; /* Sin borde */
+  color: #000; /* Color del texto */
+  border-radius: 50px; /* Bordes redondeados */
+  display: inline-block; /* Mostrar como bloque en línea */
+  text-align: center; /* Alineación del texto */
+  text-decoration: none; /* Sin subrayado */
+  width: 100%; /* Ancho del botón */
+}
+.custom-button-editar {
+  font-size: 20px; /* Tamaño de la fuente */
+  font-family: 'Nunito', sans-serif;/* Tipo de letra */
+  padding: 10px 30px; /* Espaciado interno */
+  background-color: #d9d9d9; /* Fondo del botón */
+  border: none; /* Sin borde */
+  color: #000; /* Color del texto */
+  border-radius: 50px; /* Bordes redondeados */
+  display: inline-block; /* Mostrar como bloque en línea */
+  text-align: center; /* Alineación del texto */
+  text-decoration: none; /* Sin subrayado */
+  width: 100%; /* Ancho del botón */
+}
 .custom-button {
     font-size: 20px; /* Tamaño de la fuente */
     font-family: 'Nunito', sans-serif;/* Tipo de letra */
@@ -636,7 +677,7 @@ border-radius: 90px
 .custom-label {
     font-size: 22px; /* Tamaño de la fuente para las etiquetas */
     font-family: 'Nunito', sans-serif; /* Tipo de letra para las etiquetas */
-    color: #000; /* Color del texto para las etiquetas */
+    color: #fff; /* Color del texto para las etiquetas */
 }
 
 .custom-input {

@@ -325,7 +325,7 @@ textarea {
 .button {
     background-color: #001F3F; /* Cambia a morado */
     border: 2px solid var(--blue);
-    padding: 12px 34px 12px 34px;
+    
     color: white;
     font-weight: 500;
     font-size: 1rem;
@@ -375,10 +375,21 @@ textarea {
     font-family: 'Nunito', sans-serif;
     
 }
+.button--gray_volver {
+    background: var(--gray);
+    border: 2px solid var(--gray);
+    color: var(--blue);
+    font-family: 'Nunito', sans-serif;
+    
+}
 
 .button--gray:hover {
-    background: var(--blue);
-    color: var(--gray);
+    background: #cfffc5;
+    color: var(--black);
+}
+.button--gray_volver:hover {
+    background: #f00;
+    color: var(--black);
 }
 
 .cursor--pointer {
@@ -448,7 +459,7 @@ textarea {
 }
 
 .text-blue {
-    color: var(--blue);
+    color: #001F3F;
 }
 
 .text-gray {
@@ -1006,7 +1017,11 @@ ol {
     }
 
     .h2 {
-        font-size: 34px;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-size: 50px;
+        font-style: italic;
         line-height: 44px;
     }
 
