@@ -30,8 +30,8 @@ class Perfil_Parametro(models.Model):
 class Prueba (models.Model):
     id_perfil_parametro = models.ForeignKey(Perfil_Parametro, on_delete=models.CASCADE, null=False, blank=False)
     id_user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
-    prueba_name = models.CharField(null= False, blank= True)
-    tipo = models.CharField(null= False,blank=False)
+    prueba_name = models.CharField(max_length= 255, null= False, blank= True)
+    tipo = models.CharField(max_length= 255, null= False,blank=False)
     grafico = models.ImageField(null=True, blank= True)
     fecha = models.DateTimeField(auto_now=True)
     prueba_state = models.CharField(max_length=10, null=False, blank=False, default='t')
