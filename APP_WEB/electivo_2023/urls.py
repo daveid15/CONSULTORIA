@@ -14,8 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-
-
 from django.conf import settings
 from django.conf.urls.static import static
 from core.urls import core_urlpatterns
@@ -23,14 +21,14 @@ from django.contrib import admin
 from django.urls import path, include
 from administrator import views
 from administrator.urls import administrator_patterns
-
+from caracterizacion.urls import caracterizacion_patterns
 urlpatterns = [
     path("administrator/", include(administrator_patterns)),
     path('', include(core_urlpatterns)),
     path('admin/',admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('registration.urls')),
-
+    path("caracterizacion/", include(caracterizacion_patterns))
 
 ]
 admin.site.site_header = 'Administrador Bussiness_Solutions'
