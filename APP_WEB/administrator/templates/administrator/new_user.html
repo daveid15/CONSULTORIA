@@ -37,18 +37,13 @@
                         <div class="row col-md-11 dato3">
                             <input type="text" class="form-control border custom-input" id="last_name1" name="last_name1" required  placeholder="Rojas"/>
                         </div>
-                        <div class="row col-md-11 casilla4">
+                        <div class="row col-md-11 casilla5">
                             <label for="email" class="custom-label">Correo: </label>
                         </div>
-                        <div class="row col-md-11 dato4">
+                        <div class="row col-md-11 dato5">
                             <input type="email" class="form-control border custom-input" placeholder="nombre@autonoma.cl" name="email"/>
                         </div>
-                        <div class="row col-md-11 casilla5">
-                            <label for="position" class="custom-label">Cargo: </label>
-                        </div>
-                        <div class="row col-md-11 dato5">
-                            <input type="text" class="form-control border custom-input" placeholder="Cargo" name="position" required/>
-                        </div>
+
                         <div class="col-12 col-sm-4 mb-3 casilla6">
                             <label for="grupo" class="custom-label">Perfil: </label>
                         </div>
@@ -60,14 +55,14 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="botones-5">
+                        <div class="botones-5-crear">
                             <input type="submit" value="Crear Usuario" class="button button--gray form-control custom-button" title="Crear Nuevo Usuario">
                         </div>
                 </form>
             </div>
         </div>
-        <div class="botones-4">
-            <a href="{% url 'list_user_active2' %}" class="button button--gray form-control custom-button" title="Volver a Lista">Volver</a>
+        <div class="botones-4-crear">
+            <a href="{% url 'list_user_active2' %}" class="button button--gray_volver form-control custom-button" title="Volver a Lista">Volver</a>
         </div>
     </main>
 
