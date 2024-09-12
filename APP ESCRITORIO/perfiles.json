@@ -1,0 +1,14 @@
+[
+    {
+        "nombre": "Prueba1",
+        "intervalo_simetrico": 4,
+        "intervalos_corriente": 10,
+        "tiempo_entre_mediciones": 0.55
+    },
+    {
+        "nombre": "Prueba3",
+        "intervalo_simetrico": 10,
+        "intervalos_corriente": 100,
+        "tiempo_entre_mediciones": 1.5
+    }
+]
