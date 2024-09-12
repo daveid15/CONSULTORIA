@@ -74,7 +74,8 @@ def verificar_inputs(start_current_str, step_size_str, delay_str, parent_window)
     delay = validar_float(delay_str)
     if delay is None or delay <= 0:
         errores.append("El valor de 'Tiempo entre Mediciones' debe ser un número flotante mayor a cero.")
-
+    elif validar_delay(delay):
+        errores.append("El valor de 'Tiempo entre Mediciones' debe entre 1ms y 999.999s .")
 
     if errores:
         # Mostrar errores
@@ -89,6 +90,14 @@ def validar_intervalo_simetrico(start_current):
     min_current = 1e-12
     max_current = 1.05
     if ( start_current >=min_current and start_current <= max_current):
+        return False
+    else:
+        return True
+    
+def validar_delay(delay):
+    min_delay = 0.001
+    max_delay = 999.999
+    if ( delay >=min_delay and delay <= max_delay):
         return False
     else:
         return True
