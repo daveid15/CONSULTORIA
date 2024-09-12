@@ -269,11 +269,6 @@ body {
     flex-direction: column;
 }
 
-a {
-    text-decoration: none;
-    color: rgb(255, 255, 255);
-
-}
 
 p {
     margin-bottom: 0;

@@ -63,12 +63,12 @@
         <tbody>
             {% for s in user_list %}
                 <tr>
-                    <td class="user-data">{{ s.user_name }}</td>
-                    <td class="user-data">{{ s.name }}</td>
-                    <td class="user-data">{{ s.mail }}</td>
-                    <td class="user-data">{{ s.profile }}</td>
+                    <td >{{ s.user_name }}</td>
+                    <td >{{ s.name }}</td>
+                    <td >{{ s.mail }}</td>
+                    <td >{{ s.profile }}</td>
                     {% if profiles.group_id == 1 %}
-                        <td class="all-lightgray">
+                        <td>
                             {% if s.id != request.user.id %}
 
                                 <a href="#" title="Activa Usuario" class="user-action" onclick="confirmarCambio('{% url 'user_activate' s.id %}')">
