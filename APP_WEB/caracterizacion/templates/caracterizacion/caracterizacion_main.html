@@ -1,0 +1,17 @@
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+{% block extrahead %}
+
+{% endblock %}
+    <main role="main">
+        <div class=" titu-mein">
+            <h3 class='h2 medium text-blue'>Gestión de Pruebas</h3>
+        </div>
+        {% if profiles.group_id == 1 or profiles.group_id == 4 %}
+        {% endif %}
+        <div class="botones-4">
+            <a href="{% url 'admin_main' %}" class="button button--gray form-control custom-button">Volver</a>
+        </div>
+    </main>
+{% endblock %}
