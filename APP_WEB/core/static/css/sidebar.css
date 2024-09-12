@@ -348,16 +348,16 @@ body {
 
 .cont-table{ /*TABLAS GENERALES */
     position: absolute; 
-    top: 30%; 
+    top: 25%; 
     left: 15%; 
-    width: 83%; 
-    height: 40%;
+    width: 80%; 
+    height: 15%;
     
 }
 
 .estilo-table{  /*ESTILO DE TABLAS GENERALES Titulos */
     background-color: #001F3F; 
-    color: #ffffff;
+    color: #fff;
     
     
 }
@@ -379,6 +379,20 @@ border-radius: 90px
     background-color: #001f3f;
     border-radius: 50px;
 }
+.cont-form-crud{  /*Borde GENERAL DE FORMULARIOS*/
+  position: absolute; 
+  top: 20%; 
+  width: 103.5%; 
+  height: 620px; 
+  background-color: #001f3f;
+  border-radius: 50px;
+}
+.cont-form-crud th{
+  position: relative;
+  padding-top: 15px;
+  border-bottom: 3px solid rgb(255, 255, 255);
+  color: #fff;
+} 
 
 
 .casilla1{
@@ -576,35 +590,30 @@ border-radius: 90px
 /* para tablas */
 .user-action {
     display: inline-block;
-   
     font-size: 20px; /* Tamaño de fuente */
-    color: #000; /* Color del texto */
+    color: #fff; /* Color del texto */
     text-decoration: none; /* Sin subrayado */
-    background-color: lightgray; /* Fondo del enlace */
+     /* Fondo del enlace */
     border-radius: 5px; /* Bordes redondeados */
-}
-
-.user-action:hover {
-    background-color: #B3B3B3; /* Cambio de color al pasar el cursor */
 }
 
 .user-action i {
     margin-right: 5px; /* Espacio entre el icono y el texto */
 }
 .table-user th {
-    font-family: 'Nunito', sans-serif;/* Tipo de letra */
-    font-size: 20px; /* Tamaño de la fuente para los encabezados */
-    font-weight:inherit; /* Grosor de la fuente para los encabezados */
-    text-align:center; /* Alineación del texto en los encabezados */
-    padding: 10px; /* Espaciado interno en los encabezados */
+  font-family: 'Nunito', sans-serif;/* Tipo de letra */
+  font-size: 20px; /* Tamaño de la fuente para los encabezados */
+  font-weight:inherit; /* Grosor de la fuente para los encabezados */
+  text-align:center; /* Alineación del texto en los encabezados */
+ /* Espaciado interno en los encabezados */
 }
 
 .table-user td {
     font-size: 20px; /* Tamaño de la fuente para las celdas */
-    color: #333; /* Color del texto para las celdas */
+    color: #fff; /* Color del texto para las celdas */
     padding: 10px; /* Espaciado interno en las celdas */
-    background-color: lightgray; /* Fondo de las celdas */
     text-align:center;/* Alineación del texto */
+    border-bottom: 3px solid rgb(255, 255, 255);
 }
 
 .table-user .user-actions {
@@ -618,7 +627,6 @@ border-radius: 90px
     color: #000; /* Color del texto para los enlaces */
     text-decoration: none; /* Sin subrayado en los enlaces */
     padding: 5px 10px; /* Espaciado interno en los enlaces */
-    background-color: lightgray; /* Fondo de los enlaces */
     border-radius: 5px; /* Bordes redondeados */
 }
 

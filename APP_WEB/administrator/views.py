@@ -72,9 +72,6 @@ def new_user(request):
         if validacion.validar_soloString(last_name)==False: #<- de validaciones Strings
             validar=False
             messages.add_message(request, messages.INFO, 'Error en Apellido: invalido')
-        if validacion.validar_soloString(cargo)==False: #<- de validaciones Strings
-            validar=False                               
-            messages.add_message(request, messages.INFO, 'Error en cargo: invalido')
 
         
         #Posiblemente unificar los if con "&", PERO CAMBIAR LOS MENSAJES ELSE/ O QUIZAS CREAR UNA NUEVA FUNCION.<-----

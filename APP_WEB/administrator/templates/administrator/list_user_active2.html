@@ -38,9 +38,6 @@
     <div class="col-md-11 botones-3">
         <a href="{% url 'carga_masiva' %}" class="button button--gray form-control custom-button" title="Carga masiva"> <i class="fa-solid fa-folder"></i></a>
     </div>
-    <div class=" botones-4">
-        <a href="{% url 'users_main' %}" class="button button--gray form-control custom-button" title="Volver al Inicio">Volver</a>
-    </div>
 </header>
 <div class="d-flex flex-column flex-lg-row my-5 barra-busqueda">
     <div class="my-auto d-flex flex-column flex-lg-row ms-lg-auto">
@@ -59,8 +56,8 @@
 </div>
 
 <div class="col-md-11 cont-table" >
-    <table class="table table-user">
-        <thead class="estilo-table ">
+    <table class="table table-user cont-form-crud">
+        <thead>
             <tr>
                 <th width="1%" scope="col">Nombre Usuario</th>
                 <th width="1%" scope="col">Nombre Completo</th>
@@ -74,12 +71,12 @@
         <tbody>
             {% for s in user_list %}
                 <tr>
-                    <td class="user-data">{{ s.user_name }}</td>
-                    <td class="user-data">{{ s.name }}</td>
-                    <td class="user-data">{{ s.mail }}</td>
-                    <td class="user-data">{{ s.profile }}</td>
+                    <td >{{ s.user_name }}</td>
+                    <td >{{ s.name }}</td>
+                    <td >{{ s.mail }}</td>
+                    <td >{{ s.profile }}</td>
                     {% if profiles.group_id == 1 %}
-                        <td class="all-lightgray">
+                        <td>
                             {% if s.id != request.user.id %}
                                 <a href="{% url 'user_ver' s.id %}" title="Ver Usuario" class="user-action">
                                     <i class="fa-solid fa-eye"></i> 

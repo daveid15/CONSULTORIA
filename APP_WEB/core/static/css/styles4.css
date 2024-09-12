@@ -87,14 +87,7 @@
 }
 
 /*tablas*/
-.cont-table{ 
-    position: absolute; 
-    top: 30%; 
-    left: 15%; 
-    width: 83%; 
-    height: 40%;
 
-}
 
 
 .estilo-table{
@@ -208,16 +201,6 @@ border-radius: 90px
 
 /*color del banner*/
 /* para tablas */
-.user-action {
-    display: inline-block;
-   
-    font-size: 18px; /* Tamaño de fuente */
-    color: #000; /* Color del texto */
-    text-decoration: none; /* Sin subrayado */
-    background-color: lightgray; /* Fondo del enlace */
-    border-radius: 5px; /* Bordes redondeados */
-}
-
 .user-action:hover {
     background-color: #B3B3B3; /* Cambio de color al pasar el cursor */
 }
@@ -225,20 +208,9 @@ border-radius: 90px
 .user-action i {
     margin-right: 5px; /* Espacio entre el icono y el texto */
 }
-.table-user th {
-    font-size: 20px; /* Tamaño de la fuente para los encabezados */
-    font-weight:inherit; /* Grosor de la fuente para los encabezados */
-    text-align:center; /* Alineación del texto en los encabezados */
-    padding: 10px; /* Espaciado interno en los encabezados */
-}
 
-.table-user td {
-    font-size: 20px; /* Tamaño de la fuente para las celdas */
-    color: #333; /* Color del texto para las celdas */
-    padding: 10px; /* Espaciado interno en las celdas */
-    background-color: lightgray; /* Fondo de las celdas */
-    text-align:center;/* Alineación del texto */
-}
+
+
 
 .table-user .user-actions {
     display:block; /* Usar flexbox para alinear los elementos */
