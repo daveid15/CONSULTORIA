@@ -15,7 +15,7 @@ class Menu:
         self.main.geometry('1000x600')
 
         #Pantalla con sus colores y titulo respectivo
-        tk.Label(self.main, text="MENÚ PRICIPAL", font=labelFont, bg='#D9D9D9').pack(side=TOP, fill=X)
+        tk.Label(self.main, text="MENÚ PRINCIPAL", font=labelFont, bg='#D9D9D9').pack(side=TOP, fill=X)
         right_frame = tk.Frame(self.main, bg="#1F6095")
         right_frame.place(x=0.275, y=30, relheight=1, relwidth=1)
         left_frame = tk.Frame(self.main, bg="#A6C3FF")
