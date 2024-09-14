@@ -1,6 +1,8 @@
 # Archivo validacion.py
 from tkinter import messagebox
 import pyvisa
+import json
+import os
 def validar_float(valor):
     try:
         # Intentar convertir el valor a float
@@ -101,3 +103,44 @@ def validar_delay(delay):
         return False
     else:
         return True
+    
+def comparar_perfiles(perfil1, perfil2):
+    #compara los perfiles
+    print(perfil1)
+    print(perfil2)
+
+    return (
+        perfil1['intervalo_simetrico'] == perfil2['intervalo_simetrico'] and
+        perfil1['intervalos_corriente'] ==perfil2['intervalos_corriente'] and
+        perfil1['tiempo_entre_mediciones'] == perfil2['tiempo_entre_mediciones']
+    )
+
+def validar_perfil(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones):
+    json_path = os.path.join('APP_ESCRITORIO\perfiles_parametros.json')
+
+    try:
+        with open(json_path, 'r') as file:
+            datos_perfiles = json.load(file)
+
+        perfil_nuevo = {
+            'intervalo_simetrico': intervalo_simetrico,
+            'intervalos_corriente': intervalos_corriente,
+            'tiempo_entre_mediciones': tiempo_entre_mediciones
+        }
+
+        for nombres in datos_perfiles:
+            if nombres != nombre:
+                for perfil in datos_perfiles.values():
+                    if (comparar_perfiles(perfil, perfil_nuevo)):
+                        messagebox.showwarning('Advertencia','Ya existe un perfil con esos datos')
+                        return False
+                    return False
+            else:
+                messagebox.showwarning('Advertencia', 'Ya existe un perfil con ese nombre')
+                return False
+        return True
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        messagebox.showerror("Error", f"Error al cargar los perfiles: {str(e)}")
+        return False
+
+validar_perfil('prueba', '10', '10', '10')
