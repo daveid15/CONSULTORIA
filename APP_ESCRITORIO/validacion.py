@@ -105,10 +105,7 @@ def validar_delay(delay):
         return True
     
 def comparar_perfiles(perfil1, perfil2):
-    #compara los perfiles
-    print(perfil1)
-    print(perfil2)
-
+    #compara dos perfiles
     return (
         perfil1['intervalo_simetrico'] == perfil2['intervalo_simetrico'] and
         perfil1['intervalos_corriente'] ==perfil2['intervalos_corriente'] and
@@ -129,8 +126,10 @@ def validar_perfil(nombre, intervalo_simetrico, intervalos_corriente, tiempo_ent
         }
 
         for nombres in datos_perfiles:
+            #compara los nombres existentes con el ingresado
             if nombres != nombre:
                 for perfil in datos_perfiles.values():
+                    #compara el perfil ingresado don el que esta iterando
                     if (comparar_perfiles(perfil, perfil_nuevo)):
                         messagebox.showwarning('Advertencia','Ya existe un perfil con esos datos')
                         return False
@@ -140,7 +139,5 @@ def validar_perfil(nombre, intervalo_simetrico, intervalos_corriente, tiempo_ent
                 return False
         return True
     except (FileNotFoundError, json.JSONDecodeError) as e:
-        messagebox.showerror("Error", f"Error al cargar los perfiles: {str(e)}")
+        messagebox.showerror('Error', f'Error al cargar los perfiles: {str(e)}')
         return False
-
-validar_perfil('prueba', '10', '10', '10')
