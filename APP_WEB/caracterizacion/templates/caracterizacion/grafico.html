@@ -1,0 +1,126 @@
+{% extends 'core/base_admin.html' %}
+{% load manifest %}
+{% load static %}
+{% block content %}
+
+
+{% block extra_css %}
+{% endblock extra_css %}
+
+<!DOCTYPE html>
+<html lang="es">
+<header class='mb-5'>
+    <style>
+        .upbar {
+            width: 7000px;
+            background-color: #270F57;
+            height: 65px;
+            display: flex;
+            align-items: center;
+        }
+    </style>
+    <div class="row">
+        <div class="col-12 col-sm-8 mb-3">
+            <h2 class='h2 medium text-blue'>DASHBOARD y REPORTERIA</h2>
+        </div>
+    </div>
+    <link href="{% manifest 'styles.scss' %}" rel="stylesheet">
+</header>
+
+<body>
+    <div class="row mt-2">
+        
+        <div class="col-sm-6">
+            <div class="card mr-2" style="width: 100%;">
+                <h5 class="card-header">Gráfico de usuarios</h5>
+                <canvas id="myChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    </div>
+    {% block extrajs %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
+
+
+    <canvas id="myChart" width="400" height="200"></canvas>
+
+<p>
+    Valor de R: <span id="rValue">0</span> Ω
+</p>
+
+<script>
+    // Valor inicial de la resistencia R (que puede depender de t)
+    var t = 2;  // Por ejemplo, este es el valor de t
+    var R = t * 5;  // Puedes usar cualquier fórmula para R
+
+    // Actualizar el valor de R en la etiqueta HTML
+    document.getElementById('rValue').innerText = R.toFixed(2);
+
+    // Datos del gráfico (corriente vs voltaje)
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line', // Tipo de gráfico: línea
+        data: {
+            labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],  // Corriente (X)
+            datasets: [{
+                label: 'Voltaje (V)',
+                data: [0, 1.2, 2.4, 3.5, 4.9, 6.1, 7.3, 8.6, 9.8, 11],  // Voltaje (Y)
+                backgroundColor: 'rgba(54, 162, 235, 0.2)', // Fondo de la línea
+                borderColor: 'rgba(54, 162, 235, 1)', // Color de la línea
+                borderWidth: 2,
+                fill: false  // No rellenar debajo de la línea
+            }]
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Corriente (A)'  // Etiqueta del eje X
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Voltaje (V)'  // Etiqueta del eje Y
+                    }
+                }]
+            },
+            plugins: {
+                zoom: {
+                    // Permite desplazamiento
+                    pan: {
+                        enabled: true,
+                        mode: 'xy',  // Permitir mover en ambas direcciones
+                        speed: 10,
+                        threshold: 10
+                    },
+                    // Permite zoom
+                    zoom: {
+                        enabled: true,
+                        mode: 'xy',  // Permitir zoom en ambas direcciones
+                        speed: 0.1
+                    }
+                }
+            }
+        }
+    });
+
+    // Función para actualizar el valor de R dinámicamente
+    function actualizarR(nuevoT) {
+        R = nuevoT * 5;  // Puedes cambiar la fórmula
+        document.getElementById('rValue').innerText = R.toFixed(2);  // Actualizar en HTML
+    }
+
+    // Ejemplo de cómo podrías cambiar dinámicamente el valor de t y, por tanto, de R
+    // Puedes vincular esto a un evento o botón
+    setTimeout(() => {
+        actualizarR(4);  // Cambiar valor de t, por ejemplo
+    }, 5000);  // Cambiar después de 5 segundos
+</script>
+    {% endblock extrajs %}
+    {% endblock %}

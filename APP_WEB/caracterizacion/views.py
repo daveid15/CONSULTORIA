@@ -35,3 +35,9 @@ def caracterizacion_main(request):
     template_name = 'caracterizacion/caracterizacion_main.html'
     return render(request,template_name,{'profiles':profiles})
 #Flujo usuarios
+
+def grafico (request):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    check_profile_admin(request, profiles)
+    template_name = 'caracterizacion/grafico.html'
+    return render(request,template_name,{'profiles':profiles})
