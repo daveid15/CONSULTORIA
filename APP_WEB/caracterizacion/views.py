@@ -54,7 +54,7 @@ def perfil_parametro_create(request):
             return redirect('perfil_parametro_list')  # Redirigir después de guardar
     else:
         form = PerfilParametroForm()
-    return render(request, 'caracterizacion/perfil_parametro_form.html', {'form': form})
+    return render(request, '', {'form': form})
 
 # Vista para editar un perfil
 def perfil_parametro_update(request, pk):
@@ -66,7 +66,7 @@ def perfil_parametro_update(request, pk):
             return redirect('perfil_parametro_list')
     else:
         form = PerfilParametroForm(instance=perfil)
-    return render(request, 'caracterizacion/perfil_parametro_form.html', {'form': form})
+    return render(request, '', {'form': form})
 
 # Vista para eliminar un perfil
 def perfil_parametro_delete(request, pk):
@@ -74,12 +74,12 @@ def perfil_parametro_delete(request, pk):
     if request.method == 'POST':
         perfil.delete()
         return redirect('perfil_parametro_list')
-    return render(request, 'caracterizacion/perfil_parametro_confirm_delete.html', {'perfil': perfil})
+    return render(request, '', {'perfil': perfil})
 
 # Listar todas las pruebas
 def prueba_list(request):
     pruebas = Prueba.objects.all()
-    return render(request, 'caracterizacion/prueba_list.html', {'pruebas': pruebas})
+    return render(request, '', {'pruebas': pruebas})
 
 # Crear una nueva prueba
 def prueba_create(request):
@@ -90,7 +90,7 @@ def prueba_create(request):
             return redirect('prueba_list')
     else:
         form = PruebaForm()
-    return render(request, 'caracterizacion/prueba_form.html', {'form': form})
+    return render(request, '', {'form': form})
 
 # Actualizar una prueba existente
 def prueba_update(request, pk):
@@ -102,7 +102,7 @@ def prueba_update(request, pk):
             return redirect('prueba_list')
     else:
         form = PruebaForm(instance=prueba)
-    return render(request, 'caracterizacion/prueba_form.html', {'form': form})
+    return render(request, '', {'form': form})
 
 # Eliminar una prueba
 def prueba_delete(request, pk):
@@ -110,13 +110,13 @@ def prueba_delete(request, pk):
     if request.method == 'POST':
         prueba.delete()
         return redirect('prueba_list')
-    return render(request, 'caracterizacion/prueba_confirm_delete.html', {'object': prueba})
+    return render(request, '', {'object': prueba})
 
 
 # Listar todas las mediciones
 def medicion_list(request):
     mediciones = Medicion.objects.all()
-    return render(request, 'caracterizacion/medicion_list.html', {'mediciones': mediciones})
+    return render(request, '', {'mediciones': mediciones})
 
 # Crear una nueva medición
 def medicion_create(request):
@@ -127,7 +127,7 @@ def medicion_create(request):
             return redirect('medicion_list')
     else:
         form = MedicionForm()
-    return render(request, 'caracterizacion/medicion_form.html', {'form': form})
+    return render(request, '', {'form': form})
 
 # Actualizar una medición existente
 def medicion_update(request, pk):
@@ -139,7 +139,7 @@ def medicion_update(request, pk):
             return redirect('medicion_list')
     else:
         form = MedicionForm(instance=medicion)
-    return render(request, 'caracterizacion/medicion_form.html', {'form': form})
+    return render(request, '', {'form': form})
 
 # Eliminar una medición
 def medicion_delete(request, pk):
@@ -147,4 +147,4 @@ def medicion_delete(request, pk):
     if request.method == 'POST':
         medicion.delete()
         return redirect('medicion_list')
-    return render(request, 'caracterizacion/medicion_confirm_delete.html', {'object': medicion})
+    return render(request, '', {'object': medicion})
