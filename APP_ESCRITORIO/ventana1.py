@@ -1,5 +1,6 @@
 from tkinter import *
 import tkinter as tk
+from tkinter import ttk
 from tkinter import filedialog
 from datetime import datetime
 import numpy as np
@@ -9,10 +10,13 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import threading
 from validacion import *
+import json
+
 class Ventana1:
     def __init__(self, menu, ventana_principal):
         labelFont = ("Bold Italic", 20, 'bold')
         bottonFont = ('Bold Italic', 10)
+        
 
         #Variables
         self._nombre = tk.StringVar()
@@ -20,6 +24,9 @@ class Ventana1:
         self._intervalos_corriente = tk.StringVar()
         self._tiempo_entre_mediciones = tk.StringVar()
         self.LineaTendencia = tk.BooleanVar()
+
+        # Lista para perfiles de parámetros
+        self.perfiles_parametros = self.cargar_perfiles_desde_archivo()
 
         #Diseño Ventana
         self.menu = menu
@@ -41,8 +48,11 @@ class Ventana1:
 
         tk.Checkbutton(self.menu, text="Línea de Tendencia", variable=self.LineaTendencia).place(x=25, y=300)
 
-        btn_guardar_seccion = tk.Button(self.menu, text="Guardar Sección", command=self.guardar_seccion)
-        btn_guardar_seccion.place(x=25, y=350)
+        btn_guardar_perfil = tk.Button(self.menu, text="Guardar Perfil", command=self.guardar_perfil)
+        btn_guardar_perfil.place(x=25, y=350)
+
+        btn_cargar_perfil = tk.Button(self.menu, text="Cargar Perfil", command=self.cargar_perfil)
+        btn_cargar_perfil.place(x=125, y=350)
 
         btn_iniciar = tk.Button(self.menu, text="Iniciar", command=self.medir_IV_curve)
         btn_iniciar.place(x=25, y=400)
@@ -52,6 +62,13 @@ class Ventana1:
 
         self.btn_clear_plot = tk.Button(self.menu, text="Borrar Gráfico", command=self.borrar_grafico)
         self.btn_clear_plot.place(x=25, y=500)
+
+
+        # ComboBox para seleccionar perfiles de parámetros
+        tk.Label(self.menu, text="Perfiles de Parámetros Guardados").place(x=25, y=250)
+        self.combo_perfiles = tk.ttk.Combobox(self.menu, state="readonly")
+        self.combo_perfiles.place(x=25, y=270, width=200)
+        self.combo_perfiles.bind("<<ComboboxSelected>>", self.actualizar_parametros)
 
 
         #Entradas
@@ -95,13 +112,86 @@ class Ventana1:
         self.toolbar.pack(side=tk.BOTTOM, fill=tk.X)  # Mover la barra de herramientas abajo
 
         # Mantener el gráfico arriba
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
-
-        
-        
-        
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)        
         self.rm = None
         self.corrientes = None
+
+
+        #Actualizar Perfiles
+        self.cargar_perfiles_desde_archivo()
+        self.actualizar_combo_perfiles()
+
+
+
+    #Guardar perfil de parámetros
+    def guardar_perfil(self):
+        nombre = self._nombre.get().strip()
+        if not nombre:
+            messagebox.showerror("Error", "El nombre del perfil no puede estar vacío.")
+            return
+
+        if nombre in self.perfiles_parametros:
+            messagebox.showerror("Error", "El nombre del perfil ya existe. Por favor elige otro nombre.")
+            return
+
+        #Validar que los valores sean correctos
+        intervalo_simetrico = self._intervalo_simetrico.get().strip()
+        intervalos_corriente = self._intervalos_corriente.get().strip()
+        tiempo_entre_mediciones = self._tiempo_entre_mediciones.get().strip()
+
+        if not intervalo_simetrico or not intervalos_corriente or not tiempo_entre_mediciones:
+            messagebox.showerror("Error", "Todos los campos deben ser completados.")
+            return
+
+        #Guardar parámetros en el diccionario
+        self.perfiles_parametros[nombre] = {
+            "intervalo_simetrico": intervalo_simetrico,
+            "intervalos_corriente": intervalos_corriente,
+            "tiempo_entre_mediciones": tiempo_entre_mediciones
+        }
+
+        self.guardar_perfiles_a_archivo()
+
+        #Actualizar el ComboBox con los perfiles guardados
+        self.actualizar_combo_perfiles()
+        messagebox.showinfo("Información", f"Perfil '{nombre}' guardado exitosamente.")
+
+
+    #Cargar perfil de parámetros
+    def cargar_perfil(self):
+        nombre = self.combo_perfiles.get()
+        if nombre in self.perfiles_parametros:
+            perfil = self.perfiles_parametros[nombre]
+            self._nombre.set(nombre)
+            self._intervalo_simetrico.set(perfil["intervalo_simetrico"])
+            self._intervalos_corriente.set(perfil["intervalos_corriente"])
+            self._tiempo_entre_mediciones.set(perfil["tiempo_entre_mediciones"])
+            messagebox.showinfo("Información", f"Perfil '{nombre}' cargado correctamente.")
+        else:
+            messagebox.showwarning("Advertencia", "Seleccione un perfil válido para cargar.")
+
+    #Actualizar los parámetros en el ComboBox
+    def actualizar_parametros(self, event):
+        self.cargar_perfil()
+
+    #Actualizar Combobox
+    def actualizar_combo_perfiles(self):
+        self.combo_perfiles['values'] = list(self.perfiles_parametros.keys())
+
+    
+    #Cargar Perfil en archivo
+    def cargar_perfiles_desde_archivo(self):
+        try:
+            with open("perfiles_parametros.json", "r") as archivo:
+                return json.load(archivo)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return {}
+
+    #Guardar Perfil en archivo    
+    def guardar_perfiles_a_archivo(self):
+        with open("perfiles_parametros.json", "w") as archivo:
+            json.dump(self.perfiles_parametros, archivo, indent=4)
+
 
     # Obtención de entradas
     @property
@@ -121,8 +211,6 @@ class Ventana1:
         return self._tiempo_entre_mediciones.get()
     
     #Funciones Botones
-    def guardar_seccion(self):
-        print("Sección Guardada")
 
     def iniciar(self):
         print("Iniciado")
@@ -131,10 +219,9 @@ class Ventana1:
 
     # Volver al menú
     def volver(self):
+        self.guardar_perfiles_a_archivo()
         self.menu.withdraw()
         self.ventana_principal.deiconify()
-
-
     def mostrar_mensaje_inicio(self, titulo, mensaje):
         # Crear una nueva ventana de diálogo personalizada
         self.popup = tk.Toplevel(self.menu)
@@ -165,14 +252,9 @@ class Ventana1:
         self.boton_cerrar = tk.Button(self.popup, text="Cerrar", command=self.cerrar_popup, state=tk.DISABLED)
         self.boton_cerrar.pack(pady=10)
 
-        # Ejecutar la medición en un hilo separado
-
-        
-
-        
+        # Ejecutar la medición en un hilo separado     
     def cerrar_popup(self):
         self.popup.destroy()
-
     def medir_IV_curve(self):
         def ejecutar_medicion():
             start_current_str = self._intervalo_simetrico.get()
@@ -243,19 +325,14 @@ class Ventana1:
         # Ejecutar la medición en un hilo separado
         self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
         self.hilo_medicion.start()
-
     def actualizar_interfaz_despues_de_medir(self):
         self.menu.after(0, self.mostrar_grafico(), "Información", "Medición completada")
-
     def mostrar_mensaje(self, titulo, mensaje):
         # Muestra un mensaje en el hilo principal
         messagebox.showinfo(titulo, mensaje)
         
         # Muestra el gráfico en el hilo principal
         self.mostrar_grafico()
-
-
-
     def mostrar_grafico(self):
         try:
             corrientes, voltajes = zip(*self.resultados)
@@ -290,15 +367,13 @@ class Ventana1:
 
         self.ax.grid(True)
         self.canvas.draw()
-
-
     def browse_file(self):
         file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")])
         self.entry_start.delete(0, tk.END)
         self.entry_end.delete(0, tk.END)
         self.entry_step.delete(0, tk.END)
         self.entry_start.insert(0, file_path)
-    def guardar_prueba(self, event=None):  # Accept the event argument from Tkinter
+    def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
         
         if self.corrientes is not None and self.resultados is not None:
             # Obtener el título actual de la ventana como sugerencia de nombre
