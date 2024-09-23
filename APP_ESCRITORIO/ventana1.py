@@ -377,7 +377,7 @@ class Ventana1:
         self.entry_start.insert(0, file_path)
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
         
-        if True:
+        if self.corrientes is not None and self.resultados is not None:
             # Obtener el título actual de la ventana como sugerencia de nombre
             proyecto_titulo = "test_"
 
