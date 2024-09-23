@@ -20,6 +20,7 @@ class Ventana1:
 
         #Variables
         self._nombre = tk.StringVar()
+        self._R = tk.StringVar()
         self._intervalo_simetrico = tk.StringVar()
         self._intervalos_corriente = tk.StringVar()
         self._tiempo_entre_mediciones = tk.StringVar()
@@ -347,6 +348,7 @@ class Ventana1:
         grado = 1
         coeficientes = np.polyfit(corrientes, voltajes, grado)
         resistencia = 1 / coeficientes[0]
+        self._R=resistencia
 
         if self.LineaTendencia.get():
             # Calcular la línea de tendencia usando corrientes para el eje x
@@ -375,15 +377,17 @@ class Ventana1:
         self.entry_start.insert(0, file_path)
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
         
-        if self.corrientes is not None and self.resultados is not None:
+        if True:
             # Obtener el título actual de la ventana como sugerencia de nombre
             proyecto_titulo = "test_"
 
             file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")],initialfile=proyecto_titulo)
 
             if file_path:  # Si el usuario no cancela la selección del archivo
-                with open(file_path, 'w') as file:
-                    file.write("Corriente (A)\tVoltaje (V)\n\n")
+                with open(file_path, 'w') as file: 
+                    file.write(f"fecha: {datetime.now().strftime("%d-%m-%Y")}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
+                    
+                    file.write("Corriente (A),\tVoltaje (V)\n\n")
                     #
                     for corriente, voltaje in self.resultados:
                         file.write(f"{corriente:.3f}\t\t{voltaje}\n")
