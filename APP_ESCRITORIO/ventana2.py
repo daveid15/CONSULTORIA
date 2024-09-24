@@ -51,7 +51,7 @@ class Ventana2:
         tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones).place(x=25, y=230, width=210)
 
         #Botones
-        btn_volver = tk.Button(self.menu, text="🡸", bg="#99A8EF", command=self.volver)
+        btn_volver = tk.Button(self.menu, text="volver", bg="#99A8EF", command=self.volver)
         btn_volver.place(x=50, y=1.5)
         btn_guardar_perfil = tk.Button(self.menu, text="Guardar Perfil", command=self.guardar_perfil)
         btn_guardar_perfil.place(x=35, y=375)
