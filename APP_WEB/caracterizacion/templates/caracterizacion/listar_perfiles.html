@@ -1,0 +1,13 @@
+
+
+<h1>Perfiles de Parámetros</h1>
+<a href="{% url 'crear_perfil' %}">Crear nuevo perfil</a>
+<ul>
+    {% for perfil in perfiles %}
+    <li>
+        {{ perfil.perfil_parametro_name }} - <a href="{% url 'detalle_perfil' perfil.pk %}">Ver detalles</a> | 
+        <a href="{% url 'editar_perfil' perfil.pk %}">Editar</a> | 
+        <a href="{% url 'eliminar_perfil' perfil.pk %}">Eliminar</a>
+    </li>
+    {% endfor %}
+</ul>

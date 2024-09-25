@@ -1,0 +1,6 @@
+<h1>{% if perfil %}Editar{% else %}Crear{% endif %} Perfil</h1>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">{% if perfil %}Actualizar{% else %}Crear{% endif %}</button>
+</form>
