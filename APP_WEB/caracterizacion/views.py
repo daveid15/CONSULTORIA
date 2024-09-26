@@ -54,7 +54,7 @@ def crear_perfil(request):
             return redirect('listar_perfiles')
     else:
         form = PerfilParametroForm()
-    return render(request, 'caracterizacion/crear_perfil.html', {'form': form})
+    return render(request, 'caracterizacion/crear_editar_perfil.html', {'form': form})
 
 # Editar un perfil de parámetros
 def editar_perfil(request, pk):
@@ -66,7 +66,7 @@ def editar_perfil(request, pk):
             return redirect('listar_perfiles')
     else:
         form = PerfilParametroForm(instance=perfil)
-    return render(request, 'caracterizacion/editar_perfil.html', {'form': form, 'perfil': perfil})
+    return render(request, 'caracterizacion/crear_editar_perfil.html', {'form': form, 'perfil': perfil})
 
 # Eliminar un perfil de parámetros
 def eliminar_perfil(request, pk):
