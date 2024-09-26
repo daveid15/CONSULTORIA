@@ -3,5 +3,6 @@
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">{% if perfil %}Actualizar{% else %}Crear{% endif %}</button>
+    <a href="{% url 'listar_perfiles' %}">Volver</a>
 </form>
 
