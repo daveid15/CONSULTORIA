@@ -379,6 +379,22 @@ border-radius: 90px
     background-color: #001f3f;
     border-radius: 50px;
 }
+.cont-form-carac{  /*Borde GENERAL DE FORMULARIOS*/
+  position: absolute; 
+  top: 150px;  
+  width: 140%; 
+  height: 620px; 
+  background-color: #001f3f;
+  border-radius: 50px;
+}
+
+
+.cont-form-carac th{
+  position: relative;
+  padding-top: 15px;
+  border-bottom: 3px solid rgb(255, 255, 255);
+  color: #fff;
+} 
 .cont-form-crud{  /*Borde GENERAL DE FORMULARIOS*/
   position: absolute; 
   top: 20%; 
