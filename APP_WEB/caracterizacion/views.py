@@ -80,3 +80,53 @@ def eliminar_perfil(request, pk):
 def detalle_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     return render(request, 'caracterizacion/detalle_perfil.html', {'perfil': perfil})
+
+
+#PerfilDeCorrienteWeb
+
+def caracterizacion_electrica(request):
+    if request.method == 'POST':
+        # Aquí puedes manejar los datos del formulario
+        nombre = request.POST.get('nombre')
+        intervalo_simetrico = request.POST.get('intervalo_simetrico')
+        intervalos_corriente = request.POST.get('intervalos_corriente')
+        tiempo_medicion = request.POST.get('tiempo_medicion')
+        linea_tendencia = request.POST.get('linea_tendencia')
+
+        # Procesar los datos o realizar alguna acción
+        # Luego redirigir a una plantilla o página de confirmación
+        return render(request, 'caracterizacion_electrica.html', {
+            'nombre': nombre,
+            'intervalo_simetrico': intervalo_simetrico,
+            'intervalos_corriente': intervalos_corriente,
+            'tiempo_medicion': tiempo_medicion,
+            'linea_tendencia': linea_tendencia,
+        })
+    else:
+        return render(request, 'caracterizacion_electrica.html')
+
+
+def caracterizacion_magnetoelectrica(request):
+    if request.method == 'POST':
+        # Obtener datos del formulario enviado
+        nombre = request.POST.get('nombre_usuario')
+        intervalo_simetrico = request.POST.get('intervalo_simetrico')
+        intervalos_corriente = request.POST.get('intervalos_corriente')
+        tiempo_medicion = request.POST.get('tiempo_medicion')
+        linea_tendencia = request.POST.get('linea_tendencia')
+        invertir_polos = request.POST.get('invertir_polos')  # Nuevo checkbox agregado
+
+        # Procesar los datos del formulario
+        return render(request, 'caracterizacion_magnetoelectrica.html', {
+            'nombre': nombre,
+            'intervalo_simetrico': intervalo_simetrico,
+            'intervalos_corriente': intervalos_corriente,
+            'tiempo_medicion': tiempo_medicion,
+            'linea_tendencia': linea_tendencia,
+            'invertir_polos': invertir_polos,  # Pasar a la plantilla
+        })
+    else:
+        # Si el método no es POST, simplemente cargar la plantilla sin datos
+        return render(request, 'caracterizacion_magnetoelectrica.html')
+
+    

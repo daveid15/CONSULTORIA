@@ -1,17 +1,188 @@
 {% extends 'core/base_admin.html' %}
 {% load static %}
 {% block content %}
-{% block extrahead %}
+    <style>
+        /* Estilos generales y centrado */
+        .content-container {
+            display: flex;
+            justify-content: flex-start; 
+            align-items: center;
+            flex-direction: column;
+            padding-top: 0; 
+            background-color: white;
+            height: 100vh; 
+        }
 
-{% endblock %}
-    <main role="main">
-        <div class=" titu-mein">
-            <h3 class='h2 medium text-blue'>Gestión de Pruebas</h3>
+        .main-title {
+            font-size: 48px; /* Aumentado */
+            text-align: center; 
+            margin: 20px 0; 
+            padding: 15px; /* Aumentado */
+            background-color: #001F3F; 
+            color: white; 
+            border-radius: 5px; 
+            width: 350px; /* Aumentado */
+            cursor: pointer; 
+            transition: background-color 0.3s; 
+        }
+
+        .main-title:hover {
+            background-color: #0056b3; 
+        }
+
+        .hardware-section {
+            text-align: center;
+            margin-bottom: 40px; /* Aumentado */
+        }
+
+        .hardware-section h2 {
+            font-size: 32px; /* Aumentado */
+            background-color: #001F3F; 
+            color: white;
+            padding: 15px; /* Aumentado */
+            border-radius: 5px;
+            margin-bottom: 40px; /* Aumentado */
+        }
+
+        .devices {
+            display: flex;
+            justify-content: space-around;
+            gap: 60px; /* Aumentado */
+        }
+
+        .device {
+            text-align: center;
+            width: 300px; /* Aumentado */
+        }
+
+        .device h3 {
+            font-size: 24px; /* Aumentado */
+            background-color: #001F3F; 
+            color: white;
+            padding: 10px; /* Aumentado */
+            border-radius: 5px;
+            margin-bottom: 20px; /* Aumentado */
+        }
+
+        .device img {
+            width: 250px; /* Aumentado */
+            height: 200px; /* Aumentado */
+            object-fit: cover;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .status-box {
+            background-color: #001F3F; 
+            color: white;
+            padding: 10px; /* Aumentado */
+            border-radius: 5px;
+            margin-top: 15px; /* Aumentado */
+        }
+
+        .status-box .status {
+            font-size: 18px; /* Aumentado */
+        }
+
+        .status-box .operativo {
+            color: lightgreen;
+        }
+
+        .status-box .inoperativo {
+            color: red;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+
+        .status-dot.green {
+            background-color: lightgreen;
+        }
+
+        .status-dot.red {
+            background-color: red;
+        }
+
+        .alert {
+            color: red;
+            font-size: 16px; /* Aumentado */
+            margin-top: 10px;
+        }
+
+        .check-status-button {
+            background-color: #CFFFD5; 
+            color: black; 
+            border: none;
+            border-radius: 5px;
+            padding: 12px 20px; /* Aumentado */
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px; 
+            font-size: 16px; /* Aumentado */
+        }
+
+        .check-status-button:hover {
+            background-color: #A3FFC3; 
+        }
+    </style>
+
+    <header class='mb-5'>
+        <div class="row">
+            <div class="titu-mein">
+                <h2 class='h2 medium text-blue'>Menu Principal</h2>
+            </div>
         </div>
-        {% if profiles.group_id == 1 or profiles.group_id == 4 %}
-        {% endif %}
-        <div class="botones-4">
-            <a href="{% url 'admin_main' %}" class="button button--gray form-control custom-button">Volver</a>
+    </header>
+
+    <div class="col-md-11 cont-table mb-4">
+        <div class="container content-container">
+            <div class="hardware-section">
+                <h2>Comunicación Hardware</h2>
+
+                <div class="devices">
+                    <!-- Multímetro -->
+                    <div class="device">
+                        <h3>Multímetro</h3>
+                        <img src="{% static 'assets/img/multimetro.jpg' %}" alt="Multímetro">
+                        <div class="status-box">
+                            <div class="status">
+                                <span>Estado:</span> <span class="operativo">Operativo</span>
+                                <span class="status-dot green"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fuente de Poder -->
+                    <div class="device">
+                        <h3>Fuente de Poder</h3>
+                        <img src="{% static 'assets/img/fuente.png' %}" alt="Fuente de Poder">
+                        <div class="status-box">
+                            <div class="status">
+                                <span>Estado:</span> <span class="operativo">Operativo</span>
+                                <span class="status-dot green"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gaussmeter -->
+                    <div class="device">
+                        <h3>Gaussmeter</h3>
+                        <img src="{% static 'assets/img/gaussmeter.jpg' %}" alt="Gaussmeter">
+                        <div class="status-box">
+                            <div class="status">
+                                <span>Estado:</span> <span class="inoperativo">Inoperativo</span>
+                                <span class="status-dot red"></span>
+                            </div>
+                        </div>
+                        <button class="check-status-button">Verificar Estado de Conexión</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </main>
+    </div>
 {% endblock %}

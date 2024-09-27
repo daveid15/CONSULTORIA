@@ -20,7 +20,6 @@
   <link href="{% static 'css/index.css' %}" rel="stylesheet">
   <link href="{% static 'css/styles2.css' %}" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
-
   <link href="{% static 'css/styles4.css' %}" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
@@ -38,15 +37,12 @@
 <body>
   <nav id="sidebar" class='side-bar to-left'>
     <header>
-
-
     </header>
     <div class="sidebar">
       <div class="menu-btn">
         <i class="ph-bold ph-caret-left"></i>
       </div>
       <div class="head">
-        <!--CCambiar proximamente -->
         <div class="user-img">
           <img src="{% static 'assets/img/logou.PNG' %}" alt="logo" />
         </div>
@@ -58,7 +54,7 @@
       <div class="nav">
         <div class="menu">
           <ul>
-            <!--Admin -->
+            <!-- Admin -->
             <li>
               <a href="#">
                 <span class="material-icons">admin_panel_settings</span>
@@ -68,7 +64,6 @@
               <ul class="sub-menu">
                 <li>
                   <a href="{% url 'admin_dashboard' %}">
-
                     <span class="text">Dashboard</span>
                   </a>
                 </li>
@@ -79,9 +74,8 @@
                 </li>
               </ul>
             </li>
-            <li>
-            </li>
-            
+
+            <!-- Caracterización -->
             <li>
               <a href="#">
                 <span class="material-icons">admin_panel_settings</span>
@@ -91,23 +85,26 @@
               <ul class="sub-menu">
                 <li>
                   <a href="{% url 'caracterizacion_main' %}">
-
-                    <span class="text">Main</span>
+                    <span class="text">Perfil de Corriente Web</span>
                   </a>
                 </li>
                 <li>
-                  <a href="{% url 'listar_perfiles' %}">
-                    <span class="text">Perfil Parámetros</span>
+                  <a href="{% url 'caracterizacion_electrica' %}">
+                    <span class="text">Caracterización Eléctrica</span>
+                  </a>
+                </li>
+                <!-- Botón de Caracterización Magnetoeléctrica -->
+                <li>
+                  <a href="{% url 'caracterizacion_magnetoelectrica' %}">
+                    <span class="text">Caracterización Magnetoeléctrica</span>
                   </a>
                 </li>
               </ul>
             </li>
-            <li>
-            </li>
+          </ul>
         </div>
 
-        
-
+        <!-- Settings -->
         <div class="menu">
           <p class="title">Settings</p>
           <ul>
