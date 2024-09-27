@@ -112,7 +112,7 @@ __pycache__/
 media/
 core/static/core/*.xls
 
-electivo_2023/settings.py
-electivo_2023/urls.py
+APP_WEB/electivo_2023/settings.py
+APP_WEB/electivo_2023/urls.py
 
 
