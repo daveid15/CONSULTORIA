@@ -214,14 +214,24 @@ body {
   text-align: center;
   font-size: 3rem;
 }
-* {
+* { 
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Nunito', sans-serif;
 }
 
-
+.cont-form-carac-crear label{
+  font-size: x-large;
+  padding-left: 5%;
+}
+.cont-form-carac-crear input{
+  font-size: x-large;
+  
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
 .upbar{
     background-color: #001F3F;
     height: 65px;
@@ -387,6 +397,48 @@ border-radius: 90px
   background-color: #001f3f;
   border-radius: 50px;
 }
+.cont-form-carac-crear{  /*Borde GENERAL DE FORMULARIOS*/
+  position: absolute; 
+  top: 100px;  
+  width: 16%; 
+  height: 550px; 
+  background-color: #001f3f;
+  border-radius: 50px;
+}
+.cont-form-carac-crear h1{
+  color: white;
+  position: absolute;
+  padding: 10px;
+  left: 25%;
+}
+.mover{
+  position: absolute;
+  left: 40px;
+  top: 50px;
+  color: #fff;
+}
+.mover-ver{
+  position: absolute;
+  left: 40px;
+  top: 100px;
+  color: #fff;
+}
+.cont-form-carac-ver{  /*Borde GENERAL DE FORMULARIOS*/
+  position: absolute; 
+  top: 50px;  
+  width: 40%; 
+  height: 350px; 
+  background-color: #001f3f;
+  border-radius: 50px;
+}
+.cont-form-carac-ver h1{
+  color: white;
+  position: absolute;
+  padding: 10px;
+  top: 20px;
+  left: 10%;
+}
+
 
 
 .cont-form-carac th{
@@ -689,6 +741,69 @@ border-radius: 90px
     text-align: center; /* Alineación del texto */
     text-decoration: none; /* Sin subrayado */
     width: 100%; /* Ancho del botón */
+}
+.custom-button-volver {
+  position: absolute;
+  top: 400px;
+  left: 50px;
+  font-size: 20px; /* Tamaño de la fuente */
+  font-family: 'Nunito', sans-serif;/* Tipo de letra */
+  padding: 10px 10px; /* Espaciado interno */
+  background-color: #f00; /* Fondo del botón */
+  border: none; /* Sin borde */
+  color: #fff; /* Color del texto */
+  border-radius: 50px; /* Bordes redondeados */
+  display: inline-block; /* Mostrar como bloque en línea */
+  text-align: center; /* Alineación del texto */
+  text-decoration: none; /* Sin subrayado */
+  width: 60%; /* Ancho del botón */
+}
+.custom-button-volver-ver {
+  position: absolute;
+  top: 250px;
+  left: 80px;
+  font-size: 20px; /* Tamaño de la fuente */
+  font-family: 'Nunito', sans-serif;/* Tipo de letra */
+  padding: 10px 10px; /* Espaciado interno */
+  background-color: #f00; /* Fondo del botón */
+  border: none; /* Sin borde */
+  color: #fff; /* Color del texto */
+  border-radius: 50px; /* Bordes redondeados */
+  display: inline-block; /* Mostrar como bloque en línea */
+  text-align: center; /* Alineación del texto */
+  text-decoration: none; /* Sin subrayado */
+  width: 60%; /* Ancho del botón */
+}
+.custom-button-crear {
+  position: absolute;
+  top: 330px;
+  left: 50px;
+  font-size: 20px; /* Tamaño de la fuente */
+  font-family: 'Nunito', sans-serif;/* Tipo de letra */
+  padding: 10px 10px; /* Espaciado interno */
+  background-color: #2bff00; /* Fondo del botón */
+  border: none; /* Sin borde */
+  color: #fff; /* Color del texto */
+  border-radius: 50px; /* Bordes redondeados */
+  display: inline-block; /* Mostrar como bloque en línea */
+  text-align: center; /* Alineación del texto */
+  text-decoration: none; /* Sin subrayado */
+  width: 60%; /* Ancho del botón */
+}
+.custom-button-carac {
+  position:absolute;
+  left: 300px;
+  font-size: 20px; /* Tamaño de la fuente */
+  padding: 10px 60px;
+   /* Espaciado interno */
+  background-color: #001F3F; /* Fondo del botón */
+  border: none; /* Sin borde */
+  color: #fff; /* Color del texto */
+  border-radius: 50px; /* Bordes redondeados */ /* Mostrar como bloque en línea */
+  text-decoration: none; /* Sin subrayado */ 
+  transition: 0.5s;
+  cursor: pointer;
+  
 }
 
 .custom-button:hover {

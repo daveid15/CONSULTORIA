@@ -371,9 +371,9 @@ textarea {
     
 }
 .button--gray_volver {
-    background: var(--gray);
+    background: var(--red);
     border: 2px solid var(--gray);
-    color: var(--blue);
+    color: var(--red);
     font-family: 'Nunito', sans-serif;
     
 }
@@ -382,6 +382,7 @@ textarea {
     background: #cfffc5;
     color: var(--black);
 }
+
 .button--gray_volver:hover {
     background: #f00;
     color: var(--black);
