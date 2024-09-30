@@ -1,8 +1,15 @@
-<h1>{% if perfil %}Editar{% else %}Crear{% endif %} Perfil</h1>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">{% if perfil %}Actualizar{% else %}Crear{% endif %}</button>
-    <a href="{% url 'listar_perfiles' %}">Volver</a>
-</form>
-
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+{% block extrahead %}
+{% endblock %}
+<div class="titu-mein">
+    <h1>{% if perfil %}Editar{% else %}Crear{% endif %} Perfil</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">{% if perfil %}Actualizar{% else %}Crear{% endif %}</button>
+        <a href="{% url 'listar_perfiles' %}">Volver</a>
+    </form>
+</div>
+{% endblock %}
