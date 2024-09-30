@@ -17,6 +17,8 @@ class Perfil_Parametro(models.Model):
         blank= False
     )
     perfil_parametro_state = models.CharField(max_length=10, null=True, blank=True, default='t')
+    
+    bloqueado = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Perfil Parametro'

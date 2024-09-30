@@ -80,3 +80,13 @@ def eliminar_perfil(request, pk):
 def detalle_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     return render(request, 'caracterizacion/detalle_perfil.html', {'perfil': perfil})
+
+def bloquear_perfil(request, perfil_id):
+    perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
+    perfil.bloqueado = True
+    perfil.save()
+    return redirect('listar_perfiles')  # Redirige a la lista de perfiles
+
+def listar_perfiles_bloqueados(request):
+    perfiles_bloqueados = Perfil_Parametro.objects.filter(bloqueado=True)
+    return render(request, 'perfiles_bloqueados.html', {'perfiles_bloqueados': perfiles_bloqueados})
