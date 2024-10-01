@@ -1,1 +1,7 @@
-{}
+{
+    "Prueba 1": {
+        "intervalo_simetrico": "10",
+        "intervalos_corriente": "2",
+        "tiempo_entre_mediciones": "3"
+    }
+}

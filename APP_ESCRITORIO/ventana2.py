@@ -28,11 +28,11 @@ class Ventana2:
         #Diseño ventana
         self.menu = menu
         self.ventana_principal = ventana_principal
-        self.menu.title("Caracterización Electromagnética")
+        self.menu.title("Caracterización Magnetoeléctrica")
         self.menu.geometry("1000x600")
 
         #Pantalla con sus colores y titulo respectivo
-        tk.Label(self.menu, text='Caracterización Eléctrica', font=labelFont, bg='#D9D9D9').pack(side=TOP, fill=X)
+        tk.Label(self.menu, text='Caracterización Magnetoeléctrica', font=labelFont, bg='#D9D9D9').pack(side=TOP, fill=X)
         right_frame = tk.Frame(self.menu, bg="#1F6095")
         right_frame.place(x=0.275, y=30, relheight=1, relwidth=1)
         left_frame = tk.Frame(self.menu, bg="#A6C3FF")
@@ -158,14 +158,14 @@ class Ventana2:
     #Cargar Perfil en archivo
     def cargar_perfiles_desde_archivo(self):
         try:
-            with open("perfiles_ventana2.json", "r") as archivo:
+            with open("APP_ESCRITORIO\perfiles_ventana2.json", "r") as archivo:
                 return json.load(archivo)
         except (FileNotFoundError, json.JSONDecodeError):
             return {}
 
     #Guardar Perfil en archivo    
     def guardar_perfiles_a_archivo(self):
-        with open("perfiles_ventana2.json", "w") as archivo:
+        with open("APP_ESCRITORIO\perfiles_ventana2.json", "w") as archivo:
             json.dump(self.perfiles_ventana2, archivo, indent=4)
 
     # Obtención de entradas
@@ -210,6 +210,26 @@ class Ventana2:
         else:
             messagebox.showwarning("Advertencia", "No hay datos para guardar. Realiza la medición primero.")
 
+    def graficar_histeresis(self):
+        try:
+            corrientes_fija, saturacion = zip(*self.resultados)
+        except ValueError:
+            print("Error: self.resultados no tiene el formato esperado.")
+            return
+
+        # Graficar los datos experimentales con una etiqueta
+        self.ax.plot(corrientes_fija, saturacion, marker='o', linestyle='-', label='Curva de Histéresis')
+
+        # Mostrar la leyenda solo si hay etiquetas definidas
+        handles = self.ax.get_legend_handles_labels()
+        if handles:
+            self.ax.legend()
+        else:
+            print("No se encontraron artistas con etiquetas para la leyenda.")
+
+        self.ax.grid(True)
+        self.canvas.draw()
+
     def graficar(self):
         def ejecutar():
             corriente = self._corriente_fija.get()
@@ -247,16 +267,16 @@ class Ventana2:
                                 except pyvisa.errors.VisaIOError as e:
                                     print(f"Error de VISA: {e}")
                                     self.resultados.append((corriente, None))
-
+    
                                 except ValueError as e:
                                     print(f"Error en los valores obtenidos: {e}")
                                     self.resultados.append((corriente, None))
-
+    
                             self.menu.after(0, self.boton_cerrar.config, {'state': tk.NORMAL})
                             self.actualizar_interfaz_despues_de_medir()
                             # Apagar la salida después de las mediciones
                             gaussmeter.write("OUTPUT OFF")
-
+                            self.graficar_histeresis()  # Llamar a la función para graficar la curva de histéresis
                     except pyvisa.errors.VisaIOError as e:
                         if 'VI_ERROR_LIBRARY_NFOUND' in str(e):
                             print("Error: No se pudo localizar o cargar la biblioteca requerida por VISA. Verifique que los controladores VISA estén instalados correctamente.")
