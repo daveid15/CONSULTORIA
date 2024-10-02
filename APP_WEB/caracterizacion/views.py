@@ -42,7 +42,8 @@ def caracterizacion_main(request):
 
 # Listar perfiles de parámetros
 def listar_perfiles(request):
-    perfiles = Perfil_Parametro.objects.all()
+    #perfiles = Perfil_Parametro.objects.all()
+    perfiles = Perfil_Parametro.objects.filter(perfil_parametro_state='t')  # Mostrar solo perfiles activos
     return render(request, 'caracterizacion/listar_perfiles.html', {'perfiles': perfiles})
 
 # Crear un perfil de parámetros
@@ -83,10 +84,23 @@ def detalle_perfil(request, pk):
 
 def bloquear_perfil(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
-    perfil.bloqueado = True
+    #perfil.bloqueado = True
+    perfil.perfil_parametro_state = 'f'
     perfil.save()
     return redirect('listar_perfiles')  # Redirige a la lista de perfiles
 
 def listar_perfiles_bloqueados(request):
-    perfiles_bloqueados = Perfil_Parametro.objects.filter(bloqueado=True)
-    return render(request, 'perfiles_bloqueados.html', {'perfiles_bloqueados': perfiles_bloqueados})
+    #perfiles_bloqueados = Perfil_Parametro.objects.filter(bloqueado=True)
+    perfiles_bloqueados = Perfil_Parametro.objects.filter(perfil_parametro_state='f')  # Mostrar solo perfiles bloqueados
+    return render(request, 'caracterizacion/perfiles_bloqueados.html', {'perfiles_bloqueados': perfiles_bloqueados})
+
+def desbloquear_perfil(request, perfil_id):
+    perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
+    perfil.bloqueado = False
+    perfil.save()
+    return redirect('listar_perfiles_bloqueados')
+
+def eliminar_perfil_bloqueado(request, perfil_id):
+    perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
+    perfil.delete()
+    return redirect('listar_perfiles_bloqueados')
