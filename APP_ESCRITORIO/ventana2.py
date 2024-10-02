@@ -11,8 +11,11 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import threading
 from validacion import *
 import json
+from tkinter import messagebox
+
 
 class Ventana2:
+    #Constructor
     def __init__(self, menu, ventana_principal):
         labelFont = ("Bold Italic", 20, 'bold')
         bottonFont = ('Bold Italic', 10)
@@ -57,6 +60,7 @@ class Ventana2:
         btn_guardar_perfil.place(x=35, y=375)
         btn_cargar_perfil = tk.Button(self.menu, text="Cargar Perfil", command=self.cargar_perfil)
         btn_cargar_perfil.place(x=135, y=375)
+        """OJITO Botón iniciar no esta asociado"""
         btn_iniciar = tk.Button(self.menu, text="Iniciar")
         btn_iniciar.place(x=100, y=420)
         btn_guardar_prueba = tk.Button(self.menu, text="Guardar Prueba", command=self.guardar_prueba)
@@ -67,7 +71,7 @@ class Ventana2:
 
         # ComboBox para seleccionar perfiles de parámetros
         tk.Label(self.menu, text="Perfiles de Parámetros Guardados", bg="#A6C3FF").place(x=25, y=265)
-        self.combo_perfiles = tk.ttk.Combobox(self.menu, state="readonly")
+        self.combo_perfiles = ttk.Combobox(self.menu, state="readonly")
         self.combo_perfiles.place(x=25, y=285, width=200)
         self.combo_perfiles.bind("<<ComboboxSelected>>", self.actualizar_parametros)
 
@@ -129,9 +133,10 @@ class Ventana2:
         
         #Guardar parámetros en el diccionario
         self.perfiles_parametros[nombre] = {
-            "Corriente_fija": corriente_fija,
-            "Saturacion_de_campo": saturacion_campo,
-            "Tiempo_entre_mediciones": tiempo_entre_mediciones
+            "ventana": "Caracterización Electromagnética",
+            "corriente_fija": corriente_fija,
+            "saturacion_campo": saturacion_campo,
+            "tiempo_entre_mediciones": tiempo_entre_mediciones
         }
 
         self.guardar_perfiles_a_archivo()
@@ -143,11 +148,11 @@ class Ventana2:
     #Cargar perfil de parámetros
     def cargar_perfil(self):
         nombre = self.combo_perfiles.get()
-        if nombre in self.perfiles_parametros:
-            perfil = self.perfiles_parametros[nombre]
+        perfil = self.perfiles_parametros.get(nombre)
+        if perfil and perfil.get("ventana") == "Caracterización Electromagnética":
             self._nombre.set(nombre)
             self._corriente_fija.set(perfil["corriente_fija"])
-            self._saturacion_campo.set(perfil["saturación_campo"])
+            self._saturacion_campo.set(perfil["saturacion_campo"])
             self._tiempo_entre_mediciones.set(perfil["tiempo_entre_mediciones"])
             messagebox.showinfo("Información", f"Perfil '{nombre}' cargado correctamente.")
         else:
@@ -159,7 +164,8 @@ class Ventana2:
 
     #Actualizar Combobox
     def actualizar_combo_perfiles(self):
-        self.combo_perfiles['values'] = list(self.perfiles_parametros.keys())
+        perfiles_filtrados = {k: v for k, v in self.perfiles_parametros.items() if v.get("ventana") == "Caracterización Electromagnética"}
+        self.combo_perfiles['values'] = list(perfiles_filtrados.keys())
 
     
     #Cargar Perfil en archivo

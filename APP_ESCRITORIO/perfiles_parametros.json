@@ -1,6 +1,6 @@
 {
     "prueba1": {
-        "intervalo_simetrico": "10",
+        "intervalo_simetrico": "11",
         "intervalos_corriente": "10",
         "tiempo_entre_mediciones": "10"
     },
@@ -8,5 +8,45 @@
         "intervalo_simetrico": "20",
         "intervalos_corriente": "20",
         "tiempo_entre_mediciones": "20"
+    },
+    "prueba0": {
+        "intervalo_simetrico": "00",
+        "intervalos_corriente": "00",
+        "tiempo_entre_mediciones": "00"
+    },
+    "pruebamagnetica": {
+        "Corriente_fija": "123",
+        "Saturacion_de_campo": "123",
+        "Tiempo_entre_mediciones": "123"
+    },
+    "pruebaculia": {
+        "ventana": "Caracterizaci\u00f3n El\u00e9ctrica",
+        "intervalo_simetrico": "111",
+        "intervalos_corriente": "111",
+        "tiempo_entre_mediciones": "111"
+    },
+    "pruebaculia1": {
+        "ventana": "Caracterizaci\u00f3n Magnetoel\u00e9ctrica",
+        "Corriente_fija": "222",
+        "Saturacion_de_campo": "222",
+        "Tiempo_entre_mediciones": "222"
+    },
+    "prueba5": {
+        "ventana": "Caracterizaci\u00f3n Magnetoel\u00e9ctrica",
+        "Corriente_fija": "123",
+        "Saturacion_de_campo": "123",
+        "Tiempo_entre_mediciones": "123"
+    },
+    "prueba6": {
+        "ventana": "Caracterizaci\u00f3n Magnetoel\u00e9ctrica",
+        "Corriente_fija": "133",
+        "Saturacion_de_campo": "133",
+        "Tiempo_entre_mediciones": "133"
+    },
+    "asd": {
+        "ventana": "Caracterizaci\u00f3n Electromagn\u00e9tica",
+        "corriente_fija": "123",
+        "saturacion_campo": "123",
+        "tiempo_entre_mediciones": "123"
     }
 }

@@ -13,6 +13,7 @@ from validacion import *
 import json
 
 class Ventana1:
+    #Constructor
     def __init__(self, menu, ventana_principal):
         labelFont = ("Bold Italic", 20, 'bold')
         bottonFont = ('Bold Italic', 10)
@@ -145,6 +146,7 @@ class Ventana1:
 
         #Guardar parámetros en el diccionario
         self.perfiles_parametros[nombre] = {
+            "ventana":"Caracterización Eléctrica",
             "intervalo_simetrico": intervalo_simetrico,
             "intervalos_corriente": intervalos_corriente,
             "tiempo_entre_mediciones": tiempo_entre_mediciones
@@ -160,8 +162,8 @@ class Ventana1:
     #Cargar perfil de parámetros
     def cargar_perfil(self):
         nombre = self.combo_perfiles.get()
-        if nombre in self.perfiles_parametros:
-            perfil = self.perfiles_parametros[nombre]
+        perfil = self.perfiles_parametros.get(nombre)
+        if perfil and perfil.get("ventana") == "Caracterización Eléctrica":
             self._nombre.set(nombre)
             self._intervalo_simetrico.set(perfil["intervalo_simetrico"])
             self._intervalos_corriente.set(perfil["intervalos_corriente"])
@@ -176,7 +178,8 @@ class Ventana1:
 
     #Actualizar Combobox
     def actualizar_combo_perfiles(self):
-        self.combo_perfiles['values'] = list(self.perfiles_parametros.keys())
+        perfiles_filtrados = {k: v for k, v in self.perfiles_parametros.items() if v.get("ventana") == "Caracterización Eléctrica"}
+        self.combo_perfiles['values'] = list(perfiles_filtrados.keys())
 
     
     #Cargar Perfil en archivo
