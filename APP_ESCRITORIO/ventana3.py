@@ -11,7 +11,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import threading 
 from validacion import *
 import json
-
+#holasad
 class Ventana3:
     def __init__(self, menu, ventana_principal):
         labelFont = ("Bold Italic", 20, 'bold')
