@@ -94,11 +94,6 @@ def listar_perfiles_bloqueados(request):
     perfiles_bloqueados = Perfil_Parametro.objects.filter(perfil_parametro_state='f')  # Mostrar solo perfiles bloqueados
     return render(request, 'caracterizacion/perfiles_bloqueados.html', {'perfiles_bloqueados': perfiles_bloqueados})
 
-def desbloquear_perfil(request, perfil_id):
-    perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
-    perfil.bloqueado = False
-    perfil.save()
-    return redirect('listar_perfiles_bloqueados')
 
 def eliminar_perfil_bloqueado(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
