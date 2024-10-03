@@ -8,4 +8,9 @@ caracterizacion_patterns = [
     path('caracterizacion_main', views.caracterizacion_main,name="caracterizacion_main"),
     path('grafico', views.grafico,name="grafico"),
     #flujo usuarios
+    path('perfiles/', views.listar_perfiles, name='listar_perfiles'),
+    path('perfiles/crear/', views.crear_perfil, name='crear_perfil'),
+    path('perfiles/editar/<int:pk>/', views.editar_perfil, name='editar_perfil'),
+    path('perfiles/eliminar/<int:pk>/', views.eliminar_perfil, name='eliminar_perfil'),
+    path('perfiles/detalle/<int:pk>/', views.detalle_perfil, name='detalle_perfil'),
 ]  

@@ -114,15 +114,14 @@ def comparar_perfiles(perfil1, perfil2):
 
 def validar_perfil(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones):
     json_path = os.path.join('APP_ESCRITORIO\perfiles_parametros.json')
-
     try:
         with open(json_path, 'r') as file:
             datos_perfiles = json.load(file)
 
         perfil_nuevo = {
-            'intervalo_simetrico': intervalo_simetrico,
-            'intervalos_corriente': intervalos_corriente,
-            'tiempo_entre_mediciones': tiempo_entre_mediciones
+            'intervalo_simetrico': str(intervalo_simetrico),
+            'intervalos_corriente': str(intervalos_corriente),
+            'tiempo_entre_mediciones': str(tiempo_entre_mediciones)
         }
 
         for nombres in datos_perfiles:
@@ -131,13 +130,23 @@ def validar_perfil(nombre, intervalo_simetrico, intervalos_corriente, tiempo_ent
                 for perfil in datos_perfiles.values():
                     #compara el perfil ingresado don el que esta iterando
                     if (comparar_perfiles(perfil, perfil_nuevo)):
+                        print(comparar_perfiles(perfil, perfil_nuevo))
                         messagebox.showwarning('Advertencia','Ya existe un perfil con esos datos')
                         return False
                     return False
             else:
                 messagebox.showwarning('Advertencia', 'Ya existe un perfil con ese nombre')
                 return False
+        guardar_txt(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones)
         return True
+    
     except (FileNotFoundError, json.JSONDecodeError) as e:
         messagebox.showerror('Error', f'Error al cargar los perfiles: {str(e)}')
         return False
+    
+def guardar_txt(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones):
+    f = open("APP_ESCRITORIO\perfiles_parametros.txt", "a")
+    f.write(f"{nombre} | {intervalo_simetrico} | {intervalos_corriente} | {tiempo_entre_mediciones} | \n")
+    f.close()
+
+validar_perfil('Prueba 3', 20, 20, 20)
