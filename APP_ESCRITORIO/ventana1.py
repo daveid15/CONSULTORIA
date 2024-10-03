@@ -17,7 +17,6 @@ class Ventana1:
         labelFont = ("Bold Italic", 20, 'bold')
         bottonFont = ('Bold Italic', 10)
         
-
         #Variables
         self._nombre = tk.StringVar()
         self._R = tk.StringVar()
@@ -256,6 +255,7 @@ class Ventana1:
         # Ejecutar la medición en un hilo separado     
     def cerrar_popup(self):
         self.popup.destroy()
+    
     def medir_IV_curve(self):
         def ejecutar_medicion():
             start_current_str = self._intervalo_simetrico.get()
