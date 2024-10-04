@@ -1,8 +1,3 @@
-{% extends 'core/base_admin.html' %}
-{% load static %}
-{% block content %}
-{% block extrahead %}
-{% endblock %}
 <h2>Perfiles Bloqueados</h2>
 
 <table>
@@ -25,6 +20,7 @@
             <td>{{ perfil.delay }}</td>
             <td>{{ perfil.perfil_parametro_state }}</td>
             <td>
+                <a href="{% url 'desbloquear_perfil' perfil.id %}">Desbloquear</a>
                 <a href="{% url 'eliminar_perfil_bloqueado' perfil.id %}" onclick="return confirm('¿Estás seguro de que deseas eliminar este perfil?');">Eliminar</a>
             </td>
         </tr>
@@ -32,4 +28,3 @@
     </tbody>
     <a href="{% url 'listar_perfiles' %}">Volver</a>
 </table>
-{% endblock %}
