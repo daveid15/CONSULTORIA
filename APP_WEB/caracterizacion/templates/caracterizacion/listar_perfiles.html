@@ -5,12 +5,23 @@
 {% endblock %}
 <div class="titu-mein">
     <h1 class='h2 medium text-blue'>Perfiles de Parámetros</h1>
-
     <!-- Botón para crear un nuevo perfil -->
+<<<<<<< HEAD
     <div class="botones-2">
         <a href="{% url 'crear_perfil' %}"  class=" button form-control custom-button-carac" title="Agregar Usuarios">Crear perfil</a>
     </div>
 
+=======
+    <header class='mb-5'>
+        <div class="botones-1">
+            <a href="{% url 'crear_perfil' %}"  class="button button--gray form-control custom-button" title="Agregar Usuarios">Crear nuevo perfil</a>
+        </div>
+        <div class="botones-2">
+            <a href="{% url 'listar_perfiles_bloqueados' %}"  class="button button--gray form-control custom-button" title="Agregar Usuarios">Ver Perfiles Bloqueados</a>
+        </div>
+    </header>
+    
+>>>>>>> 9905dffac940f4457bbf01ff901591109dd69378
     <!-- Tabla de perfiles de parámetros -->
     <div class="col-md-11 cont-table-carac" >
         <table  class="table table-user cont-form-carac">
@@ -39,8 +50,13 @@
                         <a href="{% url 'editar_perfil' perfil.pk %}" class="btn btn-icon">
                             <i class="fas fa-edit" style="color: white;"></i> <!-- Icono de Editar -->
                         </a>
+<<<<<<< HEAD
                         <a href="{% url 'eliminar_perfil' perfil.pk %}" class="btn btn-icon">
                             <i class="fas fa-trash" style="color: white;"></i> <!-- Icono de Eliminar -->
+=======
+                        <a href="{% url 'bloquear_perfil' perfil.pk %}" class="btn btn-icon">
+                            <i class="fas fa-lock"></i> <!-- Icono de Bloquear -->
+>>>>>>> 9905dffac940f4457bbf01ff901591109dd69378
                         </a>
                     </td>
                 </tr>

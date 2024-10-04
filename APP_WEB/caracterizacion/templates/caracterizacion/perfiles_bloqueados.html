@@ -1,0 +1,35 @@
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+{% block extrahead %}
+{% endblock %}
+<h2>Perfiles Bloqueados</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nombre Perfil</th>
+            <th>Intervalo Simétrico</th>
+            <th>Intervalo Corriente</th>
+            <th>Delay</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for perfil in perfiles_bloqueados %}
+        <tr>
+            <td>{{ perfil.perfil_parametro_name }}</td>
+            <td>{{ perfil.intervalo_simetrico }}</td>
+            <td>{{ perfil.intervalo_corriente }}</td>
+            <td>{{ perfil.delay }}</td>
+            <td>{{ perfil.perfil_parametro_state }}</td>
+            <td>
+                <a href="{% url 'eliminar_perfil_bloqueado' perfil.id %}" onclick="return confirm('¿Estás seguro de que deseas eliminar este perfil?');">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <a href="{% url 'listar_perfiles' %}">Volver</a>
+</table>
+{% endblock %}
