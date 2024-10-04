@@ -219,6 +219,7 @@ body {
     padding: 0;
     box-sizing: border-box;
     font-family: 'Nunito', sans-serif;
+    text-decoration: none;
 }
 
 .cont-form-carac-crear label{
@@ -268,13 +269,26 @@ body {
     width: 13%; 
     height: 10%;
 }
-
+.botones-1-carac{ /*boton lista block*/
+  position: absolute; 
+  top: 21%; 
+  left: 57.5%; 
+  width: 13%; 
+  height: 10%;
+}
 .botones-2{ /*boton nuevo usuario*/
     position: absolute; 
     top: 21%; 
     left: 71%; 
     width: 13%; 
     height: 10%;
+}
+.botones-2-carac{ /*boton nuevo usuario*/
+  position: absolute; 
+  top: 21%; 
+  left: 86%; 
+  width: 13%; 
+  height: 10%;
 }
 
 .botones-3{ /*boton carga masiva*/
@@ -803,7 +817,7 @@ border-radius: 90px
   text-decoration: none; /* Sin subrayado */ 
   transition: 0.5s;
   cursor: pointer;
-  
+  width: 160%;
 }
 
 .custom-button:hover {
