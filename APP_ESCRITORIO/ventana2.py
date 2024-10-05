@@ -12,7 +12,19 @@ import threading
 from validacion import *
 import json
 from tkinter import messagebox
+import nidaqmx
+from nidaqmx.constants import LineGrouping
 
+
+
+relay_pins = ['Dev1/port0/line0', 'Dev1/port0/line1', 'Dev1/port0/line2', 'Dev1/port0/line3']
+
+configuraciones = [
+    ((True, False, False, True), "Aplicar Configuración 1", "Configuración 1: A -> D (corriente) y B -> C (medición)"),
+    ((True, False, True, False), "Aplicar Configuración 2","Configuración 2: A -> C (corriente) y B -> D (medición)"),
+    ((False, True, False, True), "Aplicar Configuración 3","Configuración 3: B -> D (corriente) y A -> C (medición)"),
+    ((False, True, True, False), "Aplicar Configuración 4","Configuración 4: B -> C (corriente) y A -> D (medición)")
+]
 
 class Ventana2:
     #Constructor
@@ -34,7 +46,7 @@ class Ventana2:
         self.menu = menu
         self.ventana_principal = ventana_principal
         self.menu.title("Caracterización Electromagnética")
-        self.menu.geometry("1000x600")
+        self.menu.geometry("1000x720+0+0")
 
         #Pantalla con sus colores y titulo respectivo
         tk.Label(self.menu, text='Caracterización Eléctrica', font=labelFont, bg='#D9D9D9').pack(side=TOP, fill=X)
@@ -111,6 +123,11 @@ class Ventana2:
         self.cargar_perfiles_desde_archivo()
         self.actualizar_combo_perfiles()
 
+        self.crear_interfaz_configuraciones()
+
+        self.estados_reles = {pin: False for pin in relay_pins}  # False significa que el relé está apagado
+
+
     #Guardar perfil de parámetros
     def guardar_perfil(self):
         nombre = self._nombre.get().strip()
@@ -144,7 +161,9 @@ class Ventana2:
         #Actualizar el ComboBox con los perfiles guardados
         self.actualizar_combo_perfiles()
         messagebox.showinfo("Información", f"Perfil '{nombre}' guardado exitosamente.")
-        
+
+
+
     #Cargar perfil de parámetros
     def cargar_perfil(self):
         nombre = self.combo_perfiles.get()
@@ -158,9 +177,13 @@ class Ventana2:
         else:
             messagebox.showwarning("Advertencia", "Seleccione un perfil válido para cargar.")
 
+
+
     #Actualizar los parámetros en el ComboBox
     def actualizar_parametros(self, event):
         self.cargar_perfil()
+
+
 
     #Actualizar Combobox
     def actualizar_combo_perfiles(self):
@@ -168,6 +191,7 @@ class Ventana2:
         self.combo_perfiles['values'] = list(perfiles_filtrados.keys())
 
     
+
     #Cargar Perfil en archivo
     def cargar_perfiles_desde_archivo(self):
         try:
@@ -176,10 +200,14 @@ class Ventana2:
         except (FileNotFoundError, json.JSONDecodeError):
             return {}
 
+
+
     #Guardar Perfil en archivo    
     def guardar_perfiles_a_archivo(self):
         with open("perfiles_parametros.json", "w") as archivo:
             json.dump(self.perfiles_parametros, archivo, indent=4)
+
+
 
     # Obtención de entradas
     @property
@@ -198,13 +226,64 @@ class Ventana2:
     def tiempo_entre_mediciones(self):
         return self._tiempo_entre_mediciones.get()
 
+    def crear_interfaz_configuraciones(self):
+        # Crear un marco para el canvas
+        canvas = tk.Canvas(self.menu)
+        scroll_y = tk.Scrollbar(self.menu, orient="vertical", command=canvas.yview)
+        config_frame = tk.LabelFrame(canvas, text="Configuraciones de Relés", padx=10, pady=10)
+
+        # Crear ventana en el canvas
+        canvas.create_window((0, 0), window=config_frame, anchor="nw")
+        
+        # Configurar el canvas
+        canvas.configure(yscrollcommand=scroll_y.set)
+
+        # Organizar el canvas y el scrollbar
+        canvas.place(x=300, y=560, width=500, height=125)
+        scroll_y.place(x=800, y=560, height=125)
+
+        # Configurar el marco para que ajuste su tamaño automáticamente
+        config_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+        for i, (config, label, description) in enumerate(configuraciones):
+            lbl = tk.Label(config_frame, text=description)
+            lbl.grid(row=i, column=0, sticky='w')
+            btn = tk.Button(config_frame, text=label, command=lambda config=config: self.aplicar_configuracion(config))
+            btn.grid(row=i, column=1, padx=5, pady=5)
+
+    def aplicar_configuracion(self, configuracion):
+        self.cambiar_configuracion(configuracion)
+        messagebox.showinfo("Éxito", "Configuración de relé aplicada exitosamente.")
+        
+
+    def cambiar_configuracion(self,configuracion):
+        for index, pin in enumerate(relay_pins):
+            estado_actual = self.estados_reles[pin]
+            if configuracion[index] != estado_actual:
+                try:
+                    with nidaqmx.Task() as task:
+                        # Añadir el canal de salida digital
+                        task.do_channels.add_do_chan(pin, line_grouping=LineGrouping.CHAN_PER_LINE)
+                        # Escribir el estado (True para HIGH, False para LOW)
+                        task.write(configuracion[index])
+                        self.estados_reles[pin] = configuracion[index]
+                        # Añadir un retardo para que los cambios tengan tiempo para ser aplicados
+                        time.sleep(0.5)
+                        
+                except nidaqmx.errors.DaqError as e:
+                    messagebox.showerror("Error de DAQ", str(e))
+
 
     def iniciar(self):
         print("Iniciado")
         
+
+
     def volver(self):
         self.menu.withdraw()
         self.ventana_principal.deiconify()
+
+
 
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
         
@@ -226,6 +305,8 @@ class Ventana2:
         else:
             messagebox.showwarning("Advertencia", "No hay datos para guardar. Realiza la medición primero.")
 
+
+
     def borrar_grafico(self):
         self.ax.set_title('Gráfico IV')
         self.ax.clear()  # Limpiar el eje actual
@@ -234,3 +315,5 @@ class Ventana2:
         self.ax.legend()
         self.ax.grid(True)
         self.canvas.draw()
+
+

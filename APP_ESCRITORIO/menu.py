@@ -16,7 +16,7 @@ class Menu:
 
         self.main = main
         self.main.title('MENÚ PRINCIPAL')
-        self.main.geometry('1000x600')
+        self.main.geometry('1000x720+0+0')
 
         #Pantalla con sus colores y titulo respectivo
         tk.Label(self.main, text="MENÚ PRINCIPAL", font=labelFont, bg='#D9D9D9').pack(side=TOP, fill=X)
