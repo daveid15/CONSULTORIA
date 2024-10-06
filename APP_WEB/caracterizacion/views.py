@@ -41,12 +41,14 @@ def caracterizacion_main(request):
 #Flujo usuarios
 
 # Listar perfiles de parámetros
+@login_required
 def listar_perfiles(request):
     #perfiles = Perfil_Parametro.objects.all()
     perfiles = Perfil_Parametro.objects.filter(perfil_parametro_state='t')  # Mostrar solo perfiles activos
     return render(request, 'caracterizacion/listar_perfiles.html', {'perfiles': perfiles})
 
 # Crear un perfil de parámetros
+@login_required
 def crear_perfil(request):
     if request.method == 'POST':
         form = PerfilParametroForm(request.POST)
@@ -58,6 +60,7 @@ def crear_perfil(request):
     return render(request, 'caracterizacion/crear_editar_perfil.html', {'form': form})
 
 # Editar un perfil de parámetros
+@login_required
 def editar_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     if request.method == 'POST':
@@ -70,6 +73,7 @@ def editar_perfil(request, pk):
     return render(request, 'caracterizacion/crear_editar_perfil.html', {'form': form, 'perfil': perfil})
 
 # Eliminar un perfil de parámetros
+@login_required
 def eliminar_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     if request.method == 'POST':
@@ -78,10 +82,12 @@ def eliminar_perfil(request, pk):
     return render(request, 'caracterizacion/eliminar_perfil.html', {'perfil': perfil})
 
 # Ver un perfil de parámetros
+@login_required
 def detalle_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     return render(request, 'caracterizacion/detalle_perfil.html', {'perfil': perfil})
 
+@login_required
 def bloquear_perfil(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
     #perfil.bloqueado = True
@@ -89,12 +95,20 @@ def bloquear_perfil(request, perfil_id):
     perfil.save()
     return redirect('listar_perfiles')  # Redirige a la lista de perfiles
 
+@login_required
 def listar_perfiles_bloqueados(request):
     #perfiles_bloqueados = Perfil_Parametro.objects.filter(bloqueado=True)
     perfiles_bloqueados = Perfil_Parametro.objects.filter(perfil_parametro_state='f')  # Mostrar solo perfiles bloqueados
     return render(request, 'caracterizacion/perfiles_bloqueados.html', {'perfiles_bloqueados': perfiles_bloqueados})
 
+@login_required
+def desbloquear_perfil(request, perfil_id):
+    perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
+    perfil.bloqueado = False
+    perfil.save()
+    return redirect('listar_perfiles_bloqueados')
 
+@login_required
 def eliminar_perfil_bloqueado(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
     perfil.delete()
