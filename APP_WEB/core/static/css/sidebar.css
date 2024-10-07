@@ -432,35 +432,33 @@ border-radius: 90px
   color: #fff;
 }
 
+/* Inputs dentro del formulario */
+.form-perfil-crear input[type="text"],
+.form-perfil-crear input[type="number"],
+.form-perfil-crear input[type="password"],
+.form-perfil-crear select {
+  width: 70%; /* Ajusta el tamaño de los inputs */
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
 
-.mover-ver {
-  position: relative; /* Cambiado de absolute a relative para un mejor flujo de elementos */
-  color: #fff;
-  font-size: 18px;
-  line-height: 1.6;
+/* Botones */
+.custom-button-crear1, .custom-button-volver1 {
+  width: 150px;
+  padding: 10px;
   margin-top: 20px;
-  padding-left: 20px; /* Añadir un poco de padding para separación */
+  font-size: 16px;
 }
 
-.cont-form-carac-ver {
-  position: relative; /* Cambiado de absolute a relative para que no se salga del flujo */
-  margin: 0 auto; /* Centramos horizontalmente */
-  padding: 30px; /* Añadir padding para mejor espacio interno */
-  width: 50%; /* Ajustar el tamaño para que se vea más proporcionado */
-  background-color: #001f3f; /* Color de fondo */
-  border-radius: 25px; /* Redondear las esquinas */
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1); /* Añadir una sombra suave */
-  color: #fff;
-  text-align: center; /* Centrar el texto */
+/* Alinear el botón Volver */
+.custom-button-volver1 {
+  margin-left: 10px;
 }
 
-.cont-form-carac-ver h1 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #fff;
-  font-weight: bold;
-}
-/*.mover-ver{
+.mover-ver{
   position: absolute;
   left: 40px;
   top: 100px;
@@ -469,7 +467,7 @@ border-radius: 90px
 
 
 .cont-form-carac-ver{  /*Borde GENERAL DE FORMULARIOS*/
-/*  position: absolute; 
+  position: absolute; 
   top: 50px;  
   width: 40%; 
   height: 350px; 
@@ -482,7 +480,7 @@ border-radius: 90px
   padding: 10px;
   top: 20px;
   left: 10%;
-}*/
+}
 
 
 
