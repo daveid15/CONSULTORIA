@@ -431,14 +431,45 @@ border-radius: 90px
   top: 50px;
   color: #fff;
 }
-.mover-ver{
+
+
+.mover-ver {
+  position: relative; /* Cambiado de absolute a relative para un mejor flujo de elementos */
+  color: #fff;
+  font-size: 18px;
+  line-height: 1.6;
+  margin-top: 20px;
+  padding-left: 20px; /* Añadir un poco de padding para separación */
+}
+
+.cont-form-carac-ver {
+  position: relative; /* Cambiado de absolute a relative para que no se salga del flujo */
+  margin: 0 auto; /* Centramos horizontalmente */
+  padding: 30px; /* Añadir padding para mejor espacio interno */
+  width: 50%; /* Ajustar el tamaño para que se vea más proporcionado */
+  background-color: #001f3f; /* Color de fondo */
+  border-radius: 25px; /* Redondear las esquinas */
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1); /* Añadir una sombra suave */
+  color: #fff;
+  text-align: center; /* Centrar el texto */
+}
+
+.cont-form-carac-ver h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #fff;
+  font-weight: bold;
+}
+/*.mover-ver{
   position: absolute;
   left: 40px;
   top: 100px;
   color: #fff;
 }
+
+
 .cont-form-carac-ver{  /*Borde GENERAL DE FORMULARIOS*/
-  position: absolute; 
+/*  position: absolute; 
   top: 50px;  
   width: 40%; 
   height: 350px; 
@@ -451,7 +482,7 @@ border-radius: 90px
   padding: 10px;
   top: 20px;
   left: 10%;
-}
+}*/
 
 
 

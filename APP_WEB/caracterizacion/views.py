@@ -47,7 +47,7 @@ def listar_perfiles(request):
     perfiles = Perfil_Parametro.objects.filter(perfil_parametro_state='t')  # Mostrar solo perfiles activos
     return render(request, 'caracterizacion/listar_perfiles.html', {'perfiles': perfiles})
 
-# Crear un perfil de parámetros
+# Crear un perfil de parámetros 
 @login_required
 def crear_perfil(request):
     if request.method == 'POST':
@@ -90,14 +90,12 @@ def detalle_perfil(request, pk):
 @login_required
 def bloquear_perfil(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
-    #perfil.bloqueado = True
     perfil.perfil_parametro_state = 'f'
     perfil.save()
     return redirect('listar_perfiles')  # Redirige a la lista de perfiles
 
 @login_required
 def listar_perfiles_bloqueados(request):
-    #perfiles_bloqueados = Perfil_Parametro.objects.filter(bloqueado=True)
     perfiles_bloqueados = Perfil_Parametro.objects.filter(perfil_parametro_state='f')  # Mostrar solo perfiles bloqueados
     return render(request, 'caracterizacion/perfiles_bloqueados.html', {'perfiles_bloqueados': perfiles_bloqueados})
 
