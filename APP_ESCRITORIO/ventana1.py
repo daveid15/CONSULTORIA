@@ -15,9 +15,10 @@ import json
 class Ventana1:
     def __init__(self, menu, ventana_principal):
         labelFont = ("Bold Italic", 20, 'bold')
-       
+
         #Variables
         self._nombre = tk.StringVar()
+        self._R = tk.StringVar()
         self._intervalo_simetrico = tk.StringVar()
         self._intervalos_corriente = tk.StringVar()
         self._tiempo_entre_mediciones = tk.StringVar()
@@ -252,7 +253,6 @@ class Ventana1:
         # Ejecutar la medición en un hilo separado     
     def cerrar_popup(self):
         self.popup.destroy()
-
     def medir_IV_curve(self):
         def ejecutar_medicion():
             start_current_str = self._intervalo_simetrico.get()
@@ -348,6 +348,7 @@ class Ventana1:
         grado = 1
         coeficientes = np.polyfit(corrientes, voltajes, grado)
         resistencia = 1 / coeficientes[0]
+        self._R=resistencia
 
         if self.LineaTendencia.get():
             # Calcular la línea de tendencia usando corrientes para el eje x
@@ -385,8 +386,10 @@ class Ventana1:
             file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")],initialfile=proyecto_titulo)
 
             if file_path:  # Si el usuario no cancela la selección del archivo
-                with open(file_path, 'w') as file:
-                    file.write("Corriente (A)\tVoltaje (V)\n\n")
+                with open(file_path, 'w') as file: 
+                    file.write(f"fecha: {datetime.now().strftime("%d-%m-%Y")}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
+                    
+                    file.write("Corriente (A),\tVoltaje (V)\n\n")
                     #
                     for corriente, voltaje in self.resultados:
                         file.write(f"{corriente:.3f}\t\t{voltaje}\n")

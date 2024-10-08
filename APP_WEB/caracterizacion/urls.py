@@ -6,6 +6,7 @@ from caracterizacion import views
 
 caracterizacion_patterns = [
     path('caracterizacion_main', views.caracterizacion_main,name="caracterizacion_main"),
+    path('grafico', views.grafico,name="grafico"),
     #flujo usuarios
     path('perfiles/', views.listar_perfiles, name='listar_perfiles'),
     path('perfiles/crear/', views.crear_perfil, name='crear_perfil'),

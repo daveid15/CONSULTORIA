@@ -40,6 +40,20 @@ def caracterizacion_main(request):
     return render(request,template_name,{'profiles':profiles})
 #Flujo usuarios
 
+@login_required
+def grafico (request):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    check_profile_admin(request, profiles)
+    array_voltaje = [0, 1.2, 2.4, 3.5, 4.9, 6.1, 7.3, 8.6, 9.8, 11]
+    array_current = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    
+    template_name = 'caracterizacion/grafico.html'
+    return render(request,template_name,{'profiles':profiles,
+                                        'currents': array_current, 
+                                        'volts': array_voltaje})
+
+
+
 # Listar perfiles de parámetros
 def listar_perfiles(request):
     perfiles = Perfil_Parametro.objects.all()
@@ -80,3 +94,4 @@ def eliminar_perfil(request, pk):
 def detalle_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     return render(request, 'caracterizacion/detalle_perfil.html', {'perfil': perfil})
+
