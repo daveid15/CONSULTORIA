@@ -49,53 +49,41 @@ def listar_perfiles(request):
 
 # Crear un perfil de parámetros 
 @login_required
-def crear_editar_perfil(request, pk=None):
-    if pk:  # Si pk está presente, estamos en modo edición
-        perfil = get_object_or_404(Perfil_Parametro, pk=pk)
-        es_editar = True
-    else:  # Si pk no está presente, estamos en modo creación
-        perfil = None
-        es_editar = False
-
+def crear_perfil(request):
     if request.method == 'POST':
         nombre_perfil = request.POST.get('perfil_parametro_name')
-        intervalo_simetrico = request.POST.get('intervalo_simetrico')
-        intervalo_corriente = request.POST.get('intervalo_corriente')
-        delay = request.POST.get('delay')
-        estado = request.POST.get('perfil_parametro_state', 't')
-
         
-        intervalo_simetrico = float(intervalo_simetrico) if intervalo_simetrico else None
-        intervalo_corriente = float(intervalo_corriente) if intervalo_corriente else None
-        delay = float(delay) if delay else None
-
-        # Si estamos en modo edición, actualizamos el perfil existente
-        if es_editar:
-            perfil.perfil_parametro_name = nombre_perfil
-            perfil.intervalo_simetrico = intervalo_simetrico
-            perfil.intervalo_corriente = intervalo_corriente
-            perfil.delay = delay
-            perfil.perfil_parametro_state = estado
-            perfil.save()
-            return redirect('listar_perfiles')
-
-        # Si estamos en modo creación, creamos un nuevo perfil
+        # Comprobar si el nombre ya existe
+        if Perfil_Parametro.objects.filter(perfil_parametro_name=nombre_perfil).exists():
+            error_message = "El nombre del perfil ya existe. Por favor, elija otro."
+            return render(request, 'caracterizacion/crear_perfil.html', {'error_message': error_message})
+        
+        # Continuar con el proceso de guardado si no existe
         else:
-            nuevo_perfil = Perfil_Parametro(
-                perfil_parametro_name=nombre_perfil,
-                intervalo_simetrico=intervalo_simetrico,
-                intervalo_corriente=intervalo_corriente,
-                delay=delay,
-                perfil_parametro_state=estado
-            )
-            nuevo_perfil.save()
-            return redirect('listar_perfiles')
+            # Crear el perfil con los demás campos
+            form = PerfilParametroForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('listar_perfiles')
 
-    # Si es GET, mostrar el formulario con o sin datos (en caso de edición)
-    return render(request, 'caracterizacion/crear_editar_perfil.html', {
-        'perfil': perfil,
-        'es_editar': es_editar
-    })
+    else:
+        form = PerfilParametroForm()
+    
+    return render(request, 'caracterizacion/crear_perfil.html', {'form': form})
+ 
+    
+# Editar un perfil de parámetros
+@login_required
+def editar_perfil(request, pk):
+    perfil = get_object_or_404(Perfil_Parametro, pk=pk)
+    if request.method == 'POST':
+        form = PerfilParametroForm(request.POST, instance=perfil)
+        if form.is_valid():
+            form.save()
+            return redirect('listar_perfiles')
+    else:
+        form = PerfilParametroForm(instance=perfil)
+    return render(request, 'caracterizacion/crear_editar_perfil.html', {'form': form, 'perfil': perfil})
 
 
 # Eliminar un perfil de parámetros
