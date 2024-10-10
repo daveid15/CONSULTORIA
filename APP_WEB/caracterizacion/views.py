@@ -69,7 +69,7 @@ def crear_perfil(request):
     else:
         form = PerfilParametroForm()
     
-    return render(request, 'caracterizacion/crear_perfil.html', {'form': form})
+    return render(request, 'caracterizacion/crear_editar_perfil.html', {'form': form})
  
     
 # Editar un perfil de parámetros
