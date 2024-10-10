@@ -64,13 +64,10 @@ def crear_editar_perfil(request, pk=None):
         delay = request.POST.get('delay')
         estado = request.POST.get('perfil_parametro_state', 't')
 
-        # Validar si el nombre ya existe al crear un nuevo perfil
-        if not es_editar and Perfil_Parametro.objects.filter(perfil_parametro_name=nombre_perfil).exists():
-            error_message = "El nombre del perfil ya existe. Por favor, elija otro."
-            return render(request, 'caracterizacion/crear_editar_perfil.html', {
-                'error_message': error_message,
-                'perfil': perfil
-            })
+        
+        intervalo_simetrico = float(intervalo_simetrico) if intervalo_simetrico else None
+        intervalo_corriente = float(intervalo_corriente) if intervalo_corriente else None
+        delay = float(delay) if delay else None
 
         # Si estamos en modo edición, actualizamos el perfil existente
         if es_editar:
@@ -99,6 +96,7 @@ def crear_editar_perfil(request, pk=None):
         'perfil': perfil,
         'es_editar': es_editar
     })
+
 
 # Eliminar un perfil de parámetros
 @login_required

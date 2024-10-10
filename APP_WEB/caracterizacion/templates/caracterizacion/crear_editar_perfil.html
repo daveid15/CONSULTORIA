@@ -1,20 +1,19 @@
 {% extends 'core/base_admin.html' %}
 {% load static %}
 {% block content %}
-{% block extrahead %}
-{% endblock %}
 <div class="titu-mein cont-form-carac-crear">
     <body>
         <h1>{% if perfil %}Editar{% else %}Crear{% endif %} Perfil</h1>
         <div class="mover">
             <form method="POST">
                 {% csrf_token %}
-                
+
                 <div class="form-group">
                     <label for="perfil_parametro_name">Nombre del Perfil:</label>
                     <input type="text" id="perfil_parametro_name" name="perfil_parametro_name" value="{{ perfil.perfil_parametro_name|default_if_none:'' }}" required>
                 </div>
 
+                <!-- Estos campos se deben mostrar tanto en la creación como en la edición -->
                 <div class="form-group">
                     <label for="intervalo_simetrico">Intervalo Simétrico:</label>
                     <input type="number" step="0.01" id="intervalo_simetrico" name="intervalo_simetrico" value="{{ perfil.intervalo_simetrico|default_if_none:'' }}" required>
@@ -32,18 +31,15 @@
 
                 <div class="form-group">
                     <label for="perfil_parametro_state">Estado:</label>
-                    <select id="perfil_parametro_state" name="perfil_parametro_state" required>
-                        <option value="t" {% if perfil.perfil_parametro_state == 't' %}selected{% endif %}>Activo</option>
-                        <option value="f" {% if perfil.perfil_parametro_state == 'f' %}selected{% endif %}>Inactivo</option>
-                    </select>
+                    <input type="text" id="perfil_parametro_state" name="perfil_parametro_state" value="{{ perfil.perfil_parametro_state }}" readonly>
                 </div>
-
+                <br>
+                <br>
                 <button class="button button--gray form-control custom-button-crear" type="submit">
                     {% if perfil %}Actualizar{% else %}Crear{% endif %}
+                    
                 </button>
                 <a class="button button--gray_volver form-control custom-button-volver" href="{% url 'listar_perfiles' %}">Volver</a>
             </form>
         </div>
-    </body>
-</div>
 {% endblock %}
