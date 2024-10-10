@@ -7,16 +7,43 @@
     <body>
         <h1>{% if perfil %}Editar{% else %}Crear{% endif %} Perfil</h1>
         <div class="mover">
-            <div>
-                <form method="POST" class="form-perfil-crear">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button class="button button--gray form-control custom-button-crear1" type="submit">{% if perfil %}Actualizar{% else %}Crear{% endif %}</button>
-                    <a class="button button--gray_volver form-control custom-button-volver1" href="{% url 'listar_perfiles' %} ">Volver</a>
-                </form>
-            </div>
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="perfil_parametro_name">Nombre del Perfil:</label>
+                    <input type="text" id="perfil_parametro_name" name="perfil_parametro_name" value="{{ perfil.perfil_parametro_name|default_if_none:'' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="intervalo_simetrico">Intervalo Simétrico:</label>
+                    <input type="number" step="0.01" id="intervalo_simetrico" name="intervalo_simetrico" value="{{ perfil.intervalo_simetrico|default_if_none:'' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="intervalo_corriente">Intervalo Corriente:</label>
+                    <input type="number" id="intervalo_corriente" name="intervalo_corriente" value="{{ perfil.intervalo_corriente|default_if_none:'' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="delay">Delay:</label>
+                    <input type="number" step="0.1" id="delay" name="delay" value="{{ perfil.delay|default_if_none:'' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="perfil_parametro_state">Estado:</label>
+                    <select id="perfil_parametro_state" name="perfil_parametro_state" required>
+                        <option value="t" {% if perfil.perfil_parametro_state == 't' %}selected{% endif %}>Activo</option>
+                        <option value="f" {% if perfil.perfil_parametro_state == 'f' %}selected{% endif %}>Inactivo</option>
+                    </select>
+                </div>
+
+                <button class="button button--gray form-control custom-button-crear" type="submit">
+                    {% if perfil %}Actualizar{% else %}Crear{% endif %}
+                </button>
+                <a class="button button--gray_volver form-control custom-button-volver" href="{% url 'listar_perfiles' %}">Volver</a>
+            </form>
         </div>
     </body>
 </div>
 {% endblock %}
-

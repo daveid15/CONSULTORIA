@@ -49,28 +49,56 @@ def listar_perfiles(request):
 
 # Crear un perfil de parámetros 
 @login_required
-def crear_perfil(request):
-    if request.method == 'POST':
-        form = PerfilParametroForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('listar_perfiles')
-    else:
-        form = PerfilParametroForm()
-    return render(request, 'caracterizacion/crear_editar_perfil.html', {'form': form})
+def crear_editar_perfil(request, pk=None):
+    if pk:  # Si pk está presente, estamos en modo edición
+        perfil = get_object_or_404(Perfil_Parametro, pk=pk)
+        es_editar = True
+    else:  # Si pk no está presente, estamos en modo creación
+        perfil = None
+        es_editar = False
 
-# Editar un perfil de parámetros
-@login_required
-def editar_perfil(request, pk):
-    perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     if request.method == 'POST':
-        form = PerfilParametroForm(request.POST, instance=perfil)
-        if form.is_valid():
-            form.save()
+        nombre_perfil = request.POST.get('perfil_parametro_name')
+        intervalo_simetrico = request.POST.get('intervalo_simetrico')
+        intervalo_corriente = request.POST.get('intervalo_corriente')
+        delay = request.POST.get('delay')
+        estado = request.POST.get('perfil_parametro_state', 't')
+
+        # Validar si el nombre ya existe al crear un nuevo perfil
+        if not es_editar and Perfil_Parametro.objects.filter(perfil_parametro_name=nombre_perfil).exists():
+            error_message = "El nombre del perfil ya existe. Por favor, elija otro."
+            return render(request, 'caracterizacion/crear_editar_perfil.html', {
+                'error_message': error_message,
+                'perfil': perfil
+            })
+
+        # Si estamos en modo edición, actualizamos el perfil existente
+        if es_editar:
+            perfil.perfil_parametro_name = nombre_perfil
+            perfil.intervalo_simetrico = intervalo_simetrico
+            perfil.intervalo_corriente = intervalo_corriente
+            perfil.delay = delay
+            perfil.perfil_parametro_state = estado
+            perfil.save()
             return redirect('listar_perfiles')
-    else:
-        form = PerfilParametroForm(instance=perfil)
-    return render(request, 'caracterizacion/crear_editar_perfil.html', {'form': form, 'perfil': perfil})
+
+        # Si estamos en modo creación, creamos un nuevo perfil
+        else:
+            nuevo_perfil = Perfil_Parametro(
+                perfil_parametro_name=nombre_perfil,
+                intervalo_simetrico=intervalo_simetrico,
+                intervalo_corriente=intervalo_corriente,
+                delay=delay,
+                perfil_parametro_state=estado
+            )
+            nuevo_perfil.save()
+            return redirect('listar_perfiles')
+
+    # Si es GET, mostrar el formulario con o sin datos (en caso de edición)
+    return render(request, 'caracterizacion/crear_editar_perfil.html', {
+        'perfil': perfil,
+        'es_editar': es_editar
+    })
 
 # Eliminar un perfil de parámetros
 @login_required
@@ -111,3 +139,66 @@ def eliminar_perfil_bloqueado(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
     perfil.delete()
     return redirect('listar_perfiles_bloqueados')
+
+# Apartado prueba
+@login_required
+def crear_editar_prueba(request, pk=None):
+    if pk:  # Modo edición
+        prueba = get_object_or_404(Prueba, pk=pk)
+        es_editar = True
+    else:  # Modo creación
+        prueba = None
+        es_editar = False
+
+    if request.method == 'POST':
+        nombre_prueba = request.POST.get('prueba_name')
+        tipo = request.POST.get('tipo')
+        grafico = request.FILES.get('grafico')
+        prueba_state = request.POST.get('prueba_state', 't')
+
+        # Validar si el nombre ya existe al crear una nueva prueba
+        if not es_editar and Prueba.objects.filter(prueba_name=nombre_prueba).exists():
+            error_message = "El nombre de la prueba ya existe. Por favor, elija otro."
+            return render(request, 'caracterizacion/crear_editar_prueba.html', {
+                'error_message': error_message,
+                'prueba': prueba
+            })
+
+        # Actualización de la prueba en modo edición
+        if es_editar:
+            prueba.prueba_name = nombre_prueba
+            prueba.tipo = tipo
+            if grafico:  # Solo actualiza el gráfico si se proporciona uno nuevo
+                prueba.grafico = grafico
+            prueba.prueba_state = prueba_state
+            prueba.save()
+            return redirect('listar_pruebas')
+
+        # Creación de una nueva prueba
+        else:
+            nueva_prueba = Prueba(
+                prueba_name=nombre_prueba,
+                tipo=tipo,
+                grafico=grafico,
+                prueba_state=prueba_state
+            )
+            nueva_prueba.save()
+            return redirect('listar_pruebas')
+
+    return render(request, 'caracterizacion/crear_editar_prueba.html', {
+        'prueba': prueba,
+        'es_editar': es_editar
+    })
+
+@login_required
+def listar_pruebas(request):
+    pruebas = Prueba.objects.all()
+    return render(request, 'caracterizacion/listar_pruebas.html', {'pruebas': pruebas})
+
+@login_required
+def eliminar_prueba(request, pk):
+    prueba = get_object_or_404(Prueba, pk=pk)
+    if request.method == 'POST':
+        prueba.delete()
+        return redirect('listar_pruebas')
+    return render(request, 'caracterizacion/eliminar_prueba.html', {'prueba': prueba})
