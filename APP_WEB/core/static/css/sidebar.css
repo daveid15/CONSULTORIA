@@ -402,6 +402,7 @@ border-radius: 90px
     height: 520px; 
     background-color: #001f3f;
     border-radius: 50px;
+    
 }
 .cont-form-carac{  /*Borde GENERAL DE FORMULARIOS*/
   position: absolute; 
@@ -468,6 +469,7 @@ border-radius: 90px
   height: 620px; 
   background-color: #001f3f;
   border-radius: 50px;
+  padding: 10px;
 }
 .cont-form-crud th{
   position: relative;
@@ -755,6 +757,8 @@ border-radius: 90px
     text-align: center; /* Alineación del texto */
     text-decoration: none; /* Sin subrayado */
     width: 100%; /* Ancho del botón */
+    margin-top: 10px;
+    box-sizing: border-box;
 }
 .custom-button-volver {
   position: absolute;

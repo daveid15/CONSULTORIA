@@ -1,0 +1,7 @@
+{
+    "Prueba 2": {
+        "Corriente_fija": "13",
+        "Saturacion_de_campo": "2",
+        "Tiempo_entre_mediciones": "0.3"
+    }
+}
