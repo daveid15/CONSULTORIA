@@ -415,7 +415,7 @@ border-radius: 90px
 .cont-form-carac-crear{  /*Borde GENERAL DE FORMULARIOS*/
   position: absolute; 
   top: 100px;  
-  width: 16%; 
+  width: 20%; 
   height: 550px; 
   background-color: #001f3f;
   border-radius: 50px;

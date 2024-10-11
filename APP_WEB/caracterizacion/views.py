@@ -191,7 +191,7 @@ def listar_perfiles_bloqueados(request):
 @login_required
 def desbloquear_perfil(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
-    perfil.bloqueado = False
+    perfil.perfil_parametro_state = 't'  
     perfil.save()
     return redirect('listar_perfiles_bloqueados')
 
