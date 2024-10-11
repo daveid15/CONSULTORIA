@@ -24,7 +24,7 @@ body {
   min-height: 100vh;
 }
 .sidebar {
-  position: relative;
+  position: fixed;
   width: 256px;
   height: 100vh;
   display: flex;
@@ -384,7 +384,6 @@ border-radius: 90px
   position: absolute; 
   top: 150px;  
   width: 140%; 
-  height: 620px; 
   background-color: #001f3f;
   border-radius: 50px;
 }
@@ -400,7 +399,6 @@ border-radius: 90px
   position: absolute; 
   top: 20%; 
   width: 103.5%; 
-  height: 620px; 
   background-color: #001f3f;
   border-radius: 50px;
   padding: 10px;

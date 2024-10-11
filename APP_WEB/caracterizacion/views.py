@@ -41,8 +41,8 @@ def ejecutar_medicion(start_current, step_size, delay, simular=False):
     if simular:  # Modo de simulación
         corrientes = np.linspace(start_current, -start_current, num=step_size)
         for corriente in corrientes:
-            V = random.uniform(-5, 5)  # Simula un voltaje entre -5 y 5 V
-            resultados.append((corriente, V))
+            V = corriente*2
+            resultados.append((round(corriente,1), round(V,1)))
             time.sleep(delay)  # Simula el tiempo de espera
     else:
         try:
@@ -79,8 +79,8 @@ def ejecutar_medicion(start_current, step_size, delay, simular=False):
 
 def medir_iv_view(request):
     profiles = Profile.objects.get(user_id = request.user.id)
-    array_current = []
-    array_voltaje = []
+    array_current = [0]
+    array_voltaje = [0]
     if request.method == 'POST':
         # Obtener parámetros del formulario
         start_current = float(request.POST.get('start_current', 0))
@@ -93,13 +93,11 @@ def medir_iv_view(request):
         current, voltaje  = zip(*resultado['resultados'])
         array_current = list(current)
         array_voltaje = list(voltaje)
-        return JsonResponse({'currents': array_current, 'volts': array_voltaje})
-        print(array_current)
-        print(array_current)
-
-    
+        print(resultado)
     template_name = 'caracterizacion/medir_iv.html'
-    return render(request,template_name,{'profiles':profiles})
+    return render(request,template_name,{'profiles':profiles,
+                                        'currents': array_current, 
+                                        'volts': array_voltaje})
 @login_required
 def caracterizacion_main(request):
     profiles = Profile.objects.get(user_id = request.user.id)

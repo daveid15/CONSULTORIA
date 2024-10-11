@@ -42,82 +42,71 @@
     {% block extrajs %}
     <!-- Incluir Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
-
+    
     <!-- Incluir chartjs-plugin-zoom -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
 
     <script>
-        // Función para obtener datos del backend
-            function obtenerDatos() {
-            return $.ajax({
-                type: 'GET',  // O 'POST' dependiendo de tu vista
-            url: '{% url "medir_iv_view" %}',  // URL de tu vista
-            dataType: 'json'
-            });
-        }
+        // Datos de corriente y voltaje pasados desde el servidor Django
+        var currents = {{ currents|safe }};  // Corriente (X)
+        var volts = {{ volts|safe }};  // Voltaje (Y)
 
-            // Función para crear el gráfico
-            function crearGrafico(currents, volts) {
-            // Datos de corriente y voltaje pasados desde el servidor Django
-            var currents = {{ currents| safe}};  // Corriente (X)
-            var volts = {{ volts| safe}};  // Voltaje (Y)
+        // Valor inicial de la resistencia R (que puede depender de t)
+        var t = 2;
+        var R = t * 5;
 
-            // Valor inicial de la resistencia R (que puede depender de t)
-            var t = 2;
-            var R = t * 5;
+        // Actualizar el valor de R en la etiqueta HTML
+        document.getElementById('rValue').innerText = R.toFixed(2);
 
-            // Actualizar el valor de R en la etiqueta HTML
-            document.getElementById('rValue').innerText = R.toFixed(2);
-
-            // Crear el gráfico usando los datos
-            var ctx = document.getElementById('myChart').getContext('2d');
-            var myChart = new Chart(ctx, {
-                type: 'line',
+        // Crear el gráfico usando los datos
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
             data: {
                 labels: currents,  // Etiquetas de corriente
-            datasets: [{
-                label: 'Voltaje (V)',
-            data: volts,  // Datos de voltaje
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 2,
-            fill: false
+                datasets: [{
+                    label: 'Voltaje (V)',
+                    data: volts,  // Datos de voltaje
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    fill: false
                 }]
             },
             options: {
                 responsive: true,  // Asegura que el gráfico sea responsivo
-            scales: {
-                x: {
-                title: {
-                display: true,
-            text: 'Corriente (A)'
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Corriente (A)'
                         }
                     },
-            y: {
-                title: {
-                display: true,
-            text: 'Voltaje (V)'
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Voltaje (V)'
                         },
-            beginAtZero: true
+                        beginAtZero: true
                     }
                 },
-            plugins: {
-                zoom: {
-                pan: {
-                enabled: true,
-            mode: 'xy',  // Permitir pan en ambas direcciones (x e y)
-            speed: 20,  // Velocidad de desplazamiento
-            threshold: 10  // Umbral para el desplazamiento
+                plugins: {
+                    zoom: {
+                        pan: {
+                            enabled: true,
+                            mode: 'xy',  // Permitir pan en ambas direcciones (x e y)
+                            speed: 20,  // Velocidad de desplazamiento
+                            threshold: 10  // Umbral para el desplazamiento
                         },
-            zoom: {
-                enabled: true,
-            mode: 'xy',  // Permitir zoom en ambas direcciones
-            speed: 0.1,  // Velocidad del zoom
-            pinch: {
-                enabled: true  // Habilitar zoom por pinza (en dispositivos táctiles)
+                        zoom: {
+                            enabled: true,
+                            mode: 'xy',  // Permitir zoom en ambas direcciones
+                            speed: 0.1,  // Velocidad del zoom
+                            pinch: {
+                                enabled: true  // Habilitar zoom por pinza (en dispositivos táctiles)
                             },
-            wheel: {
-                enabled: true  // Habilitar zoom usando la rueda del ratón
+                            wheel: {
+                                enabled: true  // Habilitar zoom usando la rueda del ratón
                             }
                         }
                     }
@@ -125,46 +114,21 @@
             }
         });
 
-            // Función para actualizar el valor de R dinámicamente
-            function actualizarR(nuevoT) {
-                R = nuevoT * 5;
+        // Función para actualizar el valor de R dinámicamente
+        function actualizarR(nuevoT) {
+            R = nuevoT * 5;
             document.getElementById('rValue').innerText = R.toFixed(2);
         }
 
         // Ejemplo de cambio dinámico del valor de R
         setTimeout(() => {
-                actualizarR(4);  // Cambiar valor de t después de 5 segundos
+            actualizarR(4);  // Cambiar valor de t después de 5 segundos
         }, 5000);
 
-            // Función para reestablecer el gráfico
-            document.getElementById('resetButton').addEventListener('click', function() {
-                myChart.resetZoom();  // Reestablecer el zoom y pan del gráfico
+        // Función para reestablecer el gráfico
+        document.getElementById('resetButton').addEventListener('click', function() {
+            myChart.resetZoom();  // Reestablecer el zoom y pan del gráfico
         });
-            return myChart;
-        }
-
-            // Obtener datos y crear el gráfico al cargar la página
-            $(document).ready(function() {
-                obtenerDatos().done(function (response) {
-                    var currents = response.currents;  // Datos de corriente
-                    var volts = response.volts;  // Datos de voltaje
-                    crearGrafico(currents, volts);  // Crear el gráfico con los datos
-                }).fail(function () {
-                    alert('Error al obtener los datos.');
-                });
-
-            // Actualizar el valor de R
-            var t = 2;
-            var R = t * 5;
-            document.getElementById('rValue').innerText = R.toFixed(2);
-
-            // Función para reestablecer el gráfico
-            document.getElementById('resetButton').addEventListener('click', function() {
-                if (myChart) myChart.resetZoom();  // Reestablecer el zoom y pan del gráfico
-            });
-        });
-    </script>
-
     </script>
     {% endblock extrajs %}
-    {% endblock %}
+{% endblock %}
