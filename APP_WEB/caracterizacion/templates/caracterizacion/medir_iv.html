@@ -128,7 +128,7 @@
 
                 <div class="form-group">
                     <label for="delay">Tiempo entre Mediciones (s):</label>
-                    <input type="number" id="delay" name="delay" required>
+                    <input type="number"  id="delay" name="delay" step="0.001" required>
                 </div>
 
                 <div class="form-group checkbox-group">
@@ -142,7 +142,21 @@
 
             <div id="resultados"></div>
         </div>
+        <div class="row mt-2">
+            <div class="col-sm-6">
+                <div class="card mr-2" style="width: 100%;">
+                    <h5 class="card-header">Gráfico I vs V</h5>
+                    <canvas id="myChart" width="1920" height="1080"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- Mostrar valor de R -->
+        <p>Valor de R: <span id="rValue">0.00</span> Ω</p>
+    
+        <!-- Botón para reestablecer el gráfico -->
+        <button class="btn btn-primary" id="resetButton">Reestablecer gráfico</button>
     </div>
+
 
     <script>
         $(document).ready(function () {
@@ -189,4 +203,97 @@
         }
     </script>
 </body>
+{% block extrajs %}
+<!-- Incluir Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+
+<!-- Incluir chartjs-plugin-zoom -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
+
+<script>
+    // Datos de corriente y voltaje pasados desde el servidor Django
+    var currents = {{ currents|safe }};  // Corriente (X)
+    var volts = {{ volts|safe }};  // Voltaje (Y)
+
+    // Valor inicial de la resistencia R (que puede depender de t)
+    var t = 2;
+    var R = t * 5;
+
+    // Actualizar el valor de R en la etiqueta HTML
+    document.getElementById('rValue').innerText = R.toFixed(2);
+
+    // Crear el gráfico usando los datos
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: currents,  // Etiquetas de corriente
+            datasets: [{
+                label: 'Voltaje (V)',
+                data: volts,  // Datos de voltaje
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,  // Asegura que el gráfico sea responsivo
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Corriente (A)'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Voltaje (V)'
+                    },
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                zoom: {
+                    pan: {
+                        enabled: true,
+                        mode: 'xy',  // Permitir pan en ambas direcciones (x e y)
+                        speed: 20,  // Velocidad de desplazamiento
+                        threshold: 10  // Umbral para el desplazamiento
+                    },
+                    zoom: {
+                        enabled: true,
+                        mode: 'xy',  // Permitir zoom en ambas direcciones
+                        speed: 0.1,  // Velocidad del zoom
+                        pinch: {
+                            enabled: true  // Habilitar zoom por pinza (en dispositivos táctiles)
+                        },
+                        wheel: {
+                            enabled: true  // Habilitar zoom usando la rueda del ratón
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Función para actualizar el valor de R dinámicamente
+    function actualizarR(nuevoT) {
+        R = nuevoT * 5;
+        document.getElementById('rValue').innerText = R.toFixed(2);
+    }
+
+    // Ejemplo de cambio dinámico del valor de R
+    setTimeout(() => {
+        actualizarR(4);  // Cambiar valor de t después de 5 segundos
+    }, 5000);
+
+    // Función para reestablecer el gráfico
+    document.getElementById('resetButton').addEventListener('click', function() {
+        myChart.resetZoom();  // Reestablecer el zoom y pan del gráfico
+    });
+</script>
+{% endblock extrajs %}
 {% endblock %}
+

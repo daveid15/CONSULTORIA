@@ -78,6 +78,9 @@ def ejecutar_medicion(start_current, step_size, delay, simular=False):
 
 
 def medir_iv_view(request):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    array_current = []
+    array_voltaje = []
     if request.method == 'POST':
         # Obtener parámetros del formulario
         start_current = float(request.POST.get('start_current', 0))
@@ -86,13 +89,18 @@ def medir_iv_view(request):
 
         # Ejecutar medición
         resultado = ejecutar_medicion(start_current, step_size, delay, simular=True)  # Cambia a False si no es simulación
+        
+        current, voltaje  = zip(*resultado['resultados'])
+        array_current = list(current)
+        array_voltaje = list(voltaje)
+        print(array_current)
+        print(array_current)
 
-        if 'error' in resultado:  # Verifica si hubo un error
-            return JsonResponse({'error': resultado['error']})
-
-        return JsonResponse({'resultados': resultado['resultados']})
-
-    return render(request, 'caracterizacion/medir_iv.html')
+    
+    template_name = 'caracterizacion/medir_iv.html'
+    return render(request,template_name,{'profiles':profiles,
+                                        'currents': array_current, 
+                                        'volts': array_voltaje})
 @login_required
 def caracterizacion_main(request):
     profiles = Profile.objects.get(user_id = request.user.id)
