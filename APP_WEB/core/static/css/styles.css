@@ -333,7 +333,7 @@ textarea {
 }
 
 .button:hover {
-    background-color: rgba(255, 255, 255, 0);
+    background-color:#A5A8B5;
     color: var(--blue);
 }
 
@@ -370,18 +370,29 @@ textarea {
     font-family: 'Nunito', sans-serif;
     
 }
-.button--gray_volver {
+.button--gray--carac {
     background: var(--gray);
     border: 2px solid var(--gray);
     color: var(--blue);
     font-family: 'Nunito', sans-serif;
     
 }
-
+.button--gray_volver {
+    background: var(--red);
+    border: 2px solid var(--gray);
+    color: var(--red);
+    font-family: 'Nunito', sans-serif;
+    
+}
+.button--gray--carac:hover {
+    background: #A5A8B5;
+    color: var(--black);
+}
 .button--gray:hover {
     background: #cfffc5;
     color: var(--black);
 }
+
 .button--gray_volver:hover {
     background: #f00;
     color: var(--black);

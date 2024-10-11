@@ -2,7 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import  User
 class Perfil_Parametro(models.Model):
-    perfil_parametro_name = models.CharField(max_length = 100,null=False, blank=False)
+    perfil_parametro_name = models.CharField(max_length = 100,unique=True)
     intervalo_simetrico = models.FloatField(
         # La corriente debe estar entre 1.05A y -1.05A
         validators=[MinValueValidator(-1.05), MaxValueValidator(1.05)],
@@ -17,6 +17,8 @@ class Perfil_Parametro(models.Model):
         blank= False
     )
     perfil_parametro_state = models.CharField(max_length=10, null=True, blank=True, default='t')
+    
+    bloqueado = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Perfil Parametro'

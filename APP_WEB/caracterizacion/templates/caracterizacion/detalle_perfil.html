@@ -4,11 +4,17 @@
 {% block extrahead %}
 {% endblock %}
 <div class="titu-mein">
-    <h1>Detalles del Perfil: {{ perfil.perfil_parametro_name }}</h1>
-    <p>Intervalo Simétrico: {{ perfil.intervalo_simetrico }} A</p>
-    <p>Intervalo de Corriente: {{ perfil.intervalo_corriente }} A</p>
-    <p>Delay: {{ perfil.delay }} s</p>
-    <p>Estado: {{ perfil.perfil_parametro_state }}</p>
-    <a href="{% url 'listar_perfiles' %}">Volver a la lista</a>
+    <div class="cont-form-carac-ver">
+        <h1>Detalles del Perfil: {{ perfil.perfil_parametro_name }}</h1>
+        <div class="mover-ver">
+            <br>
+            <br>
+            <p>Intervalo Simétrico: {{ perfil.intervalo_simetrico }} A</p>
+            <p>Intervalo de Corriente: {{ perfil.intervalo_corriente }} A</p>
+            <p>Delay: {{ perfil.delay }} s</p>
+            <p>Estado: {{ perfil.perfil_parametro_state }}</p>
+        </div>    
+        <a class="button button--gray_volver form-control custom-button-volver-ver" href="{% url 'listar_perfiles' %}">Volver a la lista</a>
+    </div>
 </div>
 {% endblock %}

@@ -116,22 +116,39 @@ def grafico (request):
 
 
 # Listar perfiles de parámetros
+@login_required
 def listar_perfiles(request):
-    perfiles = Perfil_Parametro.objects.all()
+    #perfiles = Perfil_Parametro.objects.all()
+    perfiles = Perfil_Parametro.objects.filter(perfil_parametro_state='t')  # Mostrar solo perfiles activos
     return render(request, 'caracterizacion/listar_perfiles.html', {'perfiles': perfiles})
 
-# Crear un perfil de parámetros
+# Crear un perfil de parámetros 
+@login_required
 def crear_perfil(request):
     if request.method == 'POST':
-        form = PerfilParametroForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('listar_perfiles')
+        nombre_perfil = request.POST.get('perfil_parametro_name')
+        
+        # Comprobar si el nombre ya existe
+        if Perfil_Parametro.objects.filter(perfil_parametro_name=nombre_perfil).exists():
+            error_message = "El nombre del perfil ya existe. Por favor, elija otro."
+            return render(request, 'caracterizacion/crear_perfil.html', {'error_message': error_message})
+        
+        # Continuar con el proceso de guardado si no existe
+        else:
+            # Crear el perfil con los demás campos
+            form = PerfilParametroForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('listar_perfiles')
+
     else:
         form = PerfilParametroForm()
+    
     return render(request, 'caracterizacion/crear_editar_perfil.html', {'form': form})
-
+ 
+    
 # Editar un perfil de parámetros
+@login_required
 def editar_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     if request.method == 'POST':
@@ -143,7 +160,9 @@ def editar_perfil(request, pk):
         form = PerfilParametroForm(instance=perfil)
     return render(request, 'caracterizacion/crear_editar_perfil.html', {'form': form, 'perfil': perfil})
 
+
 # Eliminar un perfil de parámetros
+@login_required
 def eliminar_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     if request.method == 'POST':
@@ -152,7 +171,47 @@ def eliminar_perfil(request, pk):
     return render(request, 'caracterizacion/eliminar_perfil.html', {'perfil': perfil})
 
 # Ver un perfil de parámetros
+@login_required
 def detalle_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     return render(request, 'caracterizacion/detalle_perfil.html', {'perfil': perfil})
 
+@login_required
+def bloquear_perfil(request, perfil_id):
+    perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
+    perfil.perfil_parametro_state = 'f'
+    perfil.save()
+    return redirect('listar_perfiles')  # Redirige a la lista de perfiles
+
+@login_required
+def listar_perfiles_bloqueados(request):
+    perfiles_bloqueados = Perfil_Parametro.objects.filter(perfil_parametro_state='f')  # Mostrar solo perfiles bloqueados
+    return render(request, 'caracterizacion/perfiles_bloqueados.html', {'perfiles_bloqueados': perfiles_bloqueados})
+
+@login_required
+def desbloquear_perfil(request, perfil_id):
+    perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
+    perfil.bloqueado = False
+    perfil.save()
+    return redirect('listar_perfiles_bloqueados')
+
+@login_required
+def eliminar_perfil_bloqueado(request, perfil_id):
+    perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
+    perfil.delete()
+    return redirect('listar_perfiles_bloqueados')
+
+# Apartado prueba
+
+@login_required
+def listar_pruebas(request):
+    pruebas = Prueba.objects.all()
+    return render(request, 'caracterizacion/listar_pruebas.html', {'pruebas': pruebas})
+
+@login_required
+def eliminar_prueba(request, pk):
+    prueba = get_object_or_404(Prueba, pk=pk)
+    if request.method == 'POST':
+        prueba.delete()
+        return redirect('listar_pruebas')
+    return render(request, 'caracterizacion/eliminar_prueba.html', {'prueba': prueba})
