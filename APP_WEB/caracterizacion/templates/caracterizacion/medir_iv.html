@@ -1,25 +1,24 @@
 {% extends 'core/base_admin.html' %}
+{% load manifest %}
 {% load static %}
-
 {% block content %}
-{% block extrahead %}
+{% block extra_css %}
 <style>
-    body {
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-        background-color: #eaeaea;
-        display: flex;
-    }
 
     .main-content {
-        flex: 1;
+        position:inherit;
         padding: 20px;
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+        margin-left: 200px;
+        
     }
 
     h1 {
         color: #333;
         font-size: 32px;
+        margin-left: 200px;
     }
 
     .form-container {
@@ -93,8 +92,12 @@
     #resultados {
         margin-top: 20px;
     }
+    .chart-container {
+    width: 60%;
+    }
 </style>
-{% endblock %}
+{% endblock extra_css %}
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -105,9 +108,11 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+
 <body>
+    <h1>Caracterización Eléctrica</h1>
     <div class="main-content">
-        <h1>Caracterización Eléctrica</h1>
+        
         <div class="form-container">
             <form id="medicion-form" method="POST">
                 {% csrf_token %}
@@ -128,7 +133,7 @@
 
                 <div class="form-group">
                     <label for="delay">Tiempo entre Mediciones (s):</label>
-                    <input type="number" id="delay" name="delay" required>
+                    <input type="number" id="delay" name="delay" step="0.001" min="0" required>
                 </div>
 
                 <div class="form-group checkbox-group">
@@ -142,35 +147,135 @@
 
             <div id="resultados"></div>
         </div>
+
+        <div class="chart-container ">
+
+                <div class="card mr-2" style="width: 100%;">
+                    <h5 class="card-header">Gráfico I vs V</h5>
+                    <p>Valor de R: <span id="rValue">0.00</span> Ω</p>
+                    <p id="equation"></p>
+                    <canvas id="myChart" width="1920" height="1080"></canvas>
+                </div>
+                <button class="btn btn-primary" id="resetButton">Reestablecer gráfico</button>
+
+        </div>
+        </div>
+
+        
+        
     </div>
-
+    {% block extrajs %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
     <script>
-        $(document).ready(function () {
-            $('#medicion-form').on('submit', function (e) {
-                e.preventDefault();
-                $.ajax({
-                    type: 'POST',
-                    url: '{% url "medir_iv_view" %}',
-                    data: $(this).serialize(),
-                    success: function (response) {
-                        if (response.error) {
-                            $('#resultados').html(`<h2>Error: ${response.error}</h2>`);
-                            return;
-                        }
+        // Asegúrate de que los datos se pasen correctamente
+        var currents = {{ currents|safe|default:"[]" }};  // Corriente (X)
+        var volts = {{ volts|safe|default:"[]" }};  // Voltaje (Y)
 
-                        if (Array.isArray(response.resultados)) {
-                            let resultadosHtml = '<h2>Resultados:</h2><ul>';
-                            response.resultados.forEach(function (item) {
-                                resultadosHtml += `<li>Corriente: ${item[0]}, Voltaje: ${item[1] !== null ? item[1] : "Error en medición"}</li>`;
-                            });
-                            resultadosHtml += '</ul>';
-                            $('#resultados').html(resultadosHtml);
-                        } else {
-                            $('#resultados').html('<h2>Error: La respuesta no es válida</h2>');
+        // Calcular la línea de tendencia y resistencia
+        function calcularLineadeTendencia(x, y) {
+            var n = x.length;
+            var xSum = x.reduce((a, b) => a + b, 0);
+            var ySum = y.reduce((a, b) => a + b, 0);
+            var xySum = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+            var xSqSum = x.reduce((sum, xi) => sum + xi * xi, 0);
+
+            var m = (n * xySum - xSum * ySum) / (n * xSqSum - xSum * xSum);
+            var b = (ySum - m * xSum) / n;
+
+            return { m: m, b: b };
+        }
+
+        // Crear el gráfico
+        if (currents.length > 0 && volts.length > 0) {
+            var ctx = document.getElementById('myChart').getContext('2d');
+
+            // Calcular la línea de tendencia y resistencia
+            var tendencia = calcularLineadeTendencia(currents, volts);
+            var trendLine = currents.map(x => tendencia.m * x + tendencia.b);
+            var resistencia = 1 / tendencia.m;  // Calcular resistencia
+            document.getElementById('rValue').innerText = resistencia.toFixed(2);  // Mostrar resistencia
+
+            // Mostrar la ecuación en el HTML
+            document.getElementById('equation').innerText = `Ecuación: y = ${tendencia.m.toFixed(2)}x + ${tendencia.b.toFixed(2)}`;
+
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: currents,
+                    datasets: [{
+                        label: 'Voltaje (V)',
+                        data: volts,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }, {
+                        label: 'Línea de Tendencia',
+                        data: trendLine,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Corriente (A)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                // Redondear a 2 decimales y restringir longitud
+                            return value.toFixed(2).slice(0, 6); // Ajusta 6 según sea necesario
+                }
+            }
+
+                            
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Voltaje (V)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                // Redondear a 2 decimales y restringir longitud
+                            return value.toFixed(2).slice(0, 6); // Ajusta 6 según sea necesario
+                }
+            }
+
+                    }
+                        },
+
+                    plugins: {
+                        zoom: {
+                            pan: {
+                                enabled: true,
+                                mode: 'xy',
+                                speed: 20,
+                                threshold: 10
+                            },
+                            zoom: {
+                                enabled: true,
+                                mode: 'xy',
+                                speed: 0.1
+                            }
                         }
                     }
-                });
+                }
             });
+        }
+
+
+
+        document.getElementById('resetButton').addEventListener('click', function () {
+            if (typeof myChart !== 'undefined') {
+                myChart.resetZoom();  // Reestablecer el zoom y pan del gráfico
+            }
         });
 
         function confirmarCambio(url) {
@@ -183,10 +288,11 @@
                 confirmButtonText: "Sí, confirmar"
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Redirect to the URL if confirmed
                     window.location.href = url;
                 }
             });
         }
     </script>
-</body>
+    {% endblock extrajs %}
 {% endblock %}
