@@ -176,7 +176,6 @@ def detalle_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     return render(request, 'caracterizacion/detalle_perfil.html', {'perfil': perfil})
 
-<<<<<<< HEAD
 @login_required
 def bloquear_perfil(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
@@ -203,54 +202,6 @@ def eliminar_perfil_bloqueado(request, perfil_id):
     return redirect('listar_perfiles_bloqueados')
 
 # Apartado prueba
-@login_required
-def crear_editar_prueba(request, pk=None):
-    if pk:  # Modo edición
-        prueba = get_object_or_404(Prueba, pk=pk)
-        es_editar = True
-    else:  # Modo creación
-        prueba = None
-        es_editar = False
-
-    if request.method == 'POST':
-        nombre_prueba = request.POST.get('prueba_name')
-        tipo = request.POST.get('tipo')
-        grafico = request.FILES.get('grafico')
-        prueba_state = request.POST.get('prueba_state', 't')
-
-        # Validar si el nombre ya existe al crear una nueva prueba
-        if not es_editar and Prueba.objects.filter(prueba_name=nombre_prueba).exists():
-            error_message = "El nombre de la prueba ya existe. Por favor, elija otro."
-            return render(request, 'caracterizacion/crear_editar_prueba.html', {
-                'error_message': error_message,
-                'prueba': prueba
-            })
-
-        # Actualización de la prueba en modo edición
-        if es_editar:
-            prueba.prueba_name = nombre_prueba
-            prueba.tipo = tipo
-            if grafico:  # Solo actualiza el gráfico si se proporciona uno nuevo
-                prueba.grafico = grafico
-            prueba.prueba_state = prueba_state
-            prueba.save()
-            return redirect('listar_pruebas')
-
-        # Creación de una nueva prueba
-        else:
-            nueva_prueba = Prueba(
-                prueba_name=nombre_prueba,
-                tipo=tipo,
-                grafico=grafico,
-                prueba_state=prueba_state
-            )
-            nueva_prueba.save()
-            return redirect('listar_pruebas')
-
-    return render(request, 'caracterizacion/crear_editar_prueba.html', {
-        'prueba': prueba,
-        'es_editar': es_editar
-    })
 
 @login_required
 def listar_pruebas(request):
@@ -264,5 +215,3 @@ def eliminar_prueba(request, pk):
         prueba.delete()
         return redirect('listar_pruebas')
     return render(request, 'caracterizacion/eliminar_prueba.html', {'prueba': prueba})
-=======
->>>>>>> main
