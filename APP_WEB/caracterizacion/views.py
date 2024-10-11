@@ -41,8 +41,8 @@ def ejecutar_medicion(start_current, step_size, delay, simular=False):
     if simular:  # Modo de simulación
         corrientes = np.linspace(start_current, -start_current, num=step_size)
         for corriente in corrientes:
-            V = random.uniform(-5, 5)  # Simula un voltaje entre -5 y 5 V
-            resultados.append((corriente, V))
+            V = corriente*2
+            resultados.append((round(corriente,1), round(V,1)))
             time.sleep(delay)  # Simula el tiempo de espera
     else:
         try:
@@ -78,6 +78,9 @@ def ejecutar_medicion(start_current, step_size, delay, simular=False):
 
 
 def medir_iv_view(request):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    array_current = [0]
+    array_voltaje = [0]
     if request.method == 'POST':
         # Obtener parámetros del formulario
         start_current = float(request.POST.get('start_current', 0))
@@ -86,13 +89,15 @@ def medir_iv_view(request):
 
         # Ejecutar medición
         resultado = ejecutar_medicion(start_current, step_size, delay, simular=True)  # Cambia a False si no es simulación
-
-        if 'error' in resultado:  # Verifica si hubo un error
-            return JsonResponse({'error': resultado['error']})
-
-        return JsonResponse({'resultados': resultado['resultados']})
-
-    return render(request, 'caracterizacion/medir_iv.html')
+        
+        current, voltaje  = zip(*resultado['resultados'])
+        array_current = list(current)
+        array_voltaje = list(voltaje)
+        print(resultado)
+    template_name = 'caracterizacion/medir_iv.html'
+    return render(request,template_name,{'profiles':profiles,
+                                        'currents': array_current, 
+                                        'volts': array_voltaje})
 @login_required
 def caracterizacion_main(request):
     profiles = Profile.objects.get(user_id = request.user.id)
@@ -116,23 +121,39 @@ def grafico (request):
 
 
 # Listar perfiles de parámetros
+@login_required
 def listar_perfiles(request):
     #perfiles = Perfil_Parametro.objects.all()
     perfiles = Perfil_Parametro.objects.filter(perfil_parametro_state='t')  # Mostrar solo perfiles activos
     return render(request, 'caracterizacion/listar_perfiles.html', {'perfiles': perfiles})
 
-# Crear un perfil de parámetros
+# Crear un perfil de parámetros 
+@login_required
 def crear_perfil(request):
     if request.method == 'POST':
-        form = PerfilParametroForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('listar_perfiles')
+        nombre_perfil = request.POST.get('perfil_parametro_name')
+        
+        # Comprobar si el nombre ya existe
+        if Perfil_Parametro.objects.filter(perfil_parametro_name=nombre_perfil).exists():
+            error_message = "El nombre del perfil ya existe. Por favor, elija otro."
+            return render(request, 'caracterizacion/crear_perfil.html', {'error_message': error_message})
+        
+        # Continuar con el proceso de guardado si no existe
+        else:
+            # Crear el perfil con los demás campos
+            form = PerfilParametroForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect('listar_perfiles')
+
     else:
         form = PerfilParametroForm()
+    
     return render(request, 'caracterizacion/crear_editar_perfil.html', {'form': form})
-
+ 
+    
 # Editar un perfil de parámetros
+@login_required
 def editar_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     if request.method == 'POST':
@@ -144,7 +165,9 @@ def editar_perfil(request, pk):
         form = PerfilParametroForm(instance=perfil)
     return render(request, 'caracterizacion/crear_editar_perfil.html', {'form': form, 'perfil': perfil})
 
+
 # Eliminar un perfil de parámetros
+@login_required
 def eliminar_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     if request.method == 'POST':
@@ -153,27 +176,56 @@ def eliminar_perfil(request, pk):
     return render(request, 'caracterizacion/eliminar_perfil.html', {'perfil': perfil})
 
 # Ver un perfil de parámetros
+@login_required
 def detalle_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     return render(request, 'caracterizacion/detalle_perfil.html', {'perfil': perfil})
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+@login_required
+>>>>>>> 42f7bc3c2d8354d9016587bdbe25edb4e12af79c
 def bloquear_perfil(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
-    #perfil.bloqueado = True
     perfil.perfil_parametro_state = 'f'
     perfil.save()
     return redirect('listar_perfiles')  # Redirige a la lista de perfiles
 
+@login_required
 def listar_perfiles_bloqueados(request):
-    #perfiles_bloqueados = Perfil_Parametro.objects.filter(bloqueado=True)
     perfiles_bloqueados = Perfil_Parametro.objects.filter(perfil_parametro_state='f')  # Mostrar solo perfiles bloqueados
     return render(request, 'caracterizacion/perfiles_bloqueados.html', {'perfiles_bloqueados': perfiles_bloqueados})
 
+@login_required
+def desbloquear_perfil(request, perfil_id):
+    perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
+    perfil.bloqueado = False
+    perfil.save()
+    return redirect('listar_perfiles_bloqueados')
 
+@login_required
 def eliminar_perfil_bloqueado(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
     perfil.delete()
     return redirect('listar_perfiles_bloqueados')
+<<<<<<< HEAD
 =======
 >>>>>>> 94863ca128b7d6a32e2a90c9ec292f7385266384
+=======
+
+# Apartado prueba
+
+@login_required
+def listar_pruebas(request):
+    pruebas = Prueba.objects.all()
+    return render(request, 'caracterizacion/listar_pruebas.html', {'pruebas': pruebas})
+
+@login_required
+def eliminar_prueba(request, pk):
+    prueba = get_object_or_404(Prueba, pk=pk)
+    if request.method == 'POST':
+        prueba.delete()
+        return redirect('listar_pruebas')
+    return render(request, 'caracterizacion/eliminar_prueba.html', {'prueba': prueba})
+>>>>>>> 42f7bc3c2d8354d9016587bdbe25edb4e12af79c

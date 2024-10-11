@@ -1,0 +1,31 @@
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+<h1>Listado de Pruebas</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for prueba in pruebas %}
+        <tr>
+            <td>{{ prueba.prueba_name }}</td>
+            <td>{{ prueba.tipo }}</td>
+            <td>{{ prueba.fecha }}</td>
+            <td>{{ prueba.prueba_state }}</td>
+            <td>
+                <a href="{% url 'editar_prueba' prueba.pk %}">Editar</a>
+                <a href="{% url 'eliminar_prueba' prueba.pk %}">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'crear_prueba' %}">Crear nueva Prueba</a>
+{% endblock %}

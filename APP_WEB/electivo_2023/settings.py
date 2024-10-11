@@ -90,6 +90,7 @@ DATABASES = {
         'HOST': 'localhost',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
 <<<<<<< HEAD
+<<<<<<< HEAD
         'NAME': 'baseconsultoria',
         'USER': 'postgres',
         'PASSWORD': 'maxi2002'
@@ -98,6 +99,11 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': '12345'
 >>>>>>> 94863ca128b7d6a32e2a90c9ec292f7385266384
+=======
+        'NAME': 'baseconsultoria',
+        'USER': 'postgres',
+        'PASSWORD': 'maxi2002'
+>>>>>>> 42f7bc3c2d8354d9016587bdbe25edb4e12af79c
     }
 }
 

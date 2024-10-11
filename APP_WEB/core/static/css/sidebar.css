@@ -24,7 +24,7 @@ body {
   min-height: 100vh;
 }
 .sidebar {
-  position: relative;
+  position: fixed;
   width: 256px;
   height: 100vh;
   display: flex;
@@ -408,7 +408,6 @@ border-radius: 90px
   position: absolute; 
   top: 150px;  
   width: 140%; 
-  height: 620px; 
   background-color: #001f3f;
   border-radius: 50px;
 }
@@ -432,12 +431,41 @@ border-radius: 90px
   top: 50px;
   color: #fff;
 }
+
+/* Inputs dentro del formulario */
+.form-perfil-crear input[type="text"],
+.form-perfil-crear input[type="number"],
+.form-perfil-crear input[type="password"],
+.form-perfil-crear select {
+  width: 70%; /* Ajusta el tamaño de los inputs */
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+/* Botones */
+.custom-button-crear1, .custom-button-volver1 {
+  width: 150px;
+  padding: 10px;
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+/* Alinear el botón Volver */
+.custom-button-volver1 {
+  margin-left: 10px;
+}
+
 .mover-ver{
   position: absolute;
   left: 40px;
   top: 100px;
   color: #fff;
 }
+
+
 .cont-form-carac-ver{  /*Borde GENERAL DE FORMULARIOS*/
   position: absolute; 
   top: 50px;  
@@ -466,7 +494,6 @@ border-radius: 90px
   position: absolute; 
   top: 20%; 
   width: 103.5%; 
-  height: 620px; 
   background-color: #001f3f;
   border-radius: 50px;
   padding: 10px;
