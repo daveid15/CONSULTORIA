@@ -93,14 +93,13 @@ def medir_iv_view(request):
         current, voltaje  = zip(*resultado['resultados'])
         array_current = list(current)
         array_voltaje = list(voltaje)
+        return JsonResponse({'currents': array_current, 'volts': array_voltaje})
         print(array_current)
         print(array_current)
 
     
     template_name = 'caracterizacion/medir_iv.html'
-    return render(request,template_name,{'profiles':profiles,
-                                        'currents': array_current, 
-                                        'volts': array_voltaje})
+    return render(request,template_name,{'profiles':profiles})
 @login_required
 def caracterizacion_main(request):
     profiles = Profile.objects.get(user_id = request.user.id)
