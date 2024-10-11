@@ -1,0 +1,192 @@
+{% extends 'core/base_admin.html' %}
+{% load static %}
+
+{% block content %}
+{% block extrahead %}
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #eaeaea;
+        display: flex;
+    }
+
+    .main-content {
+        flex: 1;
+        padding: 20px;
+    }
+
+    h1 {
+        color: #333;
+        font-size: 32px;
+    }
+
+    .form-container {
+        background-color: #001F3F;
+        padding: 20px;
+        border-radius: 10px;
+        width: 400px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        font-size: 14px;
+        color: #ffffff;
+        margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        box-sizing: border-box;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        color: white;
+    }
+
+    .checkbox-group label {
+        margin-left: 10px;
+    }
+
+    .guardar-btn,
+    .iniciar-btn {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: none;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+
+    .guardar-btn {
+        background-color: #d9d9d9;
+        color: black;
+    }
+
+    .iniciar-btn {
+        background-color: #cfffd5;
+    }
+
+    .guardar-btn:hover,
+    .iniciar-btn:hover {
+        opacity: 0.9;
+    }
+
+    #resultados {
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medir Curva I-V</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="main-content">
+        <h1>Caracterización Eléctrica</h1>
+        <div class="form-container">
+            <form id="medicion-form" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="nombre_usuario">Nombre:</label>
+                    <input type="text" id="nombre_usuario" name="nombre_usuario" placeholder="Prueba_1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="start_current">Intervalo simétrico (A):</label>
+                    <input type="number" id="start_current" name="start_current" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="step_size">Intervalos de corriente (A):</label>
+                    <input type="number" id="step_size" name="step_size" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="delay">Tiempo entre Mediciones (s):</label>
+                    <input type="number" id="delay" name="delay" required>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="linea_tendencia" name="linea_tendencia" value="si">
+                    <label for="linea_tendencia">Línea de Tendencia</label>
+                </div>
+
+                <button type="button" class="guardar-btn" onclick="confirmarCambio('URL_DEL_GUARDAR')">Guardar sección</button>
+                <button type="submit" class="iniciar-btn">Iniciar</button>
+            </form>
+
+            <div id="resultados"></div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#medicion-form').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "medir_iv_view" %}',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.error) {
+                            $('#resultados').html(`<h2>Error: ${response.error}</h2>`);
+                            return;
+                        }
+
+                        if (Array.isArray(response.resultados)) {
+                            let resultadosHtml = '<h2>Resultados:</h2><ul>';
+                            response.resultados.forEach(function (item) {
+                                resultadosHtml += `<li>Corriente: ${item[0]}, Voltaje: ${item[1] !== null ? item[1] : "Error en medición"}</li>`;
+                            });
+                            resultadosHtml += '</ul>';
+                            $('#resultados').html(resultadosHtml);
+                        } else {
+                            $('#resultados').html('<h2>Error: La respuesta no es válida</h2>');
+                        }
+                    }
+                });
+            });
+        });
+
+        function confirmarCambio(url) {
+            Swal.fire({
+                title: "¿Está seguro de que desea realizar esta acción?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sí, confirmar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        }
+    </script>
+</body>
+{% endblock %}

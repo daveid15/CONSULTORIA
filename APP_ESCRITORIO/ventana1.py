@@ -15,11 +15,10 @@ import json
 class Ventana1:
     def __init__(self, menu, ventana_principal):
         labelFont = ("Bold Italic", 20, 'bold')
-        bottonFont = ('Bold Italic', 10)
-        
 
         #Variables
         self._nombre = tk.StringVar()
+        self._R = tk.StringVar()
         self._intervalo_simetrico = tk.StringVar()
         self._intervalos_corriente = tk.StringVar()
         self._tiempo_entre_mediciones = tk.StringVar()
@@ -43,46 +42,46 @@ class Ventana1:
         left_frame.place(x=10, y=45, relheight=0.90, relwidth=0.275)
 
         #Botones
-        btn_volver = tk.Button(self.menu, text="volver a menu", command=self.volver)
-        btn_volver.place(x=100, y=5)
+        btn_volver = tk.Button(self.menu, text="volver", bg="#99A8EF", command=self.volver)
+        btn_volver.place(x=50, y=1.5)
 
-        tk.Checkbutton(self.menu, text="Línea de Tendencia", variable=self.LineaTendencia).place(x=25, y=300)
+        tk.Checkbutton(self.menu, text="Línea de Tendencia", variable=self.LineaTendencia).place(x=50, y=330)
 
         btn_guardar_perfil = tk.Button(self.menu, text="Guardar Perfil", command=self.guardar_perfil)
-        btn_guardar_perfil.place(x=25, y=350)
+        btn_guardar_perfil.place(x=35, y=375)
 
         btn_cargar_perfil = tk.Button(self.menu, text="Cargar Perfil", command=self.cargar_perfil)
-        btn_cargar_perfil.place(x=125, y=350)
+        btn_cargar_perfil.place(x=135, y=375)
 
         btn_iniciar = tk.Button(self.menu, text="Iniciar", command=self.medir_IV_curve)
-        btn_iniciar.place(x=25, y=400)
+        btn_iniciar.place(x=100, y=420)
 
         btn_guardar_prueba = tk.Button(self.menu, text="Guardar Prueba", command=self.guardar_prueba)
-        btn_guardar_prueba.place(x=25, y=450)
+        btn_guardar_prueba.place(x=75, y=465)
 
         self.btn_clear_plot = tk.Button(self.menu, text="Borrar Gráfico", command=self.borrar_grafico)
-        self.btn_clear_plot.place(x=25, y=500)
+        self.btn_clear_plot.place(x=80, y=510)
 
 
         # ComboBox para seleccionar perfiles de parámetros
-        tk.Label(self.menu, text="Perfiles de Parámetros Guardados").place(x=25, y=250)
+        tk.Label(self.menu, text="Perfiles de Parámetros Guardados", bg="#A6C3FF").place(x=25, y=265)
         self.combo_perfiles = tk.ttk.Combobox(self.menu, state="readonly")
-        self.combo_perfiles.place(x=25, y=270, width=200)
+        self.combo_perfiles.place(x=25, y=285, width=200)
         self.combo_perfiles.bind("<<ComboboxSelected>>", self.actualizar_parametros)
 
 
         #Entradas
-        tk.Label(self.menu, text="Nombre").place(x=25, y=50)
-        tk.Entry(self.menu, textvariable=self._nombre).place(x=25, y=70, width=200)
+        tk.Label(self.menu, text="Nombre", bg="#A6C3FF").place(x=25, y=60)
+        tk.Entry(self.menu, textvariable=self._nombre).place(x=25, y=80, width=210)
 
-        tk.Label(self.menu, text="Intervalo Simétrico").place(x=25, y=100)
-        tk.Entry(self.menu, textvariable=self._intervalo_simetrico).place(x=25, y=120, width=200)
+        tk.Label(self.menu, text="Intervalo Simétrico", bg="#A6C3FF").place(x=25, y=110)
+        tk.Entry(self.menu, textvariable=self._intervalo_simetrico).place(x=25, y=130, width=210)
 
-        tk.Label(self.menu, text="Intervalos de Corriente").place(x=25, y=150)
-        tk.Entry(self.menu, textvariable=self._intervalos_corriente).place(x=25, y=170, width=200)
+        tk.Label(self.menu, text="Intervalos de Corriente", bg="#A6C3FF").place(x=25, y=160)
+        tk.Entry(self.menu, textvariable=self._intervalos_corriente).place(x=25, y=180, width=210)
 
-        tk.Label(self.menu, text="Tiempo entre Mediciones").place(x=25, y=200)
-        tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones).place(x=25, y=220, width=200)
+        tk.Label(self.menu, text="Tiempo entre Mediciones", bg="#A6C3FF").place(x=25, y=210)
+        tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones).place(x=25, y=230, width=210)
 
         # Fecha
         fecha_actual = datetime.now().strftime("%d-%m-%Y")
@@ -116,12 +115,9 @@ class Ventana1:
         self.rm = None
         self.corrientes = None
 
-
         #Actualizar Perfiles
         self.cargar_perfiles_desde_archivo()
         self.actualizar_combo_perfiles()
-
-
 
     #Guardar perfil de parámetros
     def guardar_perfil(self):
@@ -149,12 +145,14 @@ class Ventana1:
             "intervalos_corriente": intervalos_corriente,
             "tiempo_entre_mediciones": tiempo_entre_mediciones
         }
-
-        self.guardar_perfiles_a_archivo()
+        guardar = validar_perfil(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones)
+        if guardar == True:
+            self.guardar_perfiles_a_archivo()
+            self.actualizar_combo_perfiles()
+            messagebox.showinfo("Información", f"Perfil '{nombre}' guardado exitosamente.")
 
         #Actualizar el ComboBox con los perfiles guardados
-        self.actualizar_combo_perfiles()
-        messagebox.showinfo("Información", f"Perfil '{nombre}' guardado exitosamente.")
+
 
 
     #Cargar perfil de parámetros
@@ -189,9 +187,8 @@ class Ventana1:
 
     #Guardar Perfil en archivo    
     def guardar_perfiles_a_archivo(self):
-        with open("perfiles_parametros.json", "w") as archivo:
+        with open("APP_ESCRITORIO\perfiles_parametros.json", "w") as archivo:
             json.dump(self.perfiles_parametros, archivo, indent=4)
-
 
     # Obtención de entradas
     @property
@@ -222,6 +219,7 @@ class Ventana1:
         self.guardar_perfiles_a_archivo()
         self.menu.withdraw()
         self.ventana_principal.deiconify()
+
     def mostrar_mensaje_inicio(self, titulo, mensaje):
         # Crear una nueva ventana de diálogo personalizada
         self.popup = tk.Toplevel(self.menu)
@@ -325,14 +323,17 @@ class Ventana1:
         # Ejecutar la medición en un hilo separado
         self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
         self.hilo_medicion.start()
+
     def actualizar_interfaz_despues_de_medir(self):
         self.menu.after(0, self.mostrar_grafico(), "Información", "Medición completada")
+    
     def mostrar_mensaje(self, titulo, mensaje):
         # Muestra un mensaje en el hilo principal
         messagebox.showinfo(titulo, mensaje)
         
         # Muestra el gráfico en el hilo principal
         self.mostrar_grafico()
+    
     def mostrar_grafico(self):
         try:
             corrientes, voltajes = zip(*self.resultados)
@@ -347,6 +348,7 @@ class Ventana1:
         grado = 1
         coeficientes = np.polyfit(corrientes, voltajes, grado)
         resistencia = 1 / coeficientes[0]
+        self._R=resistencia
 
         if self.LineaTendencia.get():
             # Calcular la línea de tendencia usando corrientes para el eje x
@@ -367,12 +369,14 @@ class Ventana1:
 
         self.ax.grid(True)
         self.canvas.draw()
+    
     def browse_file(self):
         file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")])
         self.entry_start.delete(0, tk.END)
         self.entry_end.delete(0, tk.END)
         self.entry_step.delete(0, tk.END)
         self.entry_start.insert(0, file_path)
+   
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
         
         if self.corrientes is not None and self.resultados is not None:
@@ -382,8 +386,10 @@ class Ventana1:
             file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")],initialfile=proyecto_titulo)
 
             if file_path:  # Si el usuario no cancela la selección del archivo
-                with open(file_path, 'w') as file:
-                    file.write("Corriente (A)\tVoltaje (V)\n\n")
+                with open(file_path, 'w') as file: 
+                    file.write(f"fecha: {datetime.now().strftime("%d-%m-%Y")}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
+                    
+                    file.write("Corriente (A),\tVoltaje (V)\n\n")
                     #
                     for corriente, voltaje in self.resultados:
                         file.write(f"{corriente:.3f}\t\t{voltaje}\n")
@@ -392,6 +398,7 @@ class Ventana1:
                 print("Guardado cancelado.")
         else:
             messagebox.showwarning("Advertencia", "No hay datos para guardar. Realiza la medición primero.")
+    
     def borrar_grafico(self):
         self.ax.clear()  # Limpiar el eje actual
         self.ax.set_title('Gráfico IV')
