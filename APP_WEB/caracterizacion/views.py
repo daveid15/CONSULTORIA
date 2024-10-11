@@ -181,11 +181,7 @@ def detalle_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     return render(request, 'caracterizacion/detalle_perfil.html', {'perfil': perfil})
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 @login_required
->>>>>>> 42f7bc3c2d8354d9016587bdbe25edb4e12af79c
 def bloquear_perfil(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
     perfil.perfil_parametro_state = 'f'
@@ -209,10 +205,6 @@ def eliminar_perfil_bloqueado(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
     perfil.delete()
     return redirect('listar_perfiles_bloqueados')
-<<<<<<< HEAD
-=======
->>>>>>> 94863ca128b7d6a32e2a90c9ec292f7385266384
-=======
 
 # Apartado prueba
 
@@ -228,4 +220,3 @@ def eliminar_prueba(request, pk):
         prueba.delete()
         return redirect('listar_pruebas')
     return render(request, 'caracterizacion/eliminar_prueba.html', {'prueba': prueba})
->>>>>>> 42f7bc3c2d8354d9016587bdbe25edb4e12af79c
