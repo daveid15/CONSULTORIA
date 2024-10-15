@@ -11,6 +11,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import threading 
 from validacion import *
 import json
+import nidaqmx
 
 class Ventana2:
     def __init__(self, menu, ventana_principal):
@@ -21,6 +22,7 @@ class Ventana2:
         self._corriente_fija = tk.StringVar()
         self._saturacion_campo = tk.StringVar()
         self._tiempo_entre_mediciones = tk.StringVar()
+        self._pasos = tk.StringVar()
 
          # Lista para perfiles de parámetros
         self.perfiles_ventana2 = self.cargar_perfiles_desde_archivo()
@@ -45,8 +47,12 @@ class Ventana2:
         tk.Entry(self.menu, textvariable=self._corriente_fija).place(x=25, y=130, width=210)
         tk.Label(self.menu, text="Saturacion de Campo", bg="#A6C3FF").place(x=25, y=160)
         tk.Entry(self.menu, textvariable=self._saturacion_campo).place(x=25, y=180, width=210)
+
         tk.Label(self.menu, text="Tiempo entre Mediciones", bg="#A6C3FF").place(x=25, y=210)
         tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones).place(x=25, y=230, width=210)
+        
+        tk.Label(self.menu, text="Pasos", bg="#A6C3FF").place(x=25, y=260)
+        tk.Entry(self.menu, textvariable=self._pasos).place(x=25, y=280, width=210)
 
         #Botones
         btn_volver = tk.Button(self.menu, text="volver", bg="#99A8EF", command=self.volver)
@@ -64,9 +70,9 @@ class Ventana2:
         #tk.Checkbutton(self.menu, text="Línea de Tendencia", variable=self.LineaTendencia).place(x=50, y=330)
 
         # ComboBox para seleccionar perfiles de parámetros
-        tk.Label(self.menu, text="Perfiles de Parámetros Guardados", bg="#A6C3FF").place(x=25, y=265)
+        tk.Label(self.menu, text="Perfiles de Parámetros Guardados", bg="#A6C3FF").place(x=25, y=310)
         self.combo_perfiles = tk.ttk.Combobox(self.menu, state="readonly")
-        self.combo_perfiles.place(x=25, y=285, width=200)
+        self.combo_perfiles.place(x=25, y=330, width=200)
         self.combo_perfiles.bind("<<ComboboxSelected>>", self.actualizar_parametros)
 
         # Fecha
@@ -192,6 +198,178 @@ class Ventana2:
     def volver(self):
         self.menu.withdraw()
         self.ventana_principal.deiconify()
+
+
+    def obtener_gauss(self):
+        num_samples = 10
+        sample_rate = 1000  # en Hz 
+        try:
+
+            def volts_a_gauss(volts, probe_type):
+    
+                voltajes_mV = volts * 1000  # Convertir a milivoltios
+
+                if probe_type == 'ST':
+                    gauss = voltajes_mV / 0.1  # Para HS Probe
+                else:
+                    raise ValueError("Tipo de sonda no reconocido")
+                return gauss
+        
+            with nidaqmx.Task() as task:
+
+                task.ai_channels.add_ai_voltage_chan("Dev2/ai0")  # Se lee datos de canal 0 de Dev2
+                task.timing.cfg_samp_clk_timing(rate=sample_rate, samps_per_chan=num_samples)#se configura la obtención de datos de gauss
+                # Leer los datos
+                data = task.read(num_samples)
+                # Convertir los datos a un array de numpy
+                data_array_0 = np.array(data[0])  # Datos del canal 0
+                promedio_data_0 = np.mean(data_array_0)#Se promedian dato
+
+                # Usar la sonda ST
+                probe_type = 'ST'  
+                # Convertir a Gauss
+                promedio_data_0 = volts_a_gauss(promedio_data_0,probe_type)
+                # Mostrar los resultados
+                return promedio_data_0
+        except nidaqmx.DaqError as e:
+            print("Ocurrió un error durante la adquisición de datos:", e)
+
+    def correr_ecuacion(self):
+        array_prom_gauss_volts = []
+        def obtener_ecuacion():
+            try:
+                # Configuración inicial de la fuente
+                fuente = self.rm.open_resource('GPIB::6::INSTR')  
+                fuente.timeout = 1000  #Se establece tiempo de respuesta max
+                fuente.read_termination = '\n' #Salto de linea al terminar de leer
+                fuente.write_termination = '\n'#Salto de linea al terminar de escribir
+                fuente.baud_rate = 57600 #se configura la velocidad de comunicación
+                fuente.write('*CLS')  # Limpiar el estado
+                fuente.write('*RST')  # Reiniciar la fuente
+                fuente.write('SOUR:FUNC:MODE VOLT')  # Establecer en modo voltaje
+                fuente.write('SOUR:CURR 20')  # Establecer límite de corriente a 20 A
+                fuente.write("OUTP ON")  # Activar la salida       
+                start_voltaje = 20
+                step_size = 40  # Número de pasos
+                delay = 5
+                voltajes = np.linspace(start_voltaje, -start_voltaje, num=step_size)  # Genera voltajes 
+    # Bucle para establecer voltajes
+                for voltaje in voltajes:
+                    voltaje = round(voltaje, 1)  # Redondear el voltaje
+                    if -20 <= voltaje <= 20:  # Asegurar que el voltaje esté dentro del rango
+                        fuente.write(f'SOUR:VOLT {voltaje}')  # Establecer el voltaje
+                        print(f"Set voltage to: {voltaje}")  # Imprimir el voltaje establecido
+                        # Esperar a que se procesen los comandos
+                        time.sleep(delay)  # Espera para permitir la estabilización Min 0.04 para permitir una estabilización pp estuvo aca
+                        array_prom_gauss_volts.append((voltaje,self.obtener_gauss()))#se agrega  promedio de gauss y voltaje a array
+
+                    else:
+                        print(f"Voltage {voltaje} out of range")
+
+            except pyvisa.errors.VisaIOError as e:
+                print("Error de VISA:", e)
+
+            finally:
+                fuente.write("OUTP OFF")  # Apagar después del bucle
+                fuente.write('*CLS')  # Limpiar el estado
+                fuente.write('*RST')  # Reiniciar el sistema
+                fuente.close()  # Cerrar la conexión
+                voltaje, senal_ni = zip(*array_prom_gauss_volts)#Guarda voltaje y señal de gauss respectivamente
+                # Calcular pendiente e intercepto
+                m, b = np.polyfit(voltaje, senal_ni, 1)
+                return m, b #retorna pendiente e interecepto
+
+
+
+
+
+    def medir_GV_curve(self):
+        def ejecutar_medicion():
+            self._corriente_fija = tk.StringVar()
+            self._saturacion_campo = tk.StringVar()
+            self._tiempo_entre_mediciones = tk.StringVar()
+            self._pasos = tk.StringVar()
+            constant_current_str =self._corriente_fija.get()
+            step_size_str = self._pasos.get()
+            delay_str =  self._tiempo_entre_mediciones.get()
+            start_saturation_str =  self._saturacion_campo.get() 
+            # Validar que todos los valores sean válidos
+            if verificar_inputs_gauss(start_saturation_str, constant_current_str, step_size_str, delay_str, self.menu):
+                # Continúa con el proceso si no hay errores
+                start_current = float(constant_current_str)
+                start_saturation = int(start_saturation_str)
+                step_size = int(step_size_str)
+                delay = float(delay_str)
+                self.fields = np.linspace(start_saturation, -start_saturation, num=step_size)
+                self.resultados = []
+                # Inicializar el gestor de recursos VISA
+                self.rm = pyvisa.ResourceManager()
+                self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
+                # Abrir la conexión con el multímetro y realizar la medición
+                if verificar_dispositivo("9", self.menu):
+                    try:
+                        multimetro = self.rm.open_resource('GPIB0::9::INSTR')
+                        fuente = self.rm.open_resource('GPIB0::6::INSTR')# Conectar a la fuente de alimentación
+                        # Configurar el multímetro para ser una fuente de corriente y medir voltaje
+                        multimetro.write("*RST")  # Resetear el equipo
+                        multimetro.write(":SOUR:FUNC CURR")  # Configurar como fuente de corriente
+                        multimetro.write(f":SOUR:CURR {start_current}") #se configura corriente fija
+                        multimetro.write("CONF:VOLT:DC")  # Configurar para medir voltaje
+                        # Encender la salida
+                        multimetro.write("OUTPUT ON")
+                        
+                        
+                        # Configuración inicial de la fuente            
+                        fuente.timeout = 1000  #Se establece tiempo de respuesta max
+                        fuente.read_termination = '\n' #Salto de linea al terminar de leer
+                        fuente.write_termination = '\n'#Salto de linea al terminar de escribir
+                        fuente.baud_rate = 57600 #se configura la velocidad de comunicación
+                        fuente.write('*CLS')  # Limpiar el estado
+                        fuente.write('*RST')  # Reiniciar la fuente
+                        fuente.write('SOUR:FUNC:MODE VOLT')  # Establecer en modo voltaje
+                        fuente.write('SOUR:CURR 20')  # Establecer límite de corriente a 20 A
+                        fuente.write("OUTP ON")  # Activar la salida   
+
+                        for field in self.fields:
+                            try:
+                                # Aplicar la corriente
+                                time.sleep(delay)
+                                # Medir el voltaje mientras se aplica la corriente
+                                medida_voltaje = multimetro.query(":MEAS:VOLT:DC?")
+                                valores = medida_voltaje.strip().split(',')
+                                
+                                V = float(valores[0])
+                                self.resultados.append((start_current, V))
+                                #print(f"{corriente}, {V}")
+                        
+
+                            except pyvisa.errors.VisaIOError as e:
+                                print(f"Error de VISA: {e}")
+                                self.resultados.append((corriente, None))
+
+                            except ValueError as e:
+                                print(f"Error en los valores obtenidos: {e}")
+                                self.resultados.append((corriente, None))
+                            
+                        self.menu.after(0, self.boton_cerrar.config, {'state': tk.NORMAL})
+                        self.actualizar_interfaz_despues_de_medir()
+                        # Apagar la salida después de las mediciones
+                        multimetro.write("OUTPUT OFF")
+
+                    except pyvisa.errors.VisaIOError as e:
+                        if 'VI_ERROR_LIBRARY_NFOUND' in str(e):
+                            print("Error: No se pudo localizar o cargar la biblioteca requerida por VISA. Verifique que los controladores VISA estén instalados correctamente.")
+                            print("Solución recomendada: Asegúrese de que el software NI-VISA (o su equivalente) esté instalado y correctamente configurado.")
+                        else:
+                            print(f"Error inesperado de VISA: {e}")
+            else:
+                print("Entradas no válidas, verifique los datos.")
+
+        # Ejecutar la medición en un hilo separado
+        self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
+        self.hilo_medicion.start()
+
+
 
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
         if self.resistencia is not None and self.resultados is not None:
