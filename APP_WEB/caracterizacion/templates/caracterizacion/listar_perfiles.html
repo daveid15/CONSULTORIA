@@ -10,9 +10,10 @@
             title: "¿Está seguro de que desea realizar esta acción?",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
+            confirmButtonColor: "#2bff00",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Sí, confirmar"
+            confirmButtonText: "Confirmar",
+            cancelButtonText: "Cancelar"
         }).then((result) => {
             if (result.isConfirmed) {
                 // Redirect to the URL if confirmed
@@ -20,16 +21,29 @@
             }
         });
     }
+    function feedback(url){
+        Swal.fire({
+            title: "Acción realizada correctamente",
+            confirmButtonColor: "#2bff00",
+            confirmButtonText: "Confirmar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Redirect to the URL if confirmed
+                window.location.href = url;
+            }
+        });
+
+    }
 </script> 
 <div class="titu-mein">
     <h1 class='h2 medium text-blue'>Perfiles de Parámetros</h1>
     <!-- Botón para crear un nuevo perfil -->
     <header class='mb-5'>
         <div class="botones-1-carac">
-            <a href="{% url 'crear_perfil' %}"  class="button button--gray--carac form-control custom-button-carac" title="Agregar Usuarios">Crear nuevo perfil</a>
+            <a href="{% url 'crear_perfil' %}"  class="button button--gray--carac form-control custom-button-carac" title="Agregar Usuarios">Crear perfil</a>
         </div>
         <div class="botones-2-carac">
-            <a href="{% url 'listar_perfiles_bloqueados' %}"  class="button button--gray--carac form-control custom-button-carac" title="Agregar Usuarios">Ver Perfiles Bloqueados</a>
+            <a href="{% url 'listar_perfiles_bloqueados' %}"  class="button button--gray--carac form-control custom-button-carac" title="Agregar Usuarios">Perfiles Bloqueados</a>
         </div>
     </header>
     <!-- Tabla de perfiles de parámetros -->

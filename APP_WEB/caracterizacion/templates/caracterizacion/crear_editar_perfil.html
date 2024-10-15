@@ -3,6 +3,21 @@
 {% block content %}
 {% block extrahead %}
 {% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function feedback(url){
+        Swal.fire({
+            title: "Acción realizada correctamente",
+            confirmButtonColor: "#2bff00",
+            confirmButtonText: "Confirmar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Redirect to the URL if confirmed
+                window.location.href = url;
+            }
+        });
+    }
+</script>
 <div class="titu-mein cont-form-carac-crear">
     <body>
         <h1>{% if perfil %}Editar{% else %}Crear{% endif %} Perfil</h1>
@@ -12,7 +27,7 @@
                         {% csrf_token %}
                         {{ form.as_p }}
                         <button class="button button--gray form-control custom-button-crear"  type="submit">{% if perfil %}Actualizar{% else %}Crear{% endif %}</button>
-                        <a class="button button--gray_volver form-control custom-button-volver" href="{% url 'listar_perfiles' %} ">Volver</a>
+                        <a class="button button--gray_volver form-control custom-button-volver" href="{% url 'listar_perfiles' %} "?Volver=1 >Volver</a>
                     </form>
                 </div>
         </div>
