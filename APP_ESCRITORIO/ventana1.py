@@ -349,7 +349,6 @@ class Ventana1:
         coeficientes = np.polyfit(corrientes, voltajes, grado)
         resistencia = 1 / coeficientes[0]
         self._R=resistencia
-
         if self.LineaTendencia.get():
             # Calcular la línea de tendencia usando corrientes para el eje x
             tendencia = np.polyval(coeficientes, corrientes)
@@ -376,7 +375,7 @@ class Ventana1:
         self.entry_end.delete(0, tk.END)
         self.entry_step.delete(0, tk.END)
         self.entry_start.insert(0, file_path)
-   
+
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
         
         if self.corrientes is not None and self.resultados is not None:

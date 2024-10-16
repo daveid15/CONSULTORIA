@@ -24,7 +24,7 @@ class Ventana2:
         self._tiempo_entre_mediciones = tk.StringVar()
         self._pasos = tk.StringVar()
 
-         # Lista para perfiles de parámetros
+        # Lista para perfiles de parámetros
         self.perfiles_ventana2 = self.cargar_perfiles_desde_archivo()
 
         #Diseño ventana
@@ -63,6 +63,8 @@ class Ventana2:
         btn_cargar_perfil.place(x=135, y=375)
         btn_iniciar = tk.Button(self.menu, text="Iniciar", command=self.graficar)
         btn_iniciar.place(x=100, y=420)
+        btn_obtener_ecuacion = tk.Button(self.menu, text="obtener_ecuacion", command=self.obtener_ecuacion)
+        btn_obtener_ecuacion.place(x=150, y=420)
         btn_guardar_prueba = tk.Button(self.menu, text="Guardar Prueba", command=self.guardar_prueba)
         btn_guardar_prueba.place(x=75, y=465)
         self.btn_clear_plot = tk.Button(self.menu, text="Borrar Gráfico", command=self.borrar_grafico)
@@ -195,25 +197,48 @@ class Ventana2:
     def iniciar(self):
         print("Iniciado")
         
+        
+    def configurar_fuente(self, fuente):
+        fuente.timeout = 1000
+        fuente.read_termination = '\n'
+        fuente.write_termination = '\n'
+        fuente.baud_rate = 57600
+        fuente.write('*CLS')
+        fuente.write('*RST')
+        fuente.write('SOUR:FUNC:MODE VOLT')
+        fuente.write('SOUR:CURR 20')
+        fuente.write("OUTP ON")
+
+    def configurar_multimetro(self, multimetro, corriente):
+        multimetro.write("*RST")
+        multimetro.write(":SOUR:FUNC CURR")
+        multimetro.write(f":SOUR:CURR {corriente}")
+        multimetro.write("CONF:VOLT:DC")
+        multimetro.write("OUTPUT ON")
+
+    def medir_voltaje(self, multimetro):
+        medida_voltaje = multimetro.query(":MEAS:VOLT:DC?")
+        valores = medida_voltaje.strip().split(',')
+        return float(valores[0])
+        
     def volver(self):
         self.menu.withdraw()
         self.ventana_principal.deiconify()
 
+    def volts_a_gauss(volts, probe_type):
+    
+        voltajes_mV = volts * 1000  # Convertir a milivoltios
+
+        if probe_type == 'ST':
+            gauss = voltajes_mV / 0.1  # Para HS Probe
+        else:
+            raise ValueError("Tipo de sonda no reconocido")
+        return gauss
 
     def obtener_gauss(self):
         num_samples = 10
         sample_rate = 1000  # en Hz 
         try:
-
-            def volts_a_gauss(volts, probe_type):
-    
-                voltajes_mV = volts * 1000  # Convertir a milivoltios
-
-                if probe_type == 'ST':
-                    gauss = voltajes_mV / 0.1  # Para HS Probe
-                else:
-                    raise ValueError("Tipo de sonda no reconocido")
-                return gauss
         
             with nidaqmx.Task() as task:
 
@@ -228,27 +253,20 @@ class Ventana2:
                 # Usar la sonda ST
                 probe_type = 'ST'  
                 # Convertir a Gauss
-                promedio_data_0 = volts_a_gauss(promedio_data_0,probe_type)
+                promedio_data_0 = self.volts_a_gauss(promedio_data_0,probe_type)
                 # Mostrar los resultados
                 return promedio_data_0
         except nidaqmx.DaqError as e:
             print("Ocurrió un error durante la adquisición de datos:", e)
 
-    def correr_ecuacion(self):
+    def obtener_ecuacion(self):
         array_prom_gauss_volts = []
         def obtener_ecuacion():
             try:
                 # Configuración inicial de la fuente
+                self.rm = pyvisa.ResourceManager()
                 fuente = self.rm.open_resource('GPIB::6::INSTR')  
-                fuente.timeout = 1000  #Se establece tiempo de respuesta max
-                fuente.read_termination = '\n' #Salto de linea al terminar de leer
-                fuente.write_termination = '\n'#Salto de linea al terminar de escribir
-                fuente.baud_rate = 57600 #se configura la velocidad de comunicación
-                fuente.write('*CLS')  # Limpiar el estado
-                fuente.write('*RST')  # Reiniciar la fuente
-                fuente.write('SOUR:FUNC:MODE VOLT')  # Establecer en modo voltaje
-                fuente.write('SOUR:CURR 20')  # Establecer límite de corriente a 20 A
-                fuente.write("OUTP ON")  # Activar la salida       
+                self.configurar_fuente(fuente)      
                 start_voltaje = 20
                 step_size = 40  # Número de pasos
                 delay = 5
@@ -258,7 +276,6 @@ class Ventana2:
                     voltaje = round(voltaje, 1)  # Redondear el voltaje
                     if -20 <= voltaje <= 20:  # Asegurar que el voltaje esté dentro del rango
                         fuente.write(f'SOUR:VOLT {voltaje}')  # Establecer el voltaje
-                        print(f"Set voltage to: {voltaje}")  # Imprimir el voltaje establecido
                         # Esperar a que se procesen los comandos
                         time.sleep(delay)  # Espera para permitir la estabilización Min 0.04 para permitir una estabilización pp estuvo aca
                         array_prom_gauss_volts.append((voltaje,self.obtener_gauss()))#se agrega  promedio de gauss y voltaje a array
@@ -277,7 +294,41 @@ class Ventana2:
                 voltaje, senal_ni = zip(*array_prom_gauss_volts)#Guarda voltaje y señal de gauss respectivamente
                 # Calcular pendiente e intercepto
                 m, b = np.polyfit(voltaje, senal_ni, 1)
-                return m, b #retorna pendiente e interecepto
+                ecuacion_dia = {
+                        "fecha": datetime.now().strftime("%Y-%m-%d"),
+                        "pendiente": m,
+                        "intercepto": b
+                    }
+                ruta_archivo = 'utils/ecuaciones/ecuacion.json'
+                with open(ruta_archivo, 'w') as archivo:
+                    json.dump(ecuacion_dia, archivo, indent=4)
+                # Ejecutar la medición en un hilo separado
+        self.hilo_medicion = threading.Thread(target=obtener_ecuacion)
+        self.hilo_medicion.start()
+
+
+
+    def cargar_ecuacion_del_dia(self):
+        ruta_archivo = 'utils/ecuaciones/ecuacion.json'
+
+        try:
+            with open(ruta_archivo, 'r') as archivo:
+                ecuacion = json.load(archivo)
+
+            # Obtener la fecha actual
+            dia_actual = datetime.now().strftime("%Y-%m-%d")
+
+            # Comparar la fecha de la ecuación con la fecha actual
+            if ecuacion['fecha'] == dia_actual:
+                m = ecuacion['pendiente']  # Pendiente
+                b = ecuacion['intercepto']  # Intercepto
+                return m,b
+
+            else:
+                return f"No hay ecuación disponible para la fecha actual: {dia_actual}. Por favor, genera una nueva."
+
+        except FileNotFoundError:
+            return "El archivo de la ecuación no se encontró. Asegúrate de haberlo generado previamente."
 
 
 
@@ -285,10 +336,7 @@ class Ventana2:
 
     def medir_GV_curve(self):
         def ejecutar_medicion():
-            self._corriente_fija = tk.StringVar()
-            self._saturacion_campo = tk.StringVar()
-            self._tiempo_entre_mediciones = tk.StringVar()
-            self._pasos = tk.StringVar()
+
             constant_current_str =self._corriente_fija.get()
             step_size_str = self._pasos.get()
             delay_str =  self._tiempo_entre_mediciones.get()
@@ -301,7 +349,7 @@ class Ventana2:
                 step_size = int(step_size_str)
                 delay = float(delay_str)
                 self.fields = np.linspace(start_saturation, -start_saturation, num=step_size)
-                self.resultados = []
+                self.array_prom_gauss_volts = []
                 # Inicializar el gestor de recursos VISA
                 self.rm = pyvisa.ResourceManager()
                 self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
@@ -311,50 +359,27 @@ class Ventana2:
                         multimetro = self.rm.open_resource('GPIB0::9::INSTR')
                         fuente = self.rm.open_resource('GPIB0::6::INSTR')# Conectar a la fuente de alimentación
                         # Configurar el multímetro para ser una fuente de corriente y medir voltaje
-                        multimetro.write("*RST")  # Resetear el equipo
-                        multimetro.write(":SOUR:FUNC CURR")  # Configurar como fuente de corriente
-                        multimetro.write(f":SOUR:CURR {start_current}") #se configura corriente fija
-                        multimetro.write("CONF:VOLT:DC")  # Configurar para medir voltaje
-                        # Encender la salida
-                        multimetro.write("OUTPUT ON")
-                        
-                        
-                        # Configuración inicial de la fuente            
-                        fuente.timeout = 1000  #Se establece tiempo de respuesta max
-                        fuente.read_termination = '\n' #Salto de linea al terminar de leer
-                        fuente.write_termination = '\n'#Salto de linea al terminar de escribir
-                        fuente.baud_rate = 57600 #se configura la velocidad de comunicación
-                        fuente.write('*CLS')  # Limpiar el estado
-                        fuente.write('*RST')  # Reiniciar la fuente
-                        fuente.write('SOUR:FUNC:MODE VOLT')  # Establecer en modo voltaje
-                        fuente.write('SOUR:CURR 20')  # Establecer límite de corriente a 20 A
-                        fuente.write("OUTP ON")  # Activar la salida   
-
+                        self.configurar_multimetro(multimetro, start_current)
+                        self.configurar_fuente(fuente)
+                        a, b = self.cargar_ecuacion_del_dia()
                         for field in self.fields:
-                            try:
-                                # Aplicar la corriente
-                                time.sleep(delay)
-                                # Medir el voltaje mientras se aplica la corriente
-                                medida_voltaje = multimetro.query(":MEAS:VOLT:DC?")
-                                valores = medida_voltaje.strip().split(',')
-                                
-                                V = float(valores[0])
-                                self.resultados.append((start_current, V))
-                                #print(f"{corriente}, {V}")
-                        
-
-                            except pyvisa.errors.VisaIOError as e:
-                                print(f"Error de VISA: {e}")
-                                self.resultados.append((corriente, None))
-
-                            except ValueError as e:
-                                print(f"Error en los valores obtenidos: {e}")
-                                self.resultados.append((corriente, None))
-                            
+                            deltaV = (field-b)/a
+                            deltaV = round(deltaV, 1)  # Redondear el voltaje
+                            fuente.write(f'SOUR:VOLT {deltaV}')  # Establecer el voltaje
+                            time.sleep(delay)
+                            # Medir el voltaje mientras se aplica la corriente
+                            V = self.medir_voltaje(multimetro)
+                            self.array_prom_gauss_volts.append((start_current, V, deltaV, self.obtener_gauss()))#se agrega  promedio de gauss y voltaje a array                            
                         self.menu.after(0, self.boton_cerrar.config, {'state': tk.NORMAL})
                         self.actualizar_interfaz_despues_de_medir()
                         # Apagar la salida después de las mediciones
                         multimetro.write("OUTPUT OFF")
+                        fuente.write("OUTP OFF")  # Apagar después del bucle
+                        fuente.write('*CLS')  # Limpiar el estado
+                        fuente.write('*RST')  # Reiniciar el sistema
+                        fuente.close()  # Cerrar la conexión
+                        multimetro.write("OUTPUT OFF")
+                        multimetro.close()
 
                     except pyvisa.errors.VisaIOError as e:
                         if 'VI_ERROR_LIBRARY_NFOUND' in str(e):
