@@ -88,18 +88,16 @@ class Ventana1:
         etiqueta_fecha = tk.Label(self.menu, text=f"Fecha: {fecha_actual}", font=("Arial", 10))
         etiqueta_fecha.place(x=800, y=5)
         
-        # Agregar un marco para contener el gráfico y la barra de herramientas
         self.frame_plot = tk.Frame(self.menu)
         self.frame_plot.place(x=300, y=50, width=700, height=500)
-
 
         # Configurar la figura de Matplotlib y el eje
         self.fig, self.ax = plt.subplots(figsize=(10, 6))
         self.ax.set_title('Gráfico IV')
         self.ax.set_xlabel('Corriente (A)')
         self.ax.set_ylabel('Voltaje (V)')
-        self.ax.legend()
         self.ax.grid(True)
+
 
         # Crear un lienzo de Tkinter para la figura
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.frame_plot)
@@ -110,8 +108,13 @@ class Ventana1:
         self.toolbar.update()
         self.toolbar.pack(side=tk.BOTTOM, fill=tk.X)  # Mover la barra de herramientas abajo
 
+        # Mostrar la leyenda solo si hay etiquetas
+        handles, labels = self.ax.get_legend_handles_labels()
+        if labels:  # Solo mostrar la leyenda si hay etiquetas
+            self.ax.legend()
+
         # Mantener el gráfico arriba
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)        
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True) 
         self.rm = None
         self.corrientes = None
 
@@ -273,12 +276,13 @@ class Ventana1:
 
                 # Inicializar el gestor de recursos VISA
                 self.rm = pyvisa.ResourceManager()
-                self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
+
                 # Abrir la conexión con el multímetro y realizar la medición
                 addresses= ["9"]
                 if verificar_dispositivo(addresses, self.menu):
                     try:
                         with self.rm.open_resource('GPIB0::9::INSTR') as multimetro:
+                            self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
                             # Configurar el multímetro para ser una fuente de corriente y medir voltaje
                             multimetro.write("*RST")  # Resetear el equipo
                             multimetro.write(":SOUR:FUNC CURR")  # Configurar como fuente de corriente
@@ -321,8 +325,6 @@ class Ventana1:
                             print("Solución recomendada: Asegúrese de que el software NI-VISA (o su equivalente) esté instalado y correctamente configurado.")
                         else:
                             print(f"Error inesperado de VISA: {e}")
-            else:
-                print("Entradas no válidas, verifique los datos.")
 
         # Ejecutar la medición en un hilo separado
         self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
@@ -403,10 +405,22 @@ class Ventana1:
             messagebox.showwarning("Advertencia", "No hay datos para guardar. Realiza la medición primero.")
     
     def borrar_grafico(self):
-        self.ax.clear()  # Limpiar el eje actual
+        # Limpiar el eje actual
+        self.ax.clear()
+
+        # Restablecer el título y etiquetas
         self.ax.set_title('Gráfico IV')
         self.ax.set_xlabel('Corriente (A)')
         self.ax.set_ylabel('Voltaje (V)')
-        self.ax.legend()
+
+
+
+        # Mostrar la leyenda solo si hay etiquetas
+        handles, labels = self.ax.get_legend_handles_labels()
+        if labels:  # Solo mostrar la leyenda si hay etiquetas
+            self.ax.legend()
+
+        # Redibujar el gráfico en el lienzo
+            # Reestablecer la cuadrícula
         self.ax.grid(True)
         self.canvas.draw()

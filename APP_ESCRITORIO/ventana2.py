@@ -90,10 +90,9 @@ class Ventana2:
         self.fig, self.ax = plt.subplots(figsize=(10, 6))
         self.ax.set_title('Gráfico')
         self.ax.set_xlabel('Delta V')
-        plt.xlim(-20,20)
-        self.ax.set_ylabel('(G)')
-        plt.ylim(-6000,6000)
-        self.ax.legend()
+        self.ax.set_ylabel('G')
+        plt.xlim(-20, 20)
+        plt.ylim(-6000, 6000)
         self.ax.grid(True)
 
         # Crear un lienzo de Tkinter para la figura
@@ -103,10 +102,15 @@ class Ventana2:
         # Agregar la barra de herramientas de navegación en la parte inferior
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.frame_plot)
         self.toolbar.update()
-        self.toolbar.pack(side=tk.BOTTOM, fill=tk.X)  # Mover la barra de herramientas abajo
+        self.toolbar.pack(side=tk.BOTTOM, fill=tk.X)
+
+        # Mostrar la leyenda solo si hay etiquetas
+        handles, labels = self.ax.get_legend_handles_labels()
+        if labels:
+            self.ax.legend()
 
         # Mantener el gráfico arriba
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)        
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.rm = None
         self.corrientes_fija = None
 
@@ -293,49 +297,51 @@ class Ventana2:
     def obtener_ecuacion(self):
         array_prom_gauss_volts = []
         def obtener_ecuacion():
+            addresses = ["6"]
             try:
-                # Configuración inicial de la fuente
-                self.rm = pyvisa.ResourceManager()
-                fuente = self.rm.open_resource('GPIB::6::INSTR')  
-                self.configurar_fuente(fuente)      
-                start_voltaje = 20
-                step_size = 40  # Número de pasos
-                delay = 1
-                voltajes = np.linspace(start_voltaje, -start_voltaje, num=step_size)  # Genera voltajes 
-                
-                # Bucle para establecer voltajes
-                for voltaje in voltajes:
-                    voltaje = round(voltaje, 1)  # Redondear el voltaje
-                    if -20 <= voltaje <= 20:  # Asegurar que el voltaje esté dentro del rango
-                        fuente.write(f'SOUR:VOLT {voltaje}')  # Establecer el voltaje
-                        time.sleep(delay)  # Espera para permitir la estabilización
-                        array_prom_gauss_volts.append((voltaje, self.obtener_gauss())) # Promedio gauss
+                if verificar_dispositivo(addresses, self.menu):
+                    # Configuración inicial de la fuente
+                    self.rm = pyvisa.ResourceManager()
+                    fuente = self.rm.open_resource('GPIB::6::INSTR')  
+                    self.configurar_fuente(fuente)      
+                    start_voltaje = 20
+                    step_size = 40  # Número de pasos
+                    delay = 1
+                    voltajes = np.linspace(start_voltaje, -start_voltaje, num=step_size)  # Genera voltajes 
+                    
+                    # Bucle para establecer voltajes
+                    for voltaje in voltajes:
+                        voltaje = round(voltaje, 1)  # Redondear el voltaje
+                        if -20 <= voltaje <= 20:  # Asegurar que el voltaje esté dentro del rango
+                            fuente.write(f'SOUR:VOLT {voltaje}')  # Establecer el voltaje
+                            time.sleep(delay)  # Espera para permitir la estabilización
+                            array_prom_gauss_volts.append((voltaje, self.obtener_gauss())) # Promedio gauss
+                    fuente.write("OUTP OFF")  # Apagar después del bucle
+                    fuente.write('*CLS')  # Limpiar el estado
+                    fuente.write('*RST')  # Reiniciar el sistema
+                    fuente.close()  # Cerrar la conexión
+
+                    # Guardar voltaje y señal de gauss respectivamente
+                    voltaje, senal_ni = zip(*array_prom_gauss_volts)
+
+                    # Calcular pendiente e intercepto
+                    m, b = np.polyfit(voltaje, senal_ni, 1)
+                    ecuacion_dia = {
+                        "fecha": datetime.now().strftime("%Y-%m-%d"),
+                        "pendiente": m,
+                        "intercepto": b
+                    }
+                    
+                    # Guardar ecuación del día
+                    ruta_archivo = 'utils/ecuaciones/ecuacion.json'
+                    os.makedirs(os.path.dirname(ruta_archivo), exist_ok=True)  # Crear carpeta si no existe
+                    with open(ruta_archivo, 'w') as archivo:
+                        json.dump(ecuacion_dia, archivo, indent=4)
+
 
             except pyvisa.errors.VisaIOError as e:
                 print("Error de VISA:", e)
-            finally:
-                fuente.write("OUTP OFF")  # Apagar después del bucle
-                fuente.write('*CLS')  # Limpiar el estado
-                fuente.write('*RST')  # Reiniciar el sistema
-                fuente.close()  # Cerrar la conexión
-
-                # Guardar voltaje y señal de gauss respectivamente
-                voltaje, senal_ni = zip(*array_prom_gauss_volts)
-
-                # Calcular pendiente e intercepto
-                m, b = np.polyfit(voltaje, senal_ni, 1)
-                ecuacion_dia = {
-                    "fecha": datetime.now().strftime("%Y-%m-%d"),
-                    "pendiente": m,
-                    "intercepto": b
-                }
-                
-                # Guardar ecuación del día
-                ruta_archivo = 'utils/ecuaciones/ecuacion.json'
-                os.makedirs(os.path.dirname(ruta_archivo), exist_ok=True)  # Crear carpeta si no existe
-                with open(ruta_archivo, 'w') as archivo:
-                    json.dump(ecuacion_dia, archivo, indent=4)
-
+            
         # Ejecutar la medición en un hilo separado
         self.hilo_medicion = threading.Thread(target=obtener_ecuacion)
         self.hilo_medicion.start()
@@ -555,16 +561,18 @@ class Ventana2:
 
     def borrar_grafico(self):
                 # Agregar un marco para contener el gráfico y la barra de herramientas
-
-        self.ax.legend()
         self.ax.grid(True)
-        self.ax.set_title('Gráfico')
+
         self.ax.clear()  # Limpiar el eje actual
+        self.ax.set_title('Gráfico')
         self.ax.set_ylabel('G')
         self.ax.set_xlabel('Delta V')
         plt.xlim(-20,20)
         plt.ylim(-6000,6000)
-        self.ax.legend()
+                # Mostrar la leyenda solo si hay etiquetas
+        handles, labels = self.ax.get_legend_handles_labels()
+        if labels:  # Solo mostrar la leyenda si hay etiquetas
+            self.ax.legend()
         self.ax.grid(True)
         
         self.canvas.draw()

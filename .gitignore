@@ -1,6 +1,6 @@
 # Byte-compiled / optimized / DLL files
-APP_WEB/__pycache__/
-APP_ESCRITORIO/__pycache__/
+__pycache__/
+__pycache__/
 *.py[cod]
 *$py.class
 
@@ -108,7 +108,7 @@ venv.bak/
 *.log
 *.pot
 *.pyc
-APP_WEB/__pycache__/
+__pycache__/
 .vscode/
 media/
 core/static/core/*.xls
