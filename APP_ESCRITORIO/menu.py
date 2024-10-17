@@ -26,19 +26,19 @@ class Menu:
         left_frame.place(x=10, y=45, relheight=0.90, relwidth=0.275)
 
         #Imagenes
-        self.imagen_fuente = "APP_ESCRITORIO/fotos/FuentePoder.png"
+        self.imagen_fuente = "fotos/FuentePoder.png"
         imagen_fuente = Image.open(self.imagen_fuente)
         imagen_tk_fuente = ImageTk.PhotoImage(imagen_fuente)
         label_fuente = tk.Label(right_frame, image=imagen_tk_fuente, width=175, height=120)
         label_fuente.place(relx=0.315, rely=0.3)
 
-        self.imagen_gaussmeter = "APP_ESCRITORIO/fotos/Gaussmeter.png"
+        self.imagen_gaussmeter = "fotos/Gaussmeter.png"
         imagen_gaussmeter = Image.open(self.imagen_gaussmeter)
         imagen_tk_gaussmeter = ImageTk.PhotoImage(imagen_gaussmeter)
         label_gaussmeter = tk.Label(right_frame, image=imagen_tk_gaussmeter, width=175, height=120)
         label_gaussmeter.place(relx=0.5575, rely=0.3)
 
-        self.imagen_multimetro = "APP_ESCRITORIO/fotos/Multimetro.png"
+        self.imagen_multimetro = "fotos/Multimetro.png"
         imagen_multimetro = Image.open(self.imagen_multimetro)
         imagen_tk_multimetro = ImageTk.PhotoImage(imagen_multimetro)
         label_multimetro = tk.Label(right_frame, image=imagen_tk_multimetro, width=175, height=120)
@@ -92,6 +92,6 @@ class Menu:
     
 if __name__ == "__main__":
     main= tk.Tk()
-    imagen = tk.PhotoImage("APP_ESCRITORIO\fotos\complaint-exist.png")
+    #imagen = tk.PhotoImage("fotos\complaint-exist.png")
     app = Menu(main)
     main.mainloop()

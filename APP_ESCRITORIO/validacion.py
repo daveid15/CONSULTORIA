@@ -70,9 +70,7 @@ def verificar_inputs(start_current_str, step_size_str, delay_str, parent_window)
         errores.append("El valor del intervalo simétrico debe estar entre 1 pA y 1.05 A")
     step_size = validar_int(step_size_str)
     if step_size is None or step_size <= 0:
-
         errores.append("El valor de 'Intervalos de Corriente' debe ser un número entero mayor a cero.")
-
     delay = validar_float(delay_str)
     if delay is None or delay <= 0:
         errores.append("El valor de 'Tiempo entre Mediciones' debe ser un número flotante mayor a cero.")
@@ -87,6 +85,51 @@ def verificar_inputs(start_current_str, step_size_str, delay_str, parent_window)
     else:
         return True
     
+    
+    
+def verificar_inputs_gauss(start_saturation, constant_current_str, step_size_str, delay_str, parent_window):
+    errores = []
+
+    # Validar cada input
+    constant_current = validar_float(constant_current_str)
+    if constant_current is None or constant_current <= 0:
+        errores.append("El valor de 'Corriente Fija' debe ser un número mayor a cero.")
+    elif validar_intervalo_simetrico(constant_current):
+        errores.append("El valor de 'Corriente Fija' debe estar entre 1 pA y 1.05 A")
+    step_size = validar_int(step_size_str)
+    start_saturation=validar_int(start_saturation)
+    if start_saturation is None or start_saturation <= 0:
+        errores.append("El valor de 'Saturación de Campo' debe ser un número entero mayor a cero.")
+    elif validar_saturacion_campo(start_saturation):
+        errores.append("El valor de 'Saturación de Campo' debe estar entre -5000G y 5000G.")
+    if step_size is None or step_size <= 0:
+        errores.append("El valor de 'Intervalos de Corriente' debe ser un número entero mayor a cero.")
+    
+    delay = validar_float(delay_str)
+    if delay is None or delay <= 0:
+        errores.append("El valor de 'Tiempo entre Mediciones' debe ser un número flotante mayor a cero.")
+    elif validar_delay(delay):
+        errores.append("El valor de 'Tiempo entre Mediciones' debe entre 1ms y 999.999s .")
+
+    if errores:
+        # Mostrar errores
+        mensaje_error = "\n".join(errores)
+        messagebox.showerror("Errores de Validación", mensaje_error, parent=parent_window)
+        return False
+    else:
+        return True
+        
+    
+def validar_saturacion_campo(start_field):
+    min_field = -5000
+    max_field = 5000
+    if ( start_field >=min_field and start_field <= max_field):
+        return False
+    else:
+        return True
+
+
+
     
 def validar_intervalo_simetrico(start_current):
     min_current = 1e-12
