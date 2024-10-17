@@ -1,6 +1,5 @@
 from tkinter import *
 import tkinter as tk
-from tkinter import ttk
 from tkinter import filedialog
 from datetime import datetime
 import numpy as np
@@ -12,6 +11,7 @@ import threading
 from validacion import *
 import json
 import nidaqmx
+from nidaqmx.errors import DaqError
 
 class Ventana2:
     def __init__(self, menu, ventana_principal):
@@ -287,7 +287,7 @@ class Ventana2:
                 promedio_data_0 = self.volts_a_gauss(promedio_data_0, probe_type)
                 # Mostrar los resultados
                 return promedio_data_0
-        except nidaqmx.DaqError as e:
+        except DaqError as e:
             messagebox.showwarning("Advertencia",f"Ha ocurrido un error con el GaussMeter,{e}")
 
     def obtener_ecuacion(self):
@@ -302,47 +302,49 @@ class Ventana2:
                 step_size = 40  # Número de pasos
                 delay = 1
                 voltajes = np.linspace(start_voltaje, -start_voltaje, num=step_size)  # Genera voltajes 
-    # Bucle para establecer voltajes
+                
+                # Bucle para establecer voltajes
                 for voltaje in voltajes:
                     voltaje = round(voltaje, 1)  # Redondear el voltaje
                     if -20 <= voltaje <= 20:  # Asegurar que el voltaje esté dentro del rango
                         fuente.write(f'SOUR:VOLT {voltaje}')  # Establecer el voltaje
-                        # Esperar a que se procesen los comandos
-                        time.sleep(delay)  # Espera para permitir la estabilización Min 0.04 para permitir una estabilización pp estuvo aca
-                        array_prom_gauss_volts.append((voltaje,self.obtener_gauss()))#se agrega  promedio de gauss y voltaje a array
-
-                    else:
-                        print(f"Voltage {voltaje} out of range")
+                        time.sleep(delay)  # Espera para permitir la estabilización
+                        array_prom_gauss_volts.append((voltaje, self.obtener_gauss())) # Promedio gauss
 
             except pyvisa.errors.VisaIOError as e:
                 print("Error de VISA:", e)
-
             finally:
                 fuente.write("OUTP OFF")  # Apagar después del bucle
                 fuente.write('*CLS')  # Limpiar el estado
                 fuente.write('*RST')  # Reiniciar el sistema
                 fuente.close()  # Cerrar la conexión
-                voltaje, senal_ni = zip(*array_prom_gauss_volts)#Guarda voltaje y señal de gauss respectivamente
+
+                # Guardar voltaje y señal de gauss respectivamente
+                voltaje, senal_ni = zip(*array_prom_gauss_volts)
+
                 # Calcular pendiente e intercepto
                 m, b = np.polyfit(voltaje, senal_ni, 1)
                 ecuacion_dia = {
-                        "fecha": datetime.now().strftime("%Y-%m-%d"),
-                        "pendiente": m,
-                        "intercepto": b
-                    }
+                    "fecha": datetime.now().strftime("%Y-%m-%d"),
+                    "pendiente": m,
+                    "intercepto": b
+                }
+                
+                # Guardar ecuación del día
                 ruta_archivo = 'utils/ecuaciones/ecuacion.json'
+                os.makedirs(os.path.dirname(ruta_archivo), exist_ok=True)  # Crear carpeta si no existe
                 with open(ruta_archivo, 'w') as archivo:
                     json.dump(ecuacion_dia, archivo, indent=4)
-                # Ejecutar la medición en un hilo separado
+
+        # Ejecutar la medición en un hilo separado
         self.hilo_medicion = threading.Thread(target=obtener_ecuacion)
         self.hilo_medicion.start()
-
-
 
     def cargar_ecuacion_del_dia(self):
         ruta_archivo = 'utils/ecuaciones/ecuacion.json'
 
         try:
+            # Abrir y cargar el archivo JSON
             with open(ruta_archivo, 'r') as archivo:
                 ecuacion = json.load(archivo)
 
@@ -353,14 +355,14 @@ class Ventana2:
             if ecuacion['fecha'] == dia_actual:
                 m = ecuacion['pendiente']  # Pendiente
                 b = ecuacion['intercepto']  # Intercepto
-                return m,b
-
+                return m, b
             else:
                 return f"No hay ecuación disponible para la fecha actual: {dia_actual}. Por favor, genera una nueva."
 
         except FileNotFoundError:
-            return "El archivo de la ecuación no se encontró. Asegúrate de haberlo generado previamente."
-
+            # Manejar el caso donde el archivo no exista
+            messagebox.showwarning("Advertencia", "El archivo de la ecuación no se encontró. Por favor, genera una ecuación nueva.")
+            return None
 
     def actualizar_interfaz_despues_de_medir(self):
         self.menu.after(0, self.mostrar_grafico(), "Información", "Medición completada")
@@ -384,10 +386,12 @@ class Ventana2:
                 self.array_prom_gauss_volts = []
                 # Inicializar el gestor de recursos VISA
                 self.rm = pyvisa.ResourceManager()
-                self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
+
                 # Abrir la conexión con el multímetro y realizar la medición
-                if verificar_dispositivo("9", self.menu):
+                addresses= ["9","6"]
+                if verificar_dispositivo(addresses, self.menu):
                     try:
+                        self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
                         multimetro = self.rm.open_resource('GPIB0::9::INSTR')
                         fuente = self.rm.open_resource('GPIB0::6::INSTR')# Conectar a la fuente de alimentación
                         # Configurar el multímetro para ser una fuente de corriente y medir voltaje

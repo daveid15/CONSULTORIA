@@ -187,7 +187,7 @@ class Ventana1:
 
     #Guardar Perfil en archivo    
     def guardar_perfiles_a_archivo(self):
-        with open("APP_ESCRITORIO\perfiles_parametros.json", "w") as archivo:
+        with open("perfiles_parametros.json", "w") as archivo:
             json.dump(self.perfiles_parametros, archivo, indent=4)
 
     # Obtención de entradas
@@ -275,7 +275,8 @@ class Ventana1:
                 self.rm = pyvisa.ResourceManager()
                 self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
                 # Abrir la conexión con el multímetro y realizar la medición
-                if verificar_dispositivo("9", self.menu):
+                addresses= ["9"]
+                if verificar_dispositivo(addresses, self.menu):
                     try:
                         with self.rm.open_resource('GPIB0::9::INSTR') as multimetro:
                             # Configurar el multímetro para ser una fuente de corriente y medir voltaje
@@ -389,7 +390,7 @@ class Ventana1:
 
             if file_path:  # Si el usuario no cancela la selección del archivo
                 with open(file_path, 'w') as file: 
-                    file.write(f"fecha: {datetime.now().strftime("%d-%m-%Y")}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
+                    file.write(f"fecha: {datetime.now().strftime('%d-%m-%Y')}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
                     
                     file.write(f"Corriente (A),\tVoltaje (V), Resistencia (R)\t\n\n")
                     #
