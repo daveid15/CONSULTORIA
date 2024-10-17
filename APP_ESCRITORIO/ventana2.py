@@ -112,7 +112,8 @@ class Ventana2:
         # Mantener el gráfico arriba
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.rm = None
-        self.corrientes_fija = None
+        self.voltajes = None
+        self.array_prom_gauss_volts = None
 
         #Actualizar Perfiles
         self.cargar_perfiles_desde_archivo()
@@ -439,7 +440,7 @@ class Ventana2:
 
 
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
-        if self.array_prom_gauss_volts is not None and self.array_prom_gauss_volts is not None:
+        if self.array_prom_gauss_volts is not None and self.voltajes is not None:
             # Obtener el título actual de la ventana como sugerencia de nombre
             proyecto_titulo = "test_gauss_"
             file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")],initialfile=proyecto_titulo)

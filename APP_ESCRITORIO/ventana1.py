@@ -23,6 +23,8 @@ class Ventana1:
         self._intervalos_corriente = tk.StringVar()
         self._tiempo_entre_mediciones = tk.StringVar()
         self.LineaTendencia = tk.BooleanVar()
+        # Variable de control para el hilo
+        self. detener_medicion = False
 
         # Lista para perfiles de parámetros
         self.perfiles_parametros = self.cargar_perfiles_desde_archivo()
@@ -226,10 +228,10 @@ class Ventana1:
         self.menu.withdraw()
         self.ventana_principal.deiconify()
 
-    def mostrar_mensaje_inicio(self, titulo, mensaje):
+    def mostrar_mensaje_inicio(self):
         # Crear una nueva ventana de diálogo personalizada
         self.popup = tk.Toplevel(self.menu)
-        self.popup.title(titulo)
+        self.popup.title("Confirmar Detención")
 
         # Calcular las dimensiones de la ventana principal
         ventana_principal_width = self.menu.winfo_width()
@@ -249,16 +251,23 @@ class Ventana1:
         self.popup.geometry(f"{popup_width}x{popup_height}+{x}+{y}")
 
         # Etiqueta con el mensaje
-        mensaje_label = tk.Label(self.popup, text=mensaje, padx=10, pady=10)
+        mensaje_label = tk.Label(self.popup, text="¿Deseas detener la medición?", padx=10, pady=10)
         mensaje_label.pack()
 
-        # Botón para cerrar la ventana, deshabilitado inicialmente
-        self.boton_cerrar = tk.Button(self.popup, text="Cerrar", command=self.cerrar_popup, state=tk.DISABLED)
+        # Botón para cerrar la ventana y confirmar la detención
+        self.boton_cerrar = tk.Button(self.popup, text="Cancelar", command=self.confirmar_detener_medicion)
         self.boton_cerrar.pack(pady=10)
 
-        # Ejecutar la medición en un hilo separado     
-    def cerrar_popup(self):
-        self.popup.destroy()
+        # Manejar el evento de cierre de la ventana emergente
+        self.popup.protocol("WM_DELETE_WINDOW", self.confirmar_detener_medicion)
+
+    def confirmar_detener_medicion(self):
+        # Cambiar la variable de control para detener el hilo
+        self.detener_medicion = True
+        print("Medición detenida desde el popup.")
+        self.popup.destroy()  # Cerrar la ventana emergente
+
+        
     def medir_IV_curve(self):
         def ejecutar_medicion():
             start_current_str = self._intervalo_simetrico.get()
@@ -292,6 +301,10 @@ class Ventana1:
                             
                             for corriente in self.corrientes:
                                 try:
+                                    self.detener_medicion = False  # Reiniciar la variable de control
+
+                                    if self.detener_medicion:
+                                        break
                                     # Aplicar la corriente
                                     multimetro.write(f":SOUR:CURR {corriente}")
 
@@ -329,7 +342,11 @@ class Ventana1:
         # Ejecutar la medición en un hilo separado
         self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
         self.hilo_medicion.start()
-        #s
+
+
+
+
+
     def actualizar_interfaz_despues_de_medir(self):
         self.menu.after(0, self.mostrar_grafico(), "Información", "Medición completada")
     
