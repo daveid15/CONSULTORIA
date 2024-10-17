@@ -20,7 +20,7 @@ class Ventana2:
         self._nombre = tk.StringVar()
         self._corriente_fija = tk.StringVar()
         self._saturacion_campo = tk.StringVar()
-        self._tiempo_entre_mediciones = tk.StringVar()
+        self._tiempo_entre_mediciones_v2 = tk.StringVar()
 
          # Lista para perfiles de parámetros
         self.perfiles_ventana2 = self.cargar_perfiles_desde_archivo()
@@ -46,10 +46,10 @@ class Ventana2:
         tk.Label(self.menu, text="Saturacion de Campo", bg="#A6C3FF").place(x=25, y=160)
         tk.Entry(self.menu, textvariable=self._saturacion_campo).place(x=25, y=180, width=210)
         tk.Label(self.menu, text="Tiempo entre Mediciones", bg="#A6C3FF").place(x=25, y=210)
-        tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones).place(x=25, y=230, width=210)
+        tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones_v2).place(x=25, y=230, width=210)
 
         #Botones
-        btn_volver = tk.Button(self.menu, text="volver", bg="#99A8EF", command=self.volver)
+        btn_volver = tk.Button(self.menu, text='Volver', bg="#99A8EF", command=self.volver)
         btn_volver.place(x=50, y=1.5)
         btn_guardar_perfil = tk.Button(self.menu, text="Guardar Perfil", command=self.guardar_perfil)
         btn_guardar_perfil.place(x=35, y=375)
@@ -57,7 +57,7 @@ class Ventana2:
         btn_cargar_perfil.place(x=135, y=375)
         btn_iniciar = tk.Button(self.menu, text="Iniciar", command=self.graficar)
         btn_iniciar.place(x=100, y=420)
-        btn_guardar_prueba = tk.Button(self.menu, text="Guardar Prueba", command=self.guardar_prueba)
+        btn_guardar_prueba = tk.Button(self.menu, text="Guardar Prueba")#, command=self.guardar_prueba)
         btn_guardar_prueba.place(x=75, y=465)
         self.btn_clear_plot = tk.Button(self.menu, text="Borrar Gráfico", command=self.borrar_grafico)
         self.btn_clear_plot.place(x=80, y=510)
@@ -116,9 +116,9 @@ class Ventana2:
         #Validar que los valores sean correctos
         corriente_fija = self._corriente_fija.get().strip()
         saturacion_campo = self._saturacion_campo.get().strip()
-        tiempo_entre_mediciones = self._tiempo_entre_mediciones.get().strip()
+        tiempo_entre_mediciones_v2 = self._tiempo_entre_mediciones_v2.get().strip()
 
-        if not corriente_fija or not saturacion_campo or not tiempo_entre_mediciones:
+        if not corriente_fija or not saturacion_campo or not tiempo_entre_mediciones_v2:
             messagebox.showerror("Error", "Todos los campos deben ser completados.")
             return
         
@@ -126,23 +126,24 @@ class Ventana2:
         self.perfiles_ventana2[nombre] = {
             "Corriente_fija": corriente_fija,
             "Saturacion_de_campo": saturacion_campo,
-            "Tiempo_entre_mediciones": tiempo_entre_mediciones
+            "tiempo_entre_mediciones_v2": tiempo_entre_mediciones_v2
         }
-        self.guardar_perfiles_a_archivo()
+        guardar = validar_perfil_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2)
+        if guardar == True:
+            self.guardar_perfiles_a_archivo()
+            self.actualizar_combo_perfiles()
+            messagebox.showinfo("Información", f"Perfil '{nombre}' guardado exitosamente.")
 
-        #Actualizar el ComboBox con los perfiles guardados
-        self.actualizar_combo_perfiles()
-        messagebox.showinfo("Información", f"Perfil '{nombre}' guardado exitosamente.")
         
     #Cargar perfil de parámetros
     def cargar_perfil(self):
         nombre = self.combo_perfiles.get()
         if nombre in self.perfiles_ventana2:
-            perfil = self.perfiles_parametros_v2[nombre]
+            perfil = self.perfiles_ventana2[nombre]
             self._nombre.set(nombre)
             self._corriente_fija.set(perfil["corriente_fija"])
             self._saturacion_campo.set(perfil["saturación_campo"])
-            self._tiempo_entre_mediciones.set(perfil["tiempo_entre_mediciones"])
+            self._tiempo_entre_mediciones_v2.set(perfil["tiempo_entre_mediciones_v2_v2"])
             messagebox.showinfo("Información", f"Perfil '{nombre}' cargado correctamente.")
         else:
             messagebox.showwarning("Advertencia", "Seleccione un perfil válido para cargar.")
@@ -182,9 +183,8 @@ class Ventana2:
         return self._saturacion_campo.get()
 
     @property
-    def tiempo_entre_mediciones(self):
-        return self._tiempo_entre_mediciones.get()
-
+    def tiempo_entre_mediciones_v2(self):
+        return self._tiempo_entre_mediciones_v2.get()
 
     def iniciar(self):
         print("Iniciado")
@@ -193,32 +193,37 @@ class Ventana2:
         self.menu.withdraw()
         self.ventana_principal.deiconify()
 
-    def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
-        if self.resistencia is not None and self.resultados is not None:
-            # Obtener el título actual de la ventana como sugerencia de nombre
-            proyecto_titulo = "test_"
-            file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")],initialfile=proyecto_titulo)
-            if file_path:  # Si el usuario no cancela la selección del archivo
-                with open(file_path, 'w') as file:
-                    file.write("Resistencia (R)\t(H)\n\n")
-                    #
-                    for resistencia, voltaje in self.resultados:
-                        file.write(f"{resistencia:.3f}\t\t{voltaje}\n")
-                messagebox.showinfo("Información", f"Datos guardados en: {file_path}")
-            else:
-                print("Guardado cancelado.")
-        else:
-            messagebox.showwarning("Advertencia", "No hay datos para guardar. Realiza la medición primero.")
+    #def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
+    #    if self.resistencia is not None and self.resultados is not None:
+    #        # Obtener el título actual de la ventana como sugerencia de nombre
+    #        proyecto_titulo = "test_"
+    #        file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")],initialfile=proyecto_titulo)
+    #        if file_path:  # Si el usuario no cancela la selección del archivo
+    #            with open(file_path, 'w') as file:
+    #                file.write("Resistencia (R)\t(H)\n\n")
+    #                #
+    #                for resistencia, voltaje in self.resultados:
+    #                    file.write(f"{resistencia:.3f}\t\t{voltaje}\n")
+    #            messagebox.showinfo("Información", f"Datos guardados en: {file_path}")
+    #        else:
+    #            print("Guardado cancelado.")
+    #    else:
+    #        messagebox.showwarning("Advertencia", "No hay datos para guardar. Realiza la medición primero.")
 
     def graficar_histeresis(self):
         try:
             corrientes_fija, saturacion = zip(*self.resultados)
+            x = np.array([-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10])
+            y_up = np.array([0, 0.2, 0.4, 0.6, 0.8, 1, 0.8, 0.6, 0.4, 0.2, 0])
+            y_down = np.array([0, -0.2, -0.4, -0.6, -0.8, -1, -0.8, -0.6, -0.4, -0.2, 0])
         except ValueError:
             print("Error: self.resultados no tiene el formato esperado.")
             return
 
         # Graficar los datos experimentales con una etiqueta
         self.ax.plot(corrientes_fija, saturacion, marker='o', linestyle='-', label='Curva de Histéresis')
+        plt.plot(x, y_up, 'b-',  label='Curva de Histéresis teórica')
+        plt.plot(x, y_down, 'r-',  label='Curva de Histéres')
 
         # Mostrar la leyenda solo si hay etiquetas definidas
         handles = self.ax.get_legend_handles_labels()
@@ -234,7 +239,7 @@ class Ventana2:
         def ejecutar():
             corriente = self._corriente_fija.get()
             saturacion =self._saturacion_campo.get()
-            tiempo = self._tiempo_entre_mediciones.get()
+            tiempo = self._tiempo_entre_mediciones_v2.get()
             #Validar que los datos sean correctos
             if verificar_inputs(corriente, saturacion, tiempo):
                 corriente=float(corriente)
@@ -290,6 +295,15 @@ class Ventana2:
         self.hilo_medicion = threading.Thread(target=ejecutar)
         self.hilo_medicion.start()
 
+    def actualizar_interfaz_despues_de_medir(self):
+        self.menu.after(0, self.mostrar_grafico(), "Información", "Medición completada")
+    
+    def mostrar_mensaje(self, titulo, mensaje):
+        # Muestra un mensaje en el hilo principal
+        messagebox.showinfo(titulo, mensaje)
+        # Muestra el gráfico en el hilo principal
+        self.mostrar_grafico()
+
     def mostrar_grafico(self):
         try:
             corrientes_fija, saturacion = zip(*self.resultados)
@@ -319,3 +333,4 @@ class Ventana2:
         self.ax.grid(True)
         self.canvas.draw()
 
+    

@@ -3,13 +3,13 @@ from tkinter import messagebox
 import pyvisa
 import json
 import os
+
 def validar_float(valor):
     try:
         # Intentar convertir el valor a float
         return float(valor)
     except ValueError:
         return None
-
 
 def validar_int(valor):
     try:
@@ -18,7 +18,6 @@ def validar_int(valor):
     except ValueError:
         return None
     
-
 def listar_recursos():
     rm = pyvisa.ResourceManager()
     recursos = rm.list_resources()
@@ -28,9 +27,6 @@ def listar_recursos():
             print(recurso)
     else:
         print("No se encontraron recursos.")
-
-
-
 
 def verificar_dispositivo(resource_address, parent_window):
     rm = pyvisa.ResourceManager()
@@ -57,8 +53,6 @@ def verificar_dispositivo(resource_address, parent_window):
         if 'instrumento' in locals():
             instrumento.close()
 
-
-
 def verificar_inputs(start_current_str, step_size_str, delay_str, parent_window):
     errores = []
 
@@ -71,7 +65,7 @@ def verificar_inputs(start_current_str, step_size_str, delay_str, parent_window)
     step_size = validar_int(step_size_str)
     if step_size is None or step_size <= 0:
 
-        errores.append("El valor de 'Intervalos de Corriente' debe ser un número entero mayor a cero.")
+        errores.append("El valor de 'Intervalos de corriente_fija' debe ser un número entero mayor a cero.")
 
     delay = validar_float(delay_str)
     if delay is None or delay <= 0:
@@ -86,7 +80,6 @@ def verificar_inputs(start_current_str, step_size_str, delay_str, parent_window)
         return False
     else:
         return True
-    
     
 def validar_intervalo_simetrico(start_current):
     min_current = 1e-12
@@ -105,14 +98,14 @@ def validar_delay(delay):
         return True
     
 def comparar_perfiles(perfil1, perfil2):
-    #compara dos perfiles
+    #compara dos perfiles ingresados en la ventana 1
     return (
         perfil1['intervalo_simetrico'] == perfil2['intervalo_simetrico'] and
         perfil1['intervalos_corriente'] ==perfil2['intervalos_corriente'] and
         perfil1['tiempo_entre_mediciones'] == perfil2['tiempo_entre_mediciones']
     )
 
-def validar_perfil(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones):
+def validar_perfil_v1(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones):
     json_path = os.path.join('APP_ESCRITORIO\perfiles_parametros.json')
     try:
         with open(json_path, 'r') as file:
@@ -120,7 +113,7 @@ def validar_perfil(nombre, intervalo_simetrico, intervalos_corriente, tiempo_ent
 
         perfil_nuevo = {
             'intervalo_simetrico': str(intervalo_simetrico),
-            'intervalos_corriente': str(intervalos_corriente),
+            'intervalos_corrient)': str(intervalos_corriente),
             'tiempo_entre_mediciones': str(tiempo_entre_mediciones)
         }
 
@@ -145,8 +138,99 @@ def validar_perfil(nombre, intervalo_simetrico, intervalos_corriente, tiempo_ent
         return False
     
 def guardar_txt(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones):
-    f = open("APP_ESCRITORIO\perfiles_parametros.txt", "a")
+    f = open("APP_ESCRITORIO\v1_perfiles_parametros.txt", "a")
     f.write(f"{nombre} | {intervalo_simetrico} | {intervalos_corriente} | {tiempo_entre_mediciones} | \n")
     f.close()
 
-validar_perfil('Prueba 3', 20, 20, 20)
+
+def comparar_perfiles_v2(perfil1, perfil2):
+    #compara dos perfiles ingresados en la ventana 2
+    return (
+        perfil1['corriente_fija'] == perfil2['corriente_fija'] and
+        perfil1['saturacion_campo'] ==perfil2['saturacion_campo'] and
+        perfil1['tiempo_entre_mediciones_v2'] == perfil2['tiempo_entre_mediciones_v2']
+    )
+
+def validar_perfil_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2):
+    json_path = os.path.join('APP_ESCRITORIO\perfiles_ventana2.json')
+    try:
+        with open(json_path, 'r') as file:
+            datos_perfiles = json.load(file)
+
+        perfil_nuevo = {
+            'corriente_fija_fija': str(corriente_fija),
+            'saturacion_campo_campo': str(saturacion_campo),
+            'tiempo_entre_mediciones_v2': str(tiempo_entre_mediciones_v2)
+        }
+
+        for nombres in datos_perfiles:
+            #compara los nombres existentes con el ingresado
+            if nombres != nombre:
+                for perfil in datos_perfiles.values():
+                    #compara el perfil ingresado don el que esta iterando
+                    if (comparar_perfiles_v2(perfil, perfil_nuevo)):
+                        print(comparar_perfiles_v2(perfil, perfil_nuevo))
+                        messagebox.showwarning('Advertencia','Ya existe un perfil con esos datos')
+                        return False
+                    return False
+            else:
+                messagebox.showwarning('Advertencia', 'Ya existe un perfil con ese nombre')
+                return False
+        guardar_txt(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2)
+        return True
+    
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        messagebox.showerror('Error', f'Error al cargar los perfiles: {str(e)}')
+        return False
+    
+def guardar_txt(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2):
+    f = open("APP_ESCRITORIO\v2_perfiles_parametros.txt", "a")
+    f.write(f"{nombre} | {corriente_fija} | {saturacion_campo} | {tiempo_entre_mediciones_v2} | \n")
+    f.close()
+
+
+def comparar_perfiles_v3(perfil1, perfil2):
+    #compara dos perfiles ingresados en la ventana 3
+    return (
+        perfil1['corriente_fija_v3'] == perfil2['corriente_fija_v3'] and
+        perfil1['saturacion_campo_v3'] ==perfil2['saturacion_campo_v3'] and
+        perfil1['tiempo_entre_mediciones_v3'] == perfil2['tiempo_entre_mediciones_v3']
+    )
+
+def validar_perfil_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3):
+    json_path = os.path.join('APP_ESCRITORIO\perfiles_ventana3.json')
+    try:
+        with open(json_path, 'r') as file:
+            datos_perfiles = json.load(file)
+
+        perfil_nuevo = {
+            'corriente_fija_fija_v3': str(corriente_fija_v3),
+            'saturacion_campo_campo_v3': str(saturacion_campo_v3),
+            'tiempo_entre_mediciones_v3': str(tiempo_entre_mediciones_v3)
+        }
+
+        for nombres in datos_perfiles:
+            #compara los nombres existentes con el ingresado
+            if nombres != nombre:
+                for perfil in datos_perfiles.values():
+                    #compara el perfil ingresado don el que esta iterando
+                    if (comparar_perfiles_v3(perfil, perfil_nuevo)):
+                        print(comparar_perfiles_v3(perfil, perfil_nuevo))
+                        messagebox.showwarning('Advertencia','Ya existe un perfil con esos datos')
+                        return False
+                    return False
+            else:
+                messagebox.showwarning('Advertencia', 'Ya existe un perfil con ese nombre')
+                return False
+        guardar_txt(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3)
+        return True
+    
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        messagebox.showerror('Error', f'Error al cargar los perfiles: {str(e)}')
+        return False
+    
+def guardar_txt(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3):
+    f = open("APP_ESCRITORIO\v3_perfiles_parametros.txt", "a")
+    f.write(f"{nombre} | {corriente_fija_v3} | {saturacion_campo_v3} | {tiempo_entre_mediciones_v3} | \n")
+    f.close()
+

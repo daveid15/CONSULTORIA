@@ -19,9 +19,9 @@ class Ventana3:
 
         #Variables
         self._nombre = tk.StringVar()
-        self._corriente_fija = tk.StringVar()
-        self._saturacion_campo = tk.StringVar()
-        self._tiempo_entre_mediciones = tk.StringVar()
+        self._corriente_fija_v3 = tk.StringVar()
+        self._saturacion_campo_v3 = tk.StringVar()
+        self._tiempo_entre_mediciones_v3 = tk.StringVar()
 
          # Lista para perfiles de parámetros
         self.perfiles_ventana3 = self.cargar_perfiles_desde_archivo()
@@ -31,9 +31,9 @@ class Ventana3:
 
         #Variables
         self._nombre = tk.StringVar()
-        self._corriente_fija = tk.StringVar()
-        self._saturacion_campo = tk.StringVar()
-        self._tiempo_entre_mediciones = tk.StringVar()
+        self._corriente_fija_v3 = tk.StringVar()
+        self._saturacion_campo_v3 = tk.StringVar()
+        self._tiempo_entre_mediciones_v3 = tk.StringVar()
 
          # Lista para perfiles de parámetros
         self.perfiles_ventana3 = self.cargar_perfiles_desde_archivo()
@@ -64,21 +64,21 @@ class Ventana3:
         tk.Label(self.menu, text="Nombre", bg="#A6C3FF").place(x=25, y=60)
         tk.Entry(self.menu, textvariable=self._nombre).place(x=25, y=80, width=210)
         tk.Label(self.menu, text="Corriente Fija", bg="#A6C3FF").place(x=25, y=110)
-        tk.Entry(self.menu, textvariable=self._corriente_fija).place(x=25, y=130, width=210)
+        tk.Entry(self.menu, textvariable=self._corriente_fija_v3).place(x=25, y=130, width=210)
         tk.Label(self.menu, text="Saturacion de Campo", bg="#A6C3FF").place(x=25, y=160)
-        tk.Entry(self.menu, textvariable=self._saturacion_campo).place(x=25, y=180, width=210)
+        tk.Entry(self.menu, textvariable=self._saturacion_campo_v3).place(x=25, y=180, width=210)
         tk.Label(self.menu, text="Tiempo entre Mediciones", bg="#A6C3FF").place(x=25, y=210)
-        tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones).place(x=25, y=230, width=210)
+        tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones_v3).place(x=25, y=230, width=210)
 
         #Entradas
         tk.Label(self.menu, text="Nombre", bg="#A6C3FF").place(x=25, y=60)
         tk.Entry(self.menu, textvariable=self._nombre).place(x=25, y=80, width=210)
         tk.Label(self.menu, text="Corriente Fija", bg="#A6C3FF").place(x=25, y=110)
-        tk.Entry(self.menu, textvariable=self._corriente_fija).place(x=25, y=130, width=210)
+        tk.Entry(self.menu, textvariable=self._corriente_fija_v3).place(x=25, y=130, width=210)
         tk.Label(self.menu, text="Saturacion de Campo", bg="#A6C3FF").place(x=25, y=160)
-        tk.Entry(self.menu, textvariable=self._saturacion_campo).place(x=25, y=180, width=210)
+        tk.Entry(self.menu, textvariable=self._saturacion_campo_v3).place(x=25, y=180, width=210)
         tk.Label(self.menu, text="Tiempo entre Mediciones", bg="#A6C3FF").place(x=25, y=210)
-        tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones).place(x=25, y=230, width=210)
+        tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones_v3).place(x=25, y=230, width=210)
 
         #Botones
         btn_volver = tk.Button(self.menu, text="volver", bg="#99A8EF", command=self.volver)
@@ -146,35 +146,36 @@ class Ventana3:
             return
 
         #Validar que los valores sean correctos
-        corriente_fija = self._corriente_fija.get().strip()
-        saturacion_campo = self._saturacion_campo.get().strip()
-        tiempo_entre_mediciones = self._tiempo_entre_mediciones.get().strip()
+        corriente_fija_v3 = self._corriente_fija_v3.get().strip()
+        saturacion_campo_v3 = self._saturacion_campo_v3.get().strip()
+        tiempo_entre_mediciones_v3 = self._tiempo_entre_mediciones_v3.get().strip()
 
-        if not corriente_fija or not saturacion_campo or not tiempo_entre_mediciones:
+        if not corriente_fija_v3 or not saturacion_campo_v3 or not tiempo_entre_mediciones_v3:
             messagebox.showerror("Error", "Todos los campos deben ser completados.")
             return
         
         #Guardar parámetros en el diccionario
         self.perfiles_ventana3[nombre] = {
-            "Corriente_fija": corriente_fija,
-            "Saturacion_de_campo": saturacion_campo,
-            "Tiempo_entre_mediciones": tiempo_entre_mediciones
+            "corriente_fija_v3": corriente_fija_v3,
+            "Saturacion_de_campo": saturacion_campo_v3,
+            "tiempo_entre_mediciones_v3": tiempo_entre_mediciones_v3
         }
-        self.guardar_perfiles_a_archivo()
+        guardar = validar_perfil_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3)
+        if guardar == True:
+            self.guardar_perfiles_a_archivo()
+            self.actualizar_combo_perfiles()
+            messagebox.showinfo("Información", f"Perfil '{nombre}' guardado exitosamente.")
 
-        #Actualizar el ComboBox con los perfiles guardados
-        self.actualizar_combo_perfiles()
-        messagebox.showinfo("Información", f"Perfil '{nombre}' guardado exitosamente.")
-        
+
     #Cargar perfil de parámetros
     def cargar_perfil(self):
         nombre = self.combo_perfiles.get()
         if nombre in self.perfiles_ventana3:
-            perfil = self.perfiles_parametros_v3[nombre]
+            perfil = self.perfiles_ventana3[nombre]
             self._nombre.set(nombre)
-            self._corriente_fija.set(perfil["corriente_fija"])
-            self._saturacion_campo.set(perfil["saturación_campo"])
-            self._tiempo_entre_mediciones.set(perfil["tiempo_entre_mediciones"])
+            self._corriente_fija_v3.set(perfil["corriente_fija_v3"])
+            self._saturacion_campo_v3.set(perfil["saturación_campo"])
+            self._tiempo_entre_mediciones_v3.set(perfil["tiempo_entre_mediciones_v3"])
             messagebox.showinfo("Información", f"Perfil '{nombre}' cargado correctamente.")
         else:
             messagebox.showwarning("Advertencia", "Seleccione un perfil válido para cargar.")
@@ -206,16 +207,16 @@ class Ventana3:
         return self._nombre.get()
 
     @property
-    def corriente_fija(self):
-        return self._corriente_fija.get()
+    def corriente_fija_v3(self):
+        return self._corriente_fija_v3.get()
 
     @property
-    def saturacion_campo(self):
-        return self._saturacion_campo.get()
+    def saturacion_campo_v3(self):
+        return self._saturacion_campo_v3.get()
 
     @property
-    def tiempo_entre_mediciones(self):
-        return self._tiempo_entre_mediciones.get()
+    def tiempo_entre_mediciones_v3(self):
+        return self._tiempo_entre_mediciones_v3.get()
 
 
     def iniciar(self):
@@ -286,19 +287,19 @@ class Ventana3:
             return
 
         #Validar que los valores sean correctos
-        corriente_fija = self._corriente_fija.get().strip()
-        saturacion_campo = self._saturacion_campo.get().strip()
-        tiempo_entre_mediciones = self._tiempo_entre_mediciones.get().strip()
+        corriente_fija_v3 = self._corriente_fija_v3.get().strip()
+        saturacion_campo_v3 = self._saturacion_campo_v3.get().strip()
+        tiempo_entre_mediciones_v3 = self._tiempo_entre_mediciones_v3.get().strip()
 
-        if not corriente_fija or not saturacion_campo or not tiempo_entre_mediciones:
+        if not corriente_fija_v3 or not saturacion_campo_v3 or not tiempo_entre_mediciones_v3:
             messagebox.showerror("Error", "Todos los campos deben ser completados.")
             return
         
         #Guardar parámetros en el diccionario
         self.perfiles_ventana3[nombre] = {
-            "Corriente_fija": corriente_fija,
-            "Saturacion_de_campo": saturacion_campo,
-            "Tiempo_entre_mediciones": tiempo_entre_mediciones
+            "corriente_fija_v3": corriente_fija_v3,
+            "Saturacion_de_campo": saturacion_campo_v3,
+            "tiempo_entre_mediciones_v3": tiempo_entre_mediciones_v3
         }
         self.guardar_perfiles_a_archivo()
 
@@ -312,9 +313,9 @@ class Ventana3:
         if nombre in self.perfiles_ventana3:
             perfil = self.perfiles_parametros_v3[nombre]
             self._nombre.set(nombre)
-            self._corriente_fija.set(perfil["corriente_fija"])
-            self._saturacion_campo.set(perfil["saturación_campo"])
-            self._tiempo_entre_mediciones.set(perfil["tiempo_entre_mediciones"])
+            self._corriente_fija_v3.set(perfil["corriente_fija_v3"])
+            self._saturacion_campo_v3.set(perfil["saturación_campo"])
+            self._tiempo_entre_mediciones_v3.set(perfil["tiempo_entre_mediciones_v3"])
             messagebox.showinfo("Información", f"Perfil '{nombre}' cargado correctamente.")
         else:
             messagebox.showwarning("Advertencia", "Seleccione un perfil válido para cargar.")
@@ -346,16 +347,16 @@ class Ventana3:
         return self._nombre.get()
 
     @property
-    def corriente_fija(self):
-        return self._corriente_fija.get()
+    def corriente_fija_v3(self):
+        return self._corriente_fija_v3.get()
 
     @property
-    def saturacion_campo(self):
-        return self._saturacion_campo.get()
+    def saturacion_campo_v3(self):
+        return self._saturacion_campo_v3.get()
 
     @property
-    def tiempo_entre_mediciones(self):
-        return self._tiempo_entre_mediciones.get()
+    def tiempo_entre_mediciones_v3(self):
+        return self._tiempo_entre_mediciones_v3.get()
 
 
     def iniciar(self):
@@ -404,9 +405,9 @@ class Ventana3:
 
     def graficar(self):
         def ejecutar():
-            corriente = self._corriente_fija.get()
-            saturacion =self._saturacion_campo.get()
-            tiempo = self._tiempo_entre_mediciones.get()
+            corriente = self._corriente_fija_v3.get()
+            saturacion =self._saturacion_campo_v3.get()
+            tiempo = self._tiempo_entre_mediciones_v3.get()
             #Validar que los datos sean correctos
             if verificar_inputs(corriente, saturacion, tiempo):
                 corriente=float(corriente)
@@ -530,9 +531,9 @@ class Ventana3:
 
     def graficar(self):
         def ejecutar():
-            corriente = self._corriente_fija.get()
-            saturacion =self._saturacion_campo.get()
-            tiempo = self._tiempo_entre_mediciones.get()
+            corriente = self._corriente_fija_v3.get()
+            saturacion =self._saturacion_campo_v3.get()
+            tiempo = self._tiempo_entre_mediciones_v3.get()
             #Validar que los datos sean correctos
             if verificar_inputs(corriente, saturacion, tiempo):
                 corriente=float(corriente)

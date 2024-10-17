@@ -144,7 +144,7 @@ class Ventana1:
             "intervalos_corriente": intervalos_corriente,
             "tiempo_entre_mediciones": tiempo_entre_mediciones
         }
-        guardar = validar_perfil(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones)
+        guardar = validar_perfil_v1(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones)
         if guardar == True:
             self.guardar_perfiles_a_archivo()
             self.actualizar_combo_perfiles()

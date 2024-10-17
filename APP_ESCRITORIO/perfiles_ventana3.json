@@ -1,7 +1,7 @@
 {
     "Prueba 4": {
-        "Corriente_fija": "12",
-        "Saturacion_de_campo": "2",
-        "Tiempo_entre_mediciones": "1"
+        "Corriente_fija": "1",
+        "Saturacion_de_campo": "3",
+        "Tiempo_entre_mediciones": "2"
     }
 }
