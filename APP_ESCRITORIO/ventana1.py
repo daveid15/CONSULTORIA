@@ -192,7 +192,7 @@ class Ventana1:
     def guardar_perfiles_a_archivo(self):
         with open("perfiles_parametros.json", "w") as archivo:
             json.dump(self.perfiles_parametros, archivo, indent=4)
-
+    #s
     # Obtención de entradas
     @property
     def nombre(self):
