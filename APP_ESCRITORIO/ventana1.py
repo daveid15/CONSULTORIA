@@ -207,6 +207,9 @@ class Ventana1:
     def tiempo_entre_mediciones(self):
         return self._tiempo_entre_mediciones.get()
     
+    def R(self):
+        return self._R.get()
+    
     #Funciones Botones
 
     def iniciar(self):
@@ -388,10 +391,10 @@ class Ventana1:
                 with open(file_path, 'w') as file: 
                     file.write(f"fecha: {datetime.now().strftime("%d-%m-%Y")}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
                     
-                    file.write("Corriente (A),\tVoltaje (V)\n\n")
+                    file.write(f"Corriente (A),\tVoltaje (V), Resistencia (R)\t\n\n")
                     #
                     for corriente, voltaje in self.resultados:
-                        file.write(f"{corriente:.3f}\t\t{voltaje}\n")
+                        file.write(f"{corriente:.3f}\t\t{voltaje}\t\t{(voltaje/corriente):.6f}\n")
                 messagebox.showinfo("Información", f"Datos guardados en: {file_path}")
             else:
                 print("Guardado cancelado.")

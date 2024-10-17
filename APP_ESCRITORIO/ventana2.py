@@ -61,7 +61,7 @@ class Ventana2:
         btn_guardar_perfil.place(x=35, y=375)
         btn_cargar_perfil = tk.Button(self.menu, text="Cargar Perfil", command=self.cargar_perfil)
         btn_cargar_perfil.place(x=135, y=375)
-        btn_iniciar = tk.Button(self.menu, text="Iniciar", command=self.graficar)
+        btn_iniciar = tk.Button(self.menu, text="Iniciar", command=self.medir_GV_curve)
         btn_iniciar.place(x=100, y=420)
         btn_obtener_ecuacion = tk.Button(self.menu, text="obtener_ecuacion", command=self.obtener_ecuacion)
         btn_obtener_ecuacion.place(x=150, y=420)
@@ -89,10 +89,10 @@ class Ventana2:
         # Configurar la figura de Matplotlib y el eje
         self.fig, self.ax = plt.subplots(figsize=(10, 6))
         self.ax.set_title('Gráfico')
-        self.ax.set_xlabel('(H)')
-        plt.xlim(-5,5)
-        self.ax.set_ylabel('Resistencia (R)')
-        plt.ylim(-8,8)
+        self.ax.set_xlabel('Delta V')
+        plt.xlim(-20,20)
+        self.ax.set_ylabel('(G)')
+        plt.ylim(-6000,6000)
         self.ax.legend()
         self.ax.grid(True)
 
@@ -166,14 +166,14 @@ class Ventana2:
     #Cargar Perfil en archivo
     def cargar_perfiles_desde_archivo(self):
         try:
-            with open("APP_ESCRITORIO\perfiles_ventana2.json", "r") as archivo:
+            with open("perfiles_ventana2.json", "r") as archivo:
                 return json.load(archivo)
         except (FileNotFoundError, json.JSONDecodeError):
             return {}
 
     #Guardar Perfil en archivo    
     def guardar_perfiles_a_archivo(self):
-        with open("APP_ESCRITORIO\perfiles_ventana2.json", "w") as archivo:
+        with open("perfiles_ventana2.json", "w") as archivo:
             json.dump(self.perfiles_ventana2, archivo, indent=4)
 
     # Obtención de entradas
@@ -196,7 +196,39 @@ class Ventana2:
 
     def iniciar(self):
         print("Iniciado")
-        
+    def mostrar_mensaje_inicio(self, titulo, mensaje):
+        # Crear una nueva ventana de diálogo personalizada
+        self.popup = tk.Toplevel(self.menu)
+        self.popup.title(titulo)
+
+        # Calcular las dimensiones de la ventana principal
+        ventana_principal_width = self.menu.winfo_width()
+        ventana_principal_height = self.menu.winfo_height()
+        ventana_principal_x = self.menu.winfo_rootx()
+        ventana_principal_y = self.menu.winfo_rooty()
+
+        # Definir el tamaño de la ventana emergente
+        popup_width = 300
+        popup_height = 100
+
+        # Calcular la posición centrada
+        x = ventana_principal_x + (ventana_principal_width - popup_width) // 2
+        y = ventana_principal_y + (ventana_principal_height - popup_height) // 2
+
+        # Establecer la geometría de la ventana emergente
+        self.popup.geometry(f"{popup_width}x{popup_height}+{x}+{y}")
+
+        # Etiqueta con el mensaje
+        mensaje_label = tk.Label(self.popup, text=mensaje, padx=10, pady=10)
+        mensaje_label.pack()
+
+        # Botón para cerrar la ventana, deshabilitado inicialmente
+        self.boton_cerrar = tk.Button(self.popup, text="Cerrar", command=self.cerrar_popup, state=tk.DISABLED)
+        self.boton_cerrar.pack(pady=10)
+
+        # Ejecutar la medición en un hilo separado     
+    def cerrar_popup(self):
+        self.popup.destroy()
         
     def configurar_fuente(self, fuente):
         fuente.timeout = 1000
@@ -225,8 +257,7 @@ class Ventana2:
         self.menu.withdraw()
         self.ventana_principal.deiconify()
 
-    def volts_a_gauss(volts, probe_type):
-    
+    def volts_a_gauss(self, volts, probe_type):
         voltajes_mV = volts * 1000  # Convertir a milivoltios
 
         if probe_type == 'ST':
@@ -253,11 +284,11 @@ class Ventana2:
                 # Usar la sonda ST
                 probe_type = 'ST'  
                 # Convertir a Gauss
-                promedio_data_0 = self.volts_a_gauss(promedio_data_0,probe_type)
+                promedio_data_0 = self.volts_a_gauss(promedio_data_0, probe_type)
                 # Mostrar los resultados
                 return promedio_data_0
         except nidaqmx.DaqError as e:
-            print("Ocurrió un error durante la adquisición de datos:", e)
+            messagebox.showwarning("Advertencia",f"Ha ocurrido un error con el GaussMeter,{e}")
 
     def obtener_ecuacion(self):
         array_prom_gauss_volts = []
@@ -269,7 +300,7 @@ class Ventana2:
                 self.configurar_fuente(fuente)      
                 start_voltaje = 20
                 step_size = 40  # Número de pasos
-                delay = 5
+                delay = 1
                 voltajes = np.linspace(start_voltaje, -start_voltaje, num=step_size)  # Genera voltajes 
     # Bucle para establecer voltajes
                 for voltaje in voltajes:
@@ -331,7 +362,8 @@ class Ventana2:
             return "El archivo de la ecuación no se encontró. Asegúrate de haberlo generado previamente."
 
 
-
+    def actualizar_interfaz_despues_de_medir(self):
+        self.menu.after(0, self.mostrar_grafico(), "Información", "Medición completada")
 
 
     def medir_GV_curve(self):
@@ -369,7 +401,7 @@ class Ventana2:
                             time.sleep(delay)
                             # Medir el voltaje mientras se aplica la corriente
                             V = self.medir_voltaje(multimetro)
-                            self.array_prom_gauss_volts.append((start_current, V, deltaV, self.obtener_gauss()))#se agrega  promedio de gauss y voltaje a array                            
+                            self.array_prom_gauss_volts.append((start_current, V, deltaV, self.obtener_gauss(),field))#se agrega  promedio de gauss y voltaje a array                            
                         self.menu.after(0, self.boton_cerrar.config, {'state': tk.NORMAL})
                         self.actualizar_interfaz_despues_de_medir()
                         # Apagar la salida después de las mediciones
@@ -397,17 +429,19 @@ class Ventana2:
 
 
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
-        if self.resistencia is not None and self.resultados is not None:
+        if self.array_prom_gauss_volts is not None and self.array_prom_gauss_volts is not None:
             # Obtener el título actual de la ventana como sugerencia de nombre
-            proyecto_titulo = "test_"
+            proyecto_titulo = "test_gauss_"
             file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")],initialfile=proyecto_titulo)
+            m, b = self.cargar_ecuacion_del_dia()
             if file_path:  # Si el usuario no cancela la selección del archivo
                 with open(file_path, 'w') as file:
-                    file.write("Resistencia (R)\t(H)\n\n")
-                    #
-                    for resistencia, voltaje in self.resultados:
-                        file.write(f"{resistencia:.3f}\t\t{voltaje}\n")
-                messagebox.showinfo("Información", f"Datos guardados en: {file_path}")
+                    file.write(f"Ecuación:{m:.6f}x {b:.6f}, Saturación de campo:{self._saturacion_campo.get()}, tiempo entre mediciones:{self._tiempo_entre_mediciones.get()}, Pasos:{self._pasos.get()}\n\n")
+                    file.write("\tCorriente Fija\t\tMedida Voltaje\t\tR\t\tDelta V\t\tGauss Teórico\t\tGauss Real\n\n")
+                    
+                    for start_current,V,deltaV, saturacion, field in self.array_prom_gauss_volts:
+                        file.write(f"{start_current}\t\t{V:.6f}\t\t{(V/start_current):.6f}\t\t{deltaV:.6f}\t\t{saturacion:.6f}\t\t{field}\n")
+                messagebox.showinfo("\tInformación", f"Datos guardados en: {file_path}")
             else:
                 print("Guardado cancelado.")
         else:
@@ -495,13 +529,15 @@ class Ventana2:
 
     def mostrar_grafico(self):
         try:
-            corrientes_fija, saturacion = zip(*self.resultados)
+            start_current,V, deltaV, saturacion,field = zip(*self.array_prom_gauss_volts)
         except ValueError:
             print("Error: self.resultados no tiene el formato esperado.")
             return
+       
+                        #G vs V
 
         # Graficar los datos experimentales con una etiqueta
-        self.ax.plot(corrientes_fija, saturacion, marker='o', linestyle='-', label='Datos Experimentales')
+        self.ax.plot(deltaV, saturacion, marker='o', linestyle='-', label='Datos Experimentales')
 
         # Mostrar la leyenda solo si hay etiquetas definidas
         handles = self.ax.get_legend_handles_labels()
@@ -514,11 +550,18 @@ class Ventana2:
         self.canvas.draw()
 
     def borrar_grafico(self):
-        self.ax.set_title('Gráfico')
-        self.ax.clear()  # Limpiar el eje actual
-        self.ax.set_ylabel('Resistencia (R)')
-        self.ax.set_xlabel('(H)')
+                # Agregar un marco para contener el gráfico y la barra de herramientas
+
         self.ax.legend()
         self.ax.grid(True)
+        self.ax.set_title('Gráfico')
+        self.ax.clear()  # Limpiar el eje actual
+        self.ax.set_ylabel('G')
+        self.ax.set_xlabel('Delta V')
+        plt.xlim(-20,20)
+        plt.ylim(-6000,6000)
+        self.ax.legend()
+        self.ax.grid(True)
+        
         self.canvas.draw()
 

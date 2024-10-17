@@ -97,6 +97,7 @@ def verificar_inputs_gauss(start_saturation, constant_current_str, step_size_str
     elif validar_intervalo_simetrico(constant_current):
         errores.append("El valor de 'Corriente Fija' debe estar entre 1 pA y 1.05 A")
     step_size = validar_int(step_size_str)
+    start_saturation=validar_int(start_saturation)
     if start_saturation is None or start_saturation <= 0:
         errores.append("El valor de 'Saturación de Campo' debe ser un número entero mayor a cero.")
     elif validar_saturacion_campo(start_saturation):
