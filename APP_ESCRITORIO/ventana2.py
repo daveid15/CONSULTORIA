@@ -17,13 +17,13 @@ from nidaqmx.constants import LineGrouping
 
 
 
-relay_pins = ['Dev1/port0/line0', 'Dev1/port0/line1', 'Dev1/port0/line2', 'Dev1/port0/line3']
+relay_pins = ['Dev2/port0/line0', 'Dev2/port0/line1', 'Dev2/port0/line2', 'Dev2/port0/line3']
 
 configuraciones = [
-    ((True, False, False, True), "Aplicar Configuración 1", "Configuración 1: A -> D (corriente) y B -> C (medición)"),
-    ((True, False, True, False), "Aplicar Configuración 2","Configuración 2: A -> C (corriente) y B -> D (medición)"),
-    ((False, True, False, True), "Aplicar Configuración 3","Configuración 3: B -> D (corriente) y A -> C (medición)"),
-    ((False, True, True, False), "Aplicar Configuración 4","Configuración 4: B -> C (corriente) y A -> D (medición)")
+    ((True, False, False, True), "Configuración 1","A-D (corriente) B-C (medición)"),
+    ((True, False, True, False), "Configuración 2","A-C (corriente) B-D (medición)"),
+    ((False, True, False, True), "Configuración 3","B-D (corriente) A-C (medición)"),
+    ((False, True, True, False), "Configuración 4","B-C (corriente) A-D (medición)")
 ]
 
 class Ventana2:
@@ -39,8 +39,13 @@ class Ventana2:
         self._tiempo_entre_mediciones = tk.StringVar()
         self.LineaTendencia = tk.BooleanVar()
 
-         # Lista para perfiles de parámetros
+        #Lista para perfiles de parámetros
         self.perfiles_parametros = self.cargar_perfiles_desde_archivo()
+
+        #Estados Configuraciones relés
+        self.estados_reles = {}
+        self.ventana_config_reles = None
+        
 
         #Diseño ventana
         self.menu = menu
@@ -80,6 +85,9 @@ class Ventana2:
         self.btn_clear_plot = tk.Button(self.menu, text="Borrar Gráfico", command=self.borrar_grafico)
         self.btn_clear_plot.place(x=80, y=510)
         tk.Checkbutton(self.menu, text="Línea de Tendencia", variable=self.LineaTendencia).place(x=50, y=330)
+        btn_config_reles = tk.Button(self.menu, text="Configurar Relés", command=self.abrir_ventana_configuracion_reles)
+        btn_config_reles.place(x=80, y=555)
+
 
         # ComboBox para seleccionar perfiles de parámetros
         tk.Label(self.menu, text="Perfiles de Parámetros Guardados", bg="#A6C3FF").place(x=25, y=265)
@@ -123,10 +131,10 @@ class Ventana2:
         self.cargar_perfiles_desde_archivo()
         self.actualizar_combo_perfiles()
 
-        self.crear_interfaz_configuraciones()
 
         self.estados_reles = {pin: False for pin in relay_pins}  # False significa que el relé está apagado
 
+        self.apagar_todos_reles()
 
     #Guardar perfil de parámetros
     def guardar_perfil(self):
@@ -226,34 +234,11 @@ class Ventana2:
     def tiempo_entre_mediciones(self):
         return self._tiempo_entre_mediciones.get()
 
-    def crear_interfaz_configuraciones(self):
-        # Crear un marco para el canvas
-        canvas = tk.Canvas(self.menu)
-        scroll_y = tk.Scrollbar(self.menu, orient="vertical", command=canvas.yview)
-        config_frame = tk.LabelFrame(canvas, text="Configuraciones de Relés", padx=10, pady=10)
-
-        # Crear ventana en el canvas
-        canvas.create_window((0, 0), window=config_frame, anchor="nw")
-        
-        # Configurar el canvas
-        canvas.configure(yscrollcommand=scroll_y.set)
-
-        # Organizar el canvas y el scrollbar
-        canvas.place(x=300, y=560, width=500, height=125)
-        scroll_y.place(x=800, y=560, height=125)
-
-        # Configurar el marco para que ajuste su tamaño automáticamente
-        config_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-
-        for i, (config, label, description) in enumerate(configuraciones):
-            lbl = tk.Label(config_frame, text=description)
-            lbl.grid(row=i, column=0, sticky='w')
-            btn = tk.Button(config_frame, text=label, command=lambda config=config: self.aplicar_configuracion(config))
-            btn.grid(row=i, column=1, padx=5, pady=5)
+    
 
     def aplicar_configuracion(self, configuracion):
         self.cambiar_configuracion(configuracion)
-        messagebox.showinfo("Éxito", "Configuración de relé aplicada exitosamente.")
+        messagebox.showinfo("Éxito", "Configuración aplicada.")
         
 
     def cambiar_configuracion(self,configuracion):
@@ -272,6 +257,68 @@ class Ventana2:
                         
                 except nidaqmx.errors.DaqError as e:
                     messagebox.showerror("Error de DAQ", str(e))
+
+
+    def encender_todos_reles(self):
+        try:
+            for pin in relay_pins:
+                with nidaqmx.Task() as task:
+                    task.do_channels.add_do_chan(pin, line_grouping=LineGrouping.CHAN_PER_LINE)
+                    task.write(True)  # Encender (HIGH)
+                    self.estados_reles[pin] = True
+                    time.sleep(0.5)  # Retardo para asegurar que el cambio se aplique
+            messagebox.showinfo("Éxito", "Todos los relés encendidos.")
+        except nidaqmx.errors.DaqError as e:
+            messagebox.showerror("Error de DAQ", str(e))
+
+    def apagar_todos_reles(self):
+        try:
+            for pin in relay_pins:
+                with nidaqmx.Task() as task:
+                    task.do_channels.add_do_chan(pin, line_grouping=LineGrouping.CHAN_PER_LINE)
+                    task.write(False)  # Apagar (LOW)
+                    self.estados_reles[pin] = False
+                    time.sleep(0.5)  # Retardo para asegurar que el cambio se aplique
+            messagebox.showinfo("Éxito", "Todos los relés apagados.")
+        except nidaqmx.errors.DaqError as e:
+            messagebox.showerror("Error de DAQ", str(e))
+
+    #Ventana Configuraciones Reles
+    def abrir_ventana_configuracion_reles(self):
+        if self.ventana_config_reles is None or not self.ventana_config_reles.winfo_exists():
+            # Crear la ventana de configuraciones de relés
+            self.ventana_config_reles = tk.Toplevel(self.menu)
+            self.ventana_config_reles.title("Configuraciones de Relés")
+            self.ventana_config_reles.geometry("400x250+0+0")
+
+            config_frame = tk.LabelFrame(self.ventana_config_reles, text="Configuraciones de Relés", padx=10, pady=10)
+            config_frame.pack(fill="both", expand=True)
+
+            for i, (config, label, description) in enumerate(configuraciones):
+                lbl = tk.Label(config_frame, text=description)
+                lbl.grid(row=i, column=0, sticky='w')
+                btn = tk.Button(config_frame, text=label, command=lambda config=config: self.aplicar_configuracion(config))
+                btn.grid(row=i, column=1, padx=5, pady=5)
+
+            # Botón para encender todos los relés
+            btn_encender_todos = tk.Button(config_frame, text="Encender Todos los Relés", command=self.encender_todos_reles)
+            btn_encender_todos.grid(row=len(configuraciones), column=0, padx=5, pady=10, sticky='w')
+
+            # Botón para apagar todos los relés
+            btn_apagar_todos = tk.Button(config_frame, text="Apagar Todos los Relés", command=self.apagar_todos_reles)
+            btn_apagar_todos.grid(row=len(configuraciones), column=1, padx=5, pady=10, sticky='e')
+
+            # Asegurar que la referencia a la ventana se elimine cuando esta se cierre
+            self.ventana_config_reles.protocol("WM_DELETE_WINDOW", self.cerrar_ventana_configuracion_reles)
+
+    #Evitar ventana configuracion reles duplicada
+    def cerrar_ventana_configuracion_reles(self):
+        if self.ventana_config_reles is not None:
+            self.ventana_config_reles.destroy()
+        self.ventana_config_reles = None
+
+
+
 
 
     def iniciar(self):
