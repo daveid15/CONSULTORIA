@@ -1,0 +1,22 @@
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+{% block extrahead %}
+{% endblock %}
+<div class="titu-mein cont-form-carac-crear">
+    <body>
+        <h1>{% if perfil %}Editar{% else %}Crear{% endif %} Perfil</h1>
+        <div class="mover">
+                <div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button class="button button--gray form-control custom-button-crear"  type="submit">{% if perfil %}Actualizar{% else %}Crear{% endif %}</button>
+                        <a class="button button--gray_volver form-control custom-button-volver" href="{% url 'listar_perfiles' %} ">Volver</a>
+                    </form>
+                </div>
+        </div>
+    </body>
+</div>
+{% endblock %}
+

@@ -1,17 +1,9 @@
 from django import forms
-from .models import Perfil_Parametro, Prueba, Medicion
+from .models import Perfil_Parametro
 
 class PerfilParametroForm(forms.ModelForm):
     class Meta:
         model = Perfil_Parametro
-        fields = '__all__'  
+        fields = ['perfil_parametro_name', 'intervalo_simetrico', 'intervalo_corriente', 'delay']
 
-class PruebaForm(forms.ModelForm):
-    class Meta:
-        model = Prueba
-        fields = '__all__'
 
-class MedicionForm(forms.ModelForm):
-    class Meta:
-        model = Medicion
-        fields = '__all__'

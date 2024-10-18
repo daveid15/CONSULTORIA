@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
-__pycache__/
+APP_WEB/__pycache__/
+APP_ESCRITORIO/__pycache__/
 *.py[cod]
 *$py.class
 
@@ -107,12 +108,12 @@ venv.bak/
 *.log
 *.pot
 *.pyc
-__pycache__/
+APP_WEB/__pycache__/
 .vscode/
 media/
 core/static/core/*.xls
 
-electivo_2023/settings.py
-electivo_2023/urls.py
+APP_WEB/electivo_2023/settings.py
+APP_WEB/electivo_2023/urls.py
 
 

@@ -263,7 +263,7 @@ body {
     position: absolute; 
     top: 21%; 
     left: 71%; 
-    width: 13%; 
+    width: 23%; 
     height: 10%;
 }
 
@@ -579,19 +579,7 @@ border-radius: 90px
 }
 
 /* botones */
-.custom-button {
-    font-size: 20px; /* Tamaño de la fuente */
-    font-family: 'Nunito', sans-serif;/* Tipo de letra */
-    padding: 10px 30px; /* Espaciado interno */
-    background-color: #001F3F; /* Fondo del botón */
-    border: none; /* Sin borde */
-    color: #fff; /* Color del texto */
-    border-radius: 50px; /* Bordes redondeados */
-    display: inline-block; /* Mostrar como bloque en línea */
-    text-align: center; /* Alineación del texto */
-    text-decoration: none; /* Sin subrayado */
-    width: 100%; /* Ancho del botón */
-}
+
 
 .custom-button:hover {
     background-color: lightgray; /* Cambio de color al pasar el cursor */
