@@ -7,22 +7,83 @@
 
   }
 }
-/* Reset CSS */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Nunito', sans-serif;;
-}
+
 body {
-  background-color: #fff;
+  background-color: #fff !important;
 }
-.container {
+.flex__container {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
   min-height: 100vh;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  flex-direction: column;
 }
+
+.flex__action {
+  display: flex;
+  width: 100%;
+  max-height: 50vh;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: stretch;
+}
+
+.flex__action__title{
+  width: 100vh;
+
+}
+
+
+.flex__action__btn {
+  max-width: 20vw;
+}
+
+.flex--item{
+  padding: 20px;
+  margin-left: 280px;
+  flex: 2;
+  width: 80vw;
+  transition: margin-left 0.3s;
+}
+/* Ajuste del margen del contenido cuando el sidebar está cerrado */
+.sidebar.active + .flex--item{
+  margin-left: 116px; /* Reducir margen cuando el sidebar está cerrado */
+}
+
+.input-container-search {
+  display: flex;
+  height: 54px;
+  border-radius: 10px;
+  background-color: white;
+  border: 2px solid #606274;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.input-container-search input {
+  display: inline-block;
+  width: 100%;
+  background: none;
+  border: none;
+  margin: auto;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #A5A8B5;
+}
+
+.input-container-search input:focus {
+  outline: none;
+}
+.button--gray {
+  background: var(--gray);
+  border: 2px solid var(--gray);
+  color: var(--blue);
+  font-family: 'Nunito', sans-serif;
+}
+
 .sidebar {
   position: fixed;
   width: 256px;
@@ -34,6 +95,8 @@ body {
   padding: 12px;
   border-radius: 0px;
   transition: all 0.3s;
+  top: 0;
+  left: 0;
   
 }
 .sidebar .head {
@@ -214,13 +277,7 @@ body {
   text-align: center;
   font-size: 3rem;
 }
-* { 
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Nunito', sans-serif;
-    text-decoration: none;
-}
+
 
 .cont-form-carac-crear label{
   font-size: x-large;
@@ -262,7 +319,7 @@ body {
 }
 /*Botones generales de cada lista de izquierda a derecha*/
 
-.botones-1{ /*boton lista block*/
+.flex__action__btn--block{ /*boton lista block*/
     position: absolute; 
     top: 21%; 
     left: 57.5%; 
@@ -276,13 +333,7 @@ body {
   width: 13%; 
   height: 10%;
 }
-.botones-2{ /*boton nuevo usuario*/
-    position: absolute; 
-    top: 21%; 
-    left: 71%; 
-    width: 13%; 
-    height: 10%;
-}
+
 .botones-2-carac{ /*boton nuevo usuario*/
   position: absolute; 
   top: 21%; 
@@ -291,13 +342,7 @@ body {
   height: 10%;
 }
 
-.botones-3{ /*boton carga masiva*/
-    position: absolute; 
-    top: 21%; 
-    left: 84.5%; 
-    width: 13%; 
-    height: 10%;
-}
+
 
 .botones-4-crear{ /*boton VOLVER CREAR USUARIO*/
   position: absolute; 
@@ -351,7 +396,6 @@ body {
     height: 10%;
 }
 .barra-busqueda{ /*barra BUSQUEDA General*/
-    position: absolute;
     top: 20%;
     left: 15%;
     width: 40%;
@@ -371,7 +415,6 @@ body {
 /*tablas*/
 
 .cont-table{ /*TABLAS GENERALES */
-    position: absolute; 
     top: 25%; 
     left: 15%; 
     width: 80%; 

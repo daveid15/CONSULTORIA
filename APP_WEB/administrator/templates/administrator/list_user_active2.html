@@ -23,26 +23,21 @@
     }
 </script> 
 {% endblock %}
-<header class='mb-5'>
-    <div class="row">
-        <div class="titu-mein">
-            <h2 class='h2 medium text-blue'>Lista de Usuarios</h2>
-        </div>
+<header class='flex__action'>
+    <div class="flex__action flex__action__title">
+            <h2 class='flex__action h2 medium text-blue'>Lista de Usuarios</h2>
     </div>
-    <div class="botones-1">
+    <div class="flex__action flex__action__btn">
         <a href="{% url 'list_user_block2' %}" class="button button--gray form-control custom-button" title="Lista de Bloqueados">Bloqueados</a>
     </div>
-    <div class="botones-2">
+    <div class="flex__action flex__action__btn">
         <a href="{% url 'new_user' %}" class="button button--gray form-control custom-button" title="Agregar Usuarios">Nuevo Usuario</a>
     </div>
-    <div class="col-md-11 botones-3">
+    <div class="flex__action flex__action__btn">
         <a href="{% url 'carga_masiva' %}" class="button button--gray form-control custom-button" title="Carga masiva"> <i class="fa-solid fa-folder"></i></a>
     </div>
 </header>
-<div class="d-flex flex-column flex-lg-row my-5 barra-busqueda">
-    <div class="my-auto d-flex flex-column flex-lg-row ms-lg-auto">
-        <div class="feedback body--small normal"></div>
-    </div>
+<div class="flex__action barra-busqueda">
     <form method="post" action="" class='col-12 col-lg-6 input-container-search my-auto me-3 redondeo'>
         {% csrf_token %}
         <input name="search" id="search" type="text" placeholder='Buscar por Usuario, Primer Nombre'/>
@@ -55,7 +50,7 @@
     <form>       
 </div>
 
-<div class="col-md-11 cont-table" >
+<div class="flex__action col-md-11 cont-table" >
     <table class="table table-user cont-form-crud">
         <thead>
             <tr>
