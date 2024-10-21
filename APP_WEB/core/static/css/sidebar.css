@@ -10,6 +10,7 @@
 
 body {
   background-color: #fff !important;
+  overflow-x: hidden
 }
 .flex__container {
   display: flex;
@@ -23,7 +24,7 @@ body {
 
 .flex__action {
   display: flex;
-  width: 100%;
+  width: 100vh;
   max-height: 50vh;
   flex-wrap: wrap;
   flex-direction: row;
