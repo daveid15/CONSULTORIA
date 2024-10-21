@@ -61,7 +61,7 @@ class Menu:
         boton1.place(relx=0.13, rely=0.1)
         boton2=tk.Button(left_frame, text='Caracterización Magnetoeléctrica',bg="#FDFDFD", font=bottonFont, width=24, height=4, command=self.abrir_ventana2)
         boton2.place(relx=0.13, rely=0.3)
-        boton3=tk.Button(left_frame, text='Caracterización Magnetoeléctrica Invertida',bg="#FDFDFD", font=bottonFont, width=24, height=4, command=self.abrir_ventana3)
+        boton3=tk.Button(left_frame, text='Caracterización Magnetoeléctrica \n Invertida',bg="#FDFDFD", font=bottonFont, width=24, height=4, command=self.abrir_ventana3)
         boton3.place(relx=0.13, rely=0.5)
         boton4=tk.Button(left_frame, text='Pruebas',bg="#FDFDFD", font=bottonFont, width=24, height=4, command=self.abrir_ventana4)
         boton4.place(relx=0.13, rely=0.7)
