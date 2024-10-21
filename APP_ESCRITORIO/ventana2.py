@@ -13,16 +13,134 @@ from validacion import *
 import json
 import nidaqmx
 
+class EcuacionDatos(tk.Toplevel):
+    en_uso=FALSE
+
+    def __init__(self, menuecu, ventana_secundaria, callback=None):
+        super().__init__(menuecu, ventana_secundaria)
+        self.callback = callback
+        self.menuecu = menuecu
+        self.ventana_secundaria = ventana_secundaria
+        self.ventana_secundaria.title("Datos Ecuacion")
+        self.ventana_secundaria.geometry("400x250")
+        self.inicializar()
+
+        #Variables
+        self._start_voltaje = tk.IntVar()
+        self._step_size = tk.IntVar()
+        self._delay = tk.IntVar()
+
+        #Entradas
+        tk.Label(self.menuecu, text="Voltaje", bg="#A6C3FF").place(x=25, y=40)
+        tk.Entry(self.menuecu, textvariable=self._start_voltaje).place(x=25, y=60, width=150)
+        tk.Label(self.menuecu, text="Número de Pasos", bg="#A6C3FF").place(x=25, y=40)
+        tk.Entry(self.menuecu, textvariable=self._step_size).place(x=25, y=80, width=150)
+        tk.Label(self.menuecu, text="Delay", bg="#A6C3FF").place(x=25, y=100)
+        tk.Entry(self.menuecu, textvariable=self._delay).place(x=25, y=120, width=150)
+
+        #Botones
+        self.boton_cerrar = ttk.Button(self.menuecu, text="Cancelar", command=self.destroy)
+        self.boton_cerrar.place(x=40, y=160)
+        self.boton_calcular = ttk.Button(self.menuecu, text="Calcular", command=self.obtener_ecuacion)
+        self.boton_calcular.place(x=100, y=160)
+        self.__class__.en_uso = True
+
+
+    def obtener_ecuacion(self):
+        self.callback()
+        array_prom_gauss_volts = []
+        def obtener_ecuacion():
+            try:
+                # Configuración inicial de la fuente
+                self.rm = pyvisa.ResourceManager()
+                fuente = self.rm.open_resource('GPIB::6::INSTR')  
+                self.configurar_fuente(fuente)      
+                start_voltaje = self._start_voltaje.get()
+                step_size = self._step_size.get() # Número de pasos
+                delay = self._delay.get()
+                voltajes = np.linspace(start_voltaje, -start_voltaje, num=step_size)  # Genera voltajes 
+                # Bucle para establecer voltajes
+                for voltaje in voltajes:
+                    voltaje = round(voltaje, 1)  # Redondear el voltaje
+                    if -20 <= voltaje <= 20:  # Asegurar que el voltaje esté dentro del rango
+                        fuente.write(f'SOUR:VOLT {voltaje}')  # Establecer el voltaje
+                        # Esperar a que se procesen los comandos
+                        time.sleep(delay)  # Espera para permitir la estabilización Min 0.04 para permitir una estabilización pp estuvo aca
+                        array_prom_gauss_volts.append((voltaje,self.obtener_gauss()))#se agrega  promedio de gauss y voltaje a array
+
+                    else:
+                        print(f"Voltage {voltaje} out of range")
+
+            except pyvisa.errors.VisaIOError as e:
+                print("Error de VISA:", e)
+
+            finally:
+                fuente.write("OUTP OFF")  # Apagar después del bucle
+                fuente.write('*CLS')  # Limpiar el estado
+                fuente.write('*RST')  # Reiniciar el sistema
+                fuente.close()  # Cerrar la conexión
+                voltaje, senal_ni = zip(*array_prom_gauss_volts)#Guarda voltaje y señal de gauss respectivamente
+                # Calcular pendiente e intercepto
+                m, b = np.polyfit(voltaje, senal_ni, 1)
+                ecuacion_dia = {
+                        "fecha": datetime.now().strftime("%Y-%m-%d"),
+                        "pendiente": m,
+                        "intercepto": b
+                    }
+                ruta_archivo = 'utils/ecuaciones/ecuacion.json'
+                with open(ruta_archivo, 'w') as archivo:
+                    json.dump(ecuacion_dia, archivo, indent=4)
+                # Ejecutar la medición en un hilo separado
+        self.hilo_medicion = threading.Thread(target=obtener_ecuacion)
+        self.hilo_medicion.start()
+
+    def obtener_gauss(self):
+        num_samples = 10
+        sample_rate = 1000  # en Hz 
+        try:
+            with nidaqmx.Task() as task:
+                task.ai_channels.add_ai_voltage_chan("Dev2/ai0")  # Se lee datos de canal 0 de Dev2
+                task.timing.cfg_samp_clk_timing(rate=sample_rate, samps_per_chan=num_samples)#se configura la obtención de datos de gauss
+                # Leer los datos
+                data = task.read(num_samples)
+                # Convertir los datos a un array de numpy
+                data_array_0 = np.array(data[0])  # Datos del canal 0
+                promedio_data_0 = np.mean(data_array_0)#Se promedian dato
+
+                # Usar la sonda ST
+                probe_type = 'ST'  
+                # Convertir a Gauss
+                promedio_data_0 = self.volts_a_gauss(promedio_data_0, probe_type)
+                # Mostrar los resultados
+                return promedio_data_0
+        except nidaqmx.DaqError as e:
+            messagebox.showwarning("Advertencia",f"Ha ocurrido un error con el GaussMeter,{e}")
+    
+    def volts_a_gauss(self, volts, probe_type):
+        voltajes_mV = volts * 1000  # Convertir a milivoltios
+        if probe_type == 'ST':
+            gauss = voltajes_mV / 0.1  # Para HS Probe
+        else:
+            raise ValueError("Tipo de sonda no reconocido")
+        return gauss
+            
+    def destroy(self):
+        self.__class__.en_uso = False
+        return super().destroy()
+
+
 class Ventana2:
+    def __init__(self, menuecu, ventana_principal):
+        super().__init__(menuecu, ventana_principal)
+
     def __init__(self, menu, ventana_principal):
         labelFont = ("Bold Italic", 20, 'bold')
 
         #Variables
-        self._nombre = tk.StringVar()
+        self._nombre_v2 = tk.StringVar()
         self._corriente_fija = tk.StringVar()
         self._saturacion_campo = tk.StringVar()
-
-        self._tiempo_entre_mediciones = tk.StringVar()
+        self._tiempo_entre_mediciones_v2 = tk.StringVar()
         self._pasos = tk.StringVar()
 
 
@@ -44,16 +162,13 @@ class Ventana2:
 
         #Entradas
         tk.Label(self.menu, text="Nombre", bg="#A6C3FF").place(x=25, y=60)
-        tk.Entry(self.menu, textvariable=self._nombre).place(x=25, y=80, width=210)
+        tk.Entry(self.menu, textvariable=self._nombre_v2).place(x=25, y=80, width=210)
         tk.Label(self.menu, text="Corriente Fija", bg="#A6C3FF").place(x=25, y=110)
         tk.Entry(self.menu, textvariable=self._corriente_fija).place(x=25, y=130, width=210)
         tk.Label(self.menu, text="Saturacion de Campo", bg="#A6C3FF").place(x=25, y=160)
         tk.Entry(self.menu, textvariable=self._saturacion_campo).place(x=25, y=180, width=210)
-
         tk.Label(self.menu, text="Tiempo entre Mediciones", bg="#A6C3FF").place(x=25, y=210)
-
-        tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones).place(x=25, y=230, width=210)
-        
+        tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones_v2).place(x=25, y=230, width=210)
         tk.Label(self.menu, text="Pasos", bg="#A6C3FF").place(x=25, y=260)
         tk.Entry(self.menu, textvariable=self._pasos).place(x=25, y=280, width=210)
 
@@ -66,10 +181,10 @@ class Ventana2:
         btn_cargar_perfil = tk.Button(self.menu, text="Cargar Perfil", command=self.cargar_perfil)
         btn_cargar_perfil.place(x=135, y=375)
         btn_iniciar = tk.Button(self.menu, text="Iniciar", command=self.medir_GV_curve)
-        btn_iniciar.place(x=100, y=420)
+        btn_iniciar.place(x=50, y=420)
 
-        btn_obtener_ecuacion = tk.Button(self.menu, text="obtener_ecuacion", command=self.obtener_ecuacion)
-        btn_obtener_ecuacion.place(x=150, y=420)
+        btn_obtener_ecuacion = tk.Button(self.menu, text="Obtener ecuacion", command=self.abrir_datosecu)
+        btn_obtener_ecuacion.place(x=100, y=420)
         btn_guardar_prueba = tk.Button(self.menu, text="Guardar Prueba", command=self.guardar_prueba)
 
         btn_guardar_prueba.place(x=75, y=465)
@@ -120,10 +235,18 @@ class Ventana2:
         self.cargar_perfiles_desde_archivo()
         self.actualizar_combo_perfiles()
 
+    def abrir_datosecu(self):
+        if not EcuacionDatos.en_uso:
+            self.datos = EcuacionDatos(self.menu, self.ventana_principal)
+            self.datos.grab_set()  # Esto hace que la nueva ventana sea modal
+        else:
+            print("La ventana de datos ya está en uso.")
+            
+
     #Guardar perfil de parámetros
     def guardar_perfil(self):
-        nombre = self._nombre.get().strip()
-        if not nombre:
+        nombre_v2 = self._nombre_v2.get().strip()
+        if not nombre_v2:
             messagebox.showerror("Error", "El nombre del perfil no puede estar vacío.")
             return
 
@@ -137,28 +260,28 @@ class Ventana2:
             return
         
         #Guardar parámetros en el diccionario
-        self.perfiles_ventana2[nombre] = {
+        self.perfiles_ventana2[nombre_v2] = {
             "Corriente_fija": corriente_fija,
             "Saturacion_de_campo": saturacion_campo,
             "tiempo_entre_mediciones_v2": tiempo_entre_mediciones_v2
         }
-        guardar = validar_perfil_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2)
+        guardar = validar_perfil_v2(nombre_v2, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2)
         if guardar == True:
             self.guardar_perfiles_a_archivo()
             self.actualizar_combo_perfiles()
-            messagebox.showinfo("Información", f"Perfil '{nombre}' guardado exitosamente.")
+            messagebox.showinfo("Información", f"Perfil '{nombre_v2}' guardado exitosamente.")
 
         
     #Cargar perfil de parámetros
     def cargar_perfil(self):
-        nombre = self.combo_perfiles.get()
-        if nombre in self.perfiles_ventana2:
-            perfil = self.perfiles_ventana2[nombre]
-            self._nombre.set(nombre)
+        nombre_v2 = self.combo_perfiles.get()
+        if nombre_v2 in self.perfiles_ventana2:
+            perfil = self.perfiles_ventana2[nombre_v2]
+            self._nombre_v2.set(nombre_v2)
             self._corriente_fija.set(perfil["corriente_fija"])
             self._saturacion_campo.set(perfil["saturación_campo"])
             self._tiempo_entre_mediciones_v2.set(perfil["tiempo_entre_mediciones_v2_v2"])
-            messagebox.showinfo("Información", f"Perfil '{nombre}' cargado correctamente.")
+            messagebox.showinfo("Información", f"Perfil '{nombre_v2}' cargado correctamente.")
         else:
             messagebox.showwarning("Advertencia", "Seleccione un perfil válido para cargar.")
 
@@ -185,8 +308,8 @@ class Ventana2:
 
     # Obtención de entradas
     @property
-    def nombre(self):
-        return self._nombre.get()
+    def nombre_v2(self):
+        return self._nombre_v2.get()
 
     @property
     def corriente_fija(self):
@@ -262,88 +385,6 @@ class Ventana2:
     def volver(self):
         self.menu.withdraw()
         self.ventana_principal.deiconify()
-
-    def volts_a_gauss(self, volts, probe_type):
-        voltajes_mV = volts * 1000  # Convertir a milivoltios
-
-        if probe_type == 'ST':
-            gauss = voltajes_mV / 0.1  # Para HS Probe
-        else:
-            raise ValueError("Tipo de sonda no reconocido")
-        return gauss
-
-    def obtener_gauss(self):
-        num_samples = 10
-        sample_rate = 1000  # en Hz 
-        try:
-        
-            with nidaqmx.Task() as task:
-
-                task.ai_channels.add_ai_voltage_chan("Dev2/ai0")  # Se lee datos de canal 0 de Dev2
-                task.timing.cfg_samp_clk_timing(rate=sample_rate, samps_per_chan=num_samples)#se configura la obtención de datos de gauss
-                # Leer los datos
-                data = task.read(num_samples)
-                # Convertir los datos a un array de numpy
-                data_array_0 = np.array(data[0])  # Datos del canal 0
-                promedio_data_0 = np.mean(data_array_0)#Se promedian dato
-
-                # Usar la sonda ST
-                probe_type = 'ST'  
-                # Convertir a Gauss
-                promedio_data_0 = self.volts_a_gauss(promedio_data_0, probe_type)
-                # Mostrar los resultados
-                return promedio_data_0
-        except nidaqmx.DaqError as e:
-            messagebox.showwarning("Advertencia",f"Ha ocurrido un error con el GaussMeter,{e}")
-
-    def obtener_ecuacion(self):
-        array_prom_gauss_volts = []
-        def obtener_ecuacion():
-            try:
-                # Configuración inicial de la fuente
-                self.rm = pyvisa.ResourceManager()
-                fuente = self.rm.open_resource('GPIB::6::INSTR')  
-                self.configurar_fuente(fuente)      
-                start_voltaje = 20
-                step_size = 40  # Número de pasos
-                delay = 1
-                voltajes = np.linspace(start_voltaje, -start_voltaje, num=step_size)  # Genera voltajes 
-    # Bucle para establecer voltajes
-                for voltaje in voltajes:
-                    voltaje = round(voltaje, 1)  # Redondear el voltaje
-                    if -20 <= voltaje <= 20:  # Asegurar que el voltaje esté dentro del rango
-                        fuente.write(f'SOUR:VOLT {voltaje}')  # Establecer el voltaje
-                        # Esperar a que se procesen los comandos
-                        time.sleep(delay)  # Espera para permitir la estabilización Min 0.04 para permitir una estabilización pp estuvo aca
-                        array_prom_gauss_volts.append((voltaje,self.obtener_gauss()))#se agrega  promedio de gauss y voltaje a array
-
-                    else:
-                        print(f"Voltage {voltaje} out of range")
-
-            except pyvisa.errors.VisaIOError as e:
-                print("Error de VISA:", e)
-
-            finally:
-                fuente.write("OUTP OFF")  # Apagar después del bucle
-                fuente.write('*CLS')  # Limpiar el estado
-                fuente.write('*RST')  # Reiniciar el sistema
-                fuente.close()  # Cerrar la conexión
-                voltaje, senal_ni = zip(*array_prom_gauss_volts)#Guarda voltaje y señal de gauss respectivamente
-                # Calcular pendiente e intercepto
-                m, b = np.polyfit(voltaje, senal_ni, 1)
-                ecuacion_dia = {
-                        "fecha": datetime.now().strftime("%Y-%m-%d"),
-                        "pendiente": m,
-                        "intercepto": b
-                    }
-                ruta_archivo = 'utils/ecuaciones/ecuacion.json'
-                with open(ruta_archivo, 'w') as archivo:
-                    json.dump(ecuacion_dia, archivo, indent=4)
-                # Ejecutar la medición en un hilo separado
-        self.hilo_medicion = threading.Thread(target=obtener_ecuacion)
-        self.hilo_medicion.start()
-
-
 
     def cargar_ecuacion_del_dia(self):
         ruta_archivo = 'utils/ecuaciones/ecuacion.json'
@@ -436,7 +477,7 @@ class Ventana2:
 
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
         if self.array_prom_gauss_volts is not None and self.array_prom_gauss_volts is not None:
-            # Obtener el título actual de la ventana como sugerencia de nombre
+            # Obtener el título actual de la ventana como sugerencia de nombre_v2
             proyecto_titulo = "test_gauss_"
             file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")],initialfile=proyecto_titulo)
             m, b = self.cargar_ecuacion_del_dia()
