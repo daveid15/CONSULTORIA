@@ -3,6 +3,9 @@ from tkinter import messagebox
 import pyvisa
 import json
 import os
+import nidaqmx
+from nidaqmx.errors import DaqError
+#****VALIDACIONES DE INPUTS*****
 
 def validar_float(valor):
     try:
@@ -18,6 +21,9 @@ def validar_int(valor):
     except ValueError:
         return None
     
+
+
+#****VALIDACIONES DE COMUNICACIÓN*****
 def listar_recursos():
     rm = pyvisa.ResourceManager()
     recursos = rm.list_resources()
@@ -28,30 +34,58 @@ def listar_recursos():
     else:
         print("No se encontraron recursos.")
 
-def verificar_dispositivo(resource_address, parent_window):
-    rm = pyvisa.ResourceManager()
+
+def validar_conexion_gauss(errores, parent_window = None):
+    #Valida si el Gauss meter está conectado correctamente.
     try:
-        # Intenta abrir el recurso
-        instrumento = rm.open_resource(f"GPIB0::{resource_address}::INSTR")
-        """messagebox.showinfo("Conexión exitosa", 
-                            f"El dispositivo GPIB0::{resource_address}::INSTR está conectado.",
-                            parent=parent_window)
+        with nidaqmx.Task() as task:
+            # Intenta agregar el canal de voltaje del Gauss meter
+            task.ai_channels.add_ai_voltage_chan("Dev2/ai0")
+            # Si no se produce ningún error, está conectado
+            if parent_window:
+                return True
+            return errores
+    except DaqError as e:
+        # Mostrar advertencia si no se puede conectar al dispositivo
+        if parent_window:
+            messagebox.showerror("Error de conexión", 
+                        f"No se pudo conectar con el GaussMeter en el canal Dev2/ai0",
+                        parent=parent_window)
+            return False
+        errores.append(f"No se pudo conectar con el GaussMeter en el canal Dev2/ai0")
+        return errores
+
+
+
+def verificar_dispositivo(addresses, parent_window):
+    errores = []
+    rm = pyvisa.ResourceManager()
+    for address in addresses:
+        try:
+            # Intenta abrir el recurso
+            instrumento = rm.open_resource(f"GPIB0::{address}::INSTR")
+            """messagebox.showinfo("Conexión exitosa", 
+                                f"El dispositivo GPIB0::{resource_address}::INSTR está conectado.",
+                                parent=parent_window)
+            
+            # Puedes enviar un comando simple para verificar la respuesta
+            respuesta = instrumento.query("*IDN?")
+            messagebox.showinfo("Respuesta del dispositivo", 
+                                f"Respuesta del dispositivo: {respuesta}",
+                                parent=parent_window)"""
+            return True
+        except pyvisa.VisaIOError as e:
+            errores.append(f"Error de conexión, No se pudo conectar con el dispositivo GPIB0::{address}::INSTR")
         
-        # Puedes enviar un comando simple para verificar la respuesta
-        respuesta = instrumento.query("*IDN?")
-        messagebox.showinfo("Respuesta del dispositivo", 
-                            f"Respuesta del dispositivo: {respuesta}",
-                            parent=parent_window)"""
-        return True
-    except pyvisa.VisaIOError as e:
-        messagebox.showerror("Error de conexión", 
-                            f"No se pudo conectar con el dispositivo GPIB0::{resource_address}::INSTR",
-                            parent=parent_window)
+    # Cierra la conexión con el recurso si se abrió correctamente
+    if 'instrumento' in locals():
+        instrumento.close()
+    if errores:
+        errores = validar_conexion_gauss(errores)
+        # Mostrar errores
+        mensaje_error = "\n".join(errores)
+        messagebox.showerror("Errores de Validación", mensaje_error, parent=parent_window)
         return False
-    finally:
-        # Cierra la conexión con el recurso si se abrió correctamente
-        if 'instrumento' in locals():
-            instrumento.close()
 
 def verificar_inputs(start_current_str, step_size_str, delay_str, parent_window):
     errores = []

@@ -4,7 +4,8 @@ from PIL import ImageTk, Image
 from ventana1 import Ventana1
 from ventana2 import Ventana2
 from ventana3 import Ventana3
-from ventana4 import Ventana4            
+from ventana4 import Ventana4
+import os            
 
 class Menu:
     def __init__(self, main):
@@ -25,9 +26,12 @@ class Menu:
         left_frame = tk.Frame(self.main, bg="#A6C3FF")
         left_frame.place(x=10, y=45, relheight=0.90, relwidth=0.275)
 
+
+        ruta_relativa = os.path.join("fotos", "FuentePoder.png")
+        imagen_fuente = Image.open(ruta_relativa)
+
         #Imagenes
-        self.imagen_fuente = "fotos/FuentePoder.png"
-        imagen_fuente = Image.open(self.imagen_fuente)
+        #imagen_fuente = Image.open(self.imagen_fuente)
         imagen_tk_fuente = ImageTk.PhotoImage(imagen_fuente)
         label_fuente = tk.Label(right_frame, image=imagen_tk_fuente, width=175, height=120)
         label_fuente.place(relx=0.315, rely=0.3)
