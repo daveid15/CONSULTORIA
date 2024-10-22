@@ -1,0 +1,62 @@
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+{% block extrahead %}
+{% endblock %}
+<main role="main">
+    <div class="titu-mein">
+        <h3 class='h2 medium text-blue'>Editar Prueba</h3>
+    </div>  
+    <div class="col-md-11 cont-form">
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" value="{{ prueba.id }}" name="prueba_id" id="prueba_id">
+            
+            <!-- Nombre de la Prueba -->
+            <div class="row col-md-11 casilla1">
+                <label for="prueba_name" class="custom-label">Nombre de la Prueba:</label>
+            </div>
+            <div class="row col-md-11 dato1">
+                <input type="text" id="prueba_name" name="prueba_name" value="{{ prueba.prueba_name }}" class="form-control border custom-input" required />
+            </div>
+
+            <!-- Tipo (no editable) -->
+            <div class="row col-md-11 casilla2">
+                <label for="tipo" class="custom-label">Tipo:</label>
+            </div>
+            <div class="row col-md-11 dato2">
+                <input type="text" id="tipo" name="tipo" value="{{ prueba.tipo }}" class="form-control border custom-input" readonly />
+            </div>
+
+            <!-- Estado (no editable) -->
+            <div class="row col-md-11 casilla3">
+                <label for="prueba_state" class="custom-label">Estado:</label>
+            </div>
+            <div class="row col-md-11 dato3">
+                <input type="text" id="prueba_state" name="prueba_state" value="{{ prueba.prueba_state|yesno:"Activo,Bloqueado" }}" class="form-control border custom-input" readonly />
+            </div>
+
+            <!-- Gráfico -->
+            <div class="row col-md-11 casilla4">
+                <label for="grafico" class="custom-label">Gráfico:</label>
+            </div>
+            <div class="row col-md-11 dato4">
+                <input type="file" id="grafico" name="grafico" class="form-control border custom-input">
+                {% if prueba.grafico %}
+                    <p>Archivo actual: <a href="{{ prueba.grafico.url }}" target="_blank">Ver Gráfico</a></p>
+                {% endif %}
+            </div>
+
+            <!-- Botón de Guardar Cambios -->
+            <div class="botones-5-crear">
+                <input type="submit" value="Guardar Cambios" class="button button--gray form-control custom-button-editar" title="Guardar Cambios de Prueba">
+            </div>
+        </form>
+    </div>
+    
+    <!-- Botón de Volver -->
+    <div class="botones-4-crear">
+        <a href="{% url 'listar_pruebas' %}" class="button button--gray_volver form-control custom-button_ver" title="Volver a Lista">Volver</a>
+    </div>
+</main>
+{% endblock %}

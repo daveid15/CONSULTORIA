@@ -25,7 +25,7 @@ from core.views import *
 #validaciones .py!!!!! <---------------------------------
 from extensiones import validacion
 #from django.shortcuts import render, get_object_or_404, redirect
-from .models import Perfil_Parametro ##Prueba, Medicion
+from .models import Perfil_Parametro,Prueba, Medicion
 from .forms import PerfilParametroForm ##, PruebaForm, MedicionForm
 import pyvisa
 import numpy as np
@@ -203,15 +203,148 @@ def eliminar_perfil_bloqueado(request, perfil_id):
 
 # Apartado prueba
 
-@login_required
-def listar_pruebas(request):
-    pruebas = Prueba.objects.all()
-    return render(request, 'caracterizacion/listar_pruebas.html', {'pruebas': pruebas})
+def listar_pruebas(request, page=None, search=None):
+    # Obtenemos el perfil del usuario actual (en caso de necesitarlo para validación)
+    profiles = Perfil_Parametro.objects.filter(perfil_parametro_state='t')  # Filtramos los perfiles activos
+    # Comprobación para obtener el parámetro `page` de la URL o de la petición GET
+    if page is None:
+        page = request.GET.get('page')
+    else:
+        page = page
+    if request.GET.get('page') is None:
+        page = page
+    else:
+        page = request.GET.get('page')
+
+    # Lógica para manejar la cadena de búsqueda y propagarla a través del paginador
+    if search is None:
+        search = request.GET.get('search')
+    else:
+        search = search
+    if request.GET.get('search') is None:
+        search = search
+    else:
+        search = request.GET.get('search')
+    if request.method == 'POST':
+        search = request.POST.get('search')
+        page = None
+
+    # Lista vacía para agregar las pruebas que se listarán
+    pruebas_all = []
+    # Si la búsqueda está vacía o no se encuentra
+    if search is None or search.strip() == "" or search == 'NoNe':
+        pruebas_array = Prueba.objects.filter(prueba_state='t').order_by('prueba_name')
+
+        for prueba in pruebas_array:
+            perfil_parametro = prueba.id_perfil_parametro.perfil_parametro_name
+            usuario = prueba.id_user.username
+            # Agregamos la información de la prueba
+            pruebas_all.append({
+                'id': prueba.id,
+                'prueba_name': prueba.prueba_name,
+                'tipo': prueba.tipo,
+                'perfil_parametro': perfil_parametro,
+                'usuario': usuario,
+                'fecha': prueba.fecha
+            })
+
+        paginator = Paginator(pruebas_all, 10)  # Definir `num_elemento` para paginar, aquí asumimos 10 por página
+        pruebas_list = paginator.get_page(page)
+        template_name = 'caracterizacion/listar_pruebas.html'
+        return render(request, template_name, {
+            'profiles': profiles,
+            'pruebas_list': pruebas_list,
+            'paginator': paginator,
+            'page': page
+        })
+    else:
+        # Lógica de búsqueda por nombre de prueba o tipo
+        pruebas_array = Prueba.objects.filter(
+            Q(prueba_name__icontains=search) | Q(tipo__icontains=search)
+        ).filter(prueba_state='t').order_by('prueba_name')
+
+        for prueba in pruebas_array:
+            perfil_parametro = prueba.id_perfil_parametro.perfil_parametro_name
+            usuario = prueba.id_user.username
+            # Agregamos la información de la prueba
+            pruebas_all.append({
+                'id': prueba.id,
+                'prueba_name': prueba.prueba_name,
+                'tipo': prueba.tipo,
+                'perfil_parametro': perfil_parametro,
+                'usuario': usuario,
+                'fecha': prueba.fecha
+            })
+
+    paginator = Paginator(pruebas_all, 10)  # Definir `num_elemento` para paginar, aquí asumimos 10 por página
+    pruebas_list = paginator.get_page(page)
+    template_name = 'caracterizacion/listar_pruebas.html'
+    return render(request, template_name, {
+        'profiles': profiles,
+        'pruebas_list': pruebas_list,
+        'paginator': paginator,
+        'page': page,
+        'search': search
+    })
+
+def detalle_prueba(request, prueba_id):
+    prueba = get_object_or_404(Prueba, id=prueba_id)
+    mediciones = Medicion.objects.filter(id_prueba=prueba)
+    
+    context = {
+        'prueba_data': prueba,
+        'mediciones': mediciones
+    }
+    
+    return render(request, 'caracterizacion/detalle_prueba.html', context)
+
+
+def editar_prueba(request, prueba_id):
+    # Recuperar la prueba específica usando su ID
+    prueba = get_object_or_404(Prueba, pk=prueba_id)
+
+    if request.method == 'POST':
+        # Capturar datos del formulario manualmente
+        prueba_name = request.POST.get('prueba_name')
+        grafico = request.FILES.get('grafico')
+
+        # Actualizar los campos editables
+        prueba.prueba_name = prueba_name
+
+        # Solo actualizar el gráfico si se ha subido un nuevo archivo
+        if grafico:
+            prueba.grafico = grafico
+
+        # Guardar cambios en la prueba
+        prueba.save()
+
+        # Mostrar mensaje de éxito y redirigir
+        messages.success(request, 'Prueba actualizada correctamente.')
+        return redirect('listar_pruebas')
+
+    # Renderizar la plantilla de edición con los datos actuales de la prueba
+    return render(request, 'caracterizacion/editar_prueba.html', {'prueba': prueba})
 
 @login_required
-def eliminar_prueba(request, pk):
-    prueba = get_object_or_404(Prueba, pk=pk)
-    if request.method == 'POST':
-        prueba.delete()
-        return redirect('listar_pruebas')
-    return render(request, 'caracterizacion/eliminar_prueba.html', {'prueba': prueba})
+def bloquear_prueba(request, prueba_id):
+    prueba = get_object_or_404(Prueba, id=prueba_id)
+    prueba.prueba_state = 'f'  
+    prueba.save()
+    return redirect('listar_pruebas')  
+
+@login_required
+def pruebas_bloqueadas(request):
+    pruebas_bloqueadas = Prueba.objects.filter(prueba_state='f')
+    return render(request, 'caracterizacion/pruebas_bloqueadas.html', {'pruebas': pruebas_bloqueadas})
+
+@login_required
+def desbloquear_prueba(request, prueba_id):
+    prueba = get_object_or_404(Prueba, id=prueba_id)
+    prueba.prueba_state = 't'  
+    prueba.save()
+    return redirect('pruebas_bloqueadas')
+
+def eliminar_prueba(request, prueba_id):
+    prueba = get_object_or_404(Prueba, id=prueba_id)
+    prueba.delete()
+    return redirect('pruebas_bloqueadas')

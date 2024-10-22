@@ -283,6 +283,8 @@ body {
     width: 13%; 
     height: 10%;
 }
+
+
 .botones-2-carac{ /*boton nuevo usuario*/
   position: absolute; 
   top: 21%; 
@@ -728,6 +730,7 @@ border-radius: 90px
     text-align:center;/* Alineación del texto */
     border-bottom: 3px solid rgb(255, 255, 255);
 }
+
 
 .table-user .user-actions {
     display:block; /* Usar flexbox para alinear los elementos */
