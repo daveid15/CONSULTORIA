@@ -21,36 +21,42 @@
             }
         });
     }
-</script> 
+</script>
 {% endblock %}
 <header class='flex__action'>
+    
     <div class="flex__action flex__action__title">
-            <h2 class='flex__action h2 medium text-blue'>Lista de Usuarios</h2>
+        <h2 class='flex__action h2 medium text-blue'>Lista de Usuarios</h2>
+    </div>
+    <div class="flex__action barra-busqueda">
+        <form method="post" action="" class='col-12 col-lg-6 input-container-search my-auto me-3 redondeo'>
+            {% csrf_token %}
+            <input name="search" id="search" type="text" placeholder='Buscar por Usuario, Primer Nombre' />
+            <button type="submit" class="button button--gray">
+                <span class="material-icons-outlined">
+                    search
+                </span>
+            </button>
+    
+            <form>
     </div>
     <div class="flex__action flex__action__btn">
-        <a href="{% url 'list_user_block2' %}" class="button button--gray form-control custom-button" title="Lista de Bloqueados">Bloqueados</a>
+        <a href="{% url 'list_user_block2' %}" class="button button--gray form-control custom-button"
+            title="Lista de Bloqueados">Bloqueados</a>
     </div>
     <div class="flex__action flex__action__btn">
-        <a href="{% url 'new_user' %}" class="button button--gray form-control custom-button" title="Agregar Usuarios">Nuevo Usuario</a>
+        <a href="{% url 'new_user' %}" class="button button--gray form-control custom-button"
+            title="Agregar Usuarios">Nuevo Usuario</a>
     </div>
     <div class="flex__action flex__action__btn">
-        <a href="{% url 'carga_masiva' %}" class="button button--gray form-control custom-button" title="Carga masiva"> <i class="fa-solid fa-folder"></i></a>
+        <a href="{% url 'carga_masiva' %}" class="button button--gray form-control custom-button" title="Carga masiva">
+            <i class="fa-solid fa-folder"></i></a>
     </div>
-</header>
-<div class="flex__action barra-busqueda">
-    <form method="post" action="" class='col-12 col-lg-6 input-container-search my-auto me-3 redondeo'>
-        {% csrf_token %}
-        <input name="search" id="search" type="text" placeholder='Buscar por Usuario, Primer Nombre'/>
-        <button type="submit" class="button button--gray">
-            <span class="material-icons-outlined">
-                search
-            </span>
-        </button>
-        
-    <form>       
-</div>
 
-<div class="flex__action col-md-11 cont-table" >
+</header>
+
+
+<div class="flex__action">
     <table class="table table-user cont-form-crud">
         <thead>
             <tr>
@@ -59,91 +65,92 @@
                 <th width="1%" scope="col">Correo</th>
                 <th width="1%" scope="col">Perfil</th>
                 {% if profiles.group_id == 1 %}
-                    <th width="1%" scope="col">Funciones</th>
+                <th width="1%" scope="col">Funciones</th>
                 {% endif %}
             </tr>
         </thead>
         <tbody>
             {% for s in user_list %}
-                <tr>
-                    <td >{{ s.user_name }}</td>
-                    <td >{{ s.name }}</td>
-                    <td >{{ s.mail }}</td>
-                    <td >{{ s.profile }}</td>
-                    {% if profiles.group_id == 1 %}
-                        <td>
-                            {% if s.id != request.user.id %}
-                                <a href="{% url 'user_ver' s.id %}" title="Ver Usuario" class="user-action">
-                                    <i class="fa-solid fa-eye"></i> 
-                                </a>
-                                &nbsp;
-                                <a href="{% url 'edit_user' s.id %}" title="Editar Usuario" class="user-action">
-                                    <i class="fas fa-edit"></i> 
-                                </a>
+            <tr>
+                <td>{{ s.user_name }}</td>
+                <td>{{ s.name }}</td>
+                <td>{{ s.mail }}</td>
+                <td>{{ s.profile }}</td>
+                {% if profiles.group_id == 1 %}
+                <td>
+                    {% if s.id != request.user.id %}
+                    <a href="{% url 'user_ver' s.id %}" title="Ver Usuario" class="user-action">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
+                    &nbsp;
+                    <a href="{% url 'edit_user' s.id %}" title="Editar Usuario" class="user-action">
+                        <i class="fas fa-edit"></i>
+                    </a>
 
-                                
-                                <a href="#" onclick="confirmarCambio('{% url 'user_block' s.id %}')" title="Bloquear Usuario" class="user-action">
-                                    <i class="fas fa-ban"></i>
-                                </a>
-                            {% endif %}
-                        </td>
+
+                    <a href="#" onclick="confirmarCambio('{% url 'user_block' s.id %}')" title="Bloquear Usuario"
+                        class="user-action">
+                        <i class="fas fa-ban"></i>
+                    </a>
                     {% endif %}
-                </tr>
+                </td>
+                {% endif %}
+            </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-   <!-- Paginación -->
-   {% if paginator.num_pages > 1 %}
-   <div class="d-flex">
-       <nav aria-label="Page navigation example" class="ms-auto">
-           <ul class="pagination pagination-table">
-               {% if user_list.has_previous %}
-                   <li class="page-item">
-                       <a class="page-link" href="?page={{ user_list.previous_page_number}}&search={{search}}" aria-label="Previous">
-                           <span aria-hidden="true">&laquo;</span>
-                       </a>
-                   </li>
-               {% else %}
-                   <li class="page-item disabled">
-                       <a class="page-link" href="#" tabindex="-1">&laquo;</a>
-                   </li>                        
-               {% endif %}
-               {% for i in paginator.page_range %}
-                   {% if i >= page|sub:2  and i < page|add:3  %}
-                       <li class="page-item {% if user_list.number == i %}active{% endif %}">
-                           <a class="page-link" href="?page={{ i }}&search={{search}}">{{ i }}</a>
-                       </li>                        
-                   {% endif %}
-               {% endfor %}
-               {% if user_list.has_next %}
-                   <li class="page-item ">
-                       <a class="page-link" href="?page={{ user_list.next_page_number }}&search={{search}}">&raquo;</a>
-                   </li>
-               {% else %}
-                   <li class="page-item disabled">
-                       <a class="page-link" href="#" tabindex="-1">&raquo;</a>
-                   </li>
-               {% endif %}
-           </ul>
-       </nav>
-   </div>
-{% endif %}  
-<!-- Paginación -->   
+<!-- Paginación -->
+{% if paginator.num_pages > 1 %}
+<div class="d-flex">
+    <nav aria-label="Page navigation example" class="ms-auto">
+        <ul class="pagination pagination-table">
+            {% if user_list.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ user_list.previous_page_number}}&search={{search}}"
+                    aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">&laquo;</a>
+            </li>
+            {% endif %}
+            {% for i in paginator.page_range %}
+            {% if i >= page|sub:2 and i < page|add:3 %} <li
+                class="page-item {% if user_list.number == i %}active{% endif %}">
+                <a class="page-link" href="?page={{ i }}&search={{search}}">{{ i }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% if user_list.has_next %}
+                <li class="page-item ">
+                    <a class="page-link" href="?page={{ user_list.next_page_number }}&search={{search}}">&raquo;</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">&raquo;</a>
+                </li>
+                {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+<!-- Paginación -->
 
 {% block scripts %}
-    {% if messages %}
-        <script>
-            {% for message in messages %}
-                Swal.fire({
-                    position: 'medium',
-                    icon: '{{ message.tags }}',
-                    title: '{{ message }}',
-                    showConfirmButton: true,
-                });
-            {% endfor %}
-        </script>
-    {% endif %}
+{% if messages %}
+<script>
+    {% for message in messages %}
+    Swal.fire({
+        position: 'medium',
+        icon: '{{ message.tags }}',
+        title: '{{ message }}',
+        showConfirmButton: true,
+    });
+    {% endfor %}
+</script>
+{% endif %}
 {% endblock %}
 {% endblock %}
-

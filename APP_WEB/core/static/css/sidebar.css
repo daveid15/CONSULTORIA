@@ -24,29 +24,30 @@ body {
 
 .flex__action {
   display: flex;
-  width: 100vh;
+  padding: 6px;
+  width: 80vw;
   max-height: 50vh;
   flex-wrap: wrap;
   flex-direction: row;
-  justify-content: space-between;
   align-content: stretch;
 }
 
 .flex__action__title{
-  width: 100vh;
+  width: 100vw;
 
 }
 
 
 .flex__action__btn {
-  max-width: 20vw;
+  max-width: 17.78vw;
+  flex: 1;
 }
 
 .flex--item{
   padding: 20px;
   margin-left: 280px;
   flex: 2;
-  width: 80vw;
+  width: 100vw;
   transition: margin-left 0.3s;
 }
 /* Ajuste del margen del contenido cuando el sidebar está cerrado */
@@ -57,6 +58,7 @@ body {
 .input-container-search {
   display: flex;
   height: 54px;
+  width: 100%;
   border-radius: 10px;
   background-color: white;
   border: 2px solid #606274;
@@ -399,7 +401,6 @@ body {
 .barra-busqueda{ /*barra BUSQUEDA General*/
     top: 20%;
     left: 15%;
-    width: 40%;
     height: 10%; 
     border-radius: 90px;
 }
@@ -414,14 +415,6 @@ body {
 }
 
 /*tablas*/
-
-.cont-table{ /*TABLAS GENERALES */
-    top: 25%; 
-    left: 15%; 
-    width: 80%; 
-    height: 15%;
-    
-}
 
 .estilo-table{  /*ESTILO DE TABLAS GENERALES Titulos */
     background-color: #001F3F; 
@@ -535,9 +528,8 @@ border-radius: 90px
   color: #fff;
 } 
 .cont-form-crud{  /*Borde GENERAL DE FORMULARIOS*/
-  position: absolute; 
-  top: 20%; 
-  width: 103.5%; 
+
+  width: 100vw;
   background-color: #001f3f;
   border-radius: 50px;
   padding: 10px;
