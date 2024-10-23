@@ -1,6 +1,5 @@
 from tkinter import *
 import tkinter as tk
-from tkinter import ttk
 from tkinter import filedialog
 from datetime import datetime
 import numpy as np
@@ -12,6 +11,7 @@ import threading
 from validacion import *
 import json
 import nidaqmx
+from nidaqmx.errors import DaqError
 
 
 class Ventana2:
@@ -94,10 +94,9 @@ class Ventana2:
         self.fig, self.ax = plt.subplots(figsize=(10, 6))
         self.ax.set_title('Gráfico')
         self.ax.set_xlabel('Delta V')
-        plt.xlim(-20,20)
-        self.ax.set_ylabel('(G)')
-        plt.ylim(-6000,6000)
-        self.ax.legend()
+        self.ax.set_ylabel('G')
+        plt.xlim(-20, 20)
+        plt.ylim(-6000, 6000)
         self.ax.grid(True)
 
         # Crear un lienzo de Tkinter para la figura
@@ -107,12 +106,18 @@ class Ventana2:
         # Agregar la barra de herramientas de navegación en la parte inferior
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.frame_plot)
         self.toolbar.update()
-        self.toolbar.pack(side=tk.BOTTOM, fill=tk.X)  # Mover la barra de herramientas abajo
+        self.toolbar.pack(side=tk.BOTTOM, fill=tk.X)
+
+        # Mostrar la leyenda solo si hay etiquetas
+        handles, labels = self.ax.get_legend_handles_labels()
+        if labels:
+            self.ax.legend()
 
         # Mantener el gráfico arriba
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)        
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.rm = None
-        self.corrientes_fija = None
+        self.voltajes = None
+        self.array_prom_gauss_volts = None
 
         #Actualizar Perfiles
         self.cargar_perfiles_desde_archivo()
@@ -371,10 +376,96 @@ class Ventana2:
         self.menu.withdraw()
         self.ventana_principal.deiconify()
 
+    def volts_a_gauss(self, volts, probe_type):
+        voltajes_mV = volts * 1000  # Convertir a milivoltios
+
+        if probe_type == 'ST':
+            gauss = voltajes_mV / 0.1  # Para HS Probe
+        else:
+            raise ValueError("Tipo de sonda no reconocido")
+        return gauss
+
+    def obtener_gauss(self):
+        num_samples = 10
+        sample_rate = 1000  # en Hz 
+        try:
+        
+            with nidaqmx.Task() as task:
+
+                task.ai_channels.add_ai_voltage_chan("Dev2/ai0")  # Se lee datos de canal 0 de Dev2
+                task.timing.cfg_samp_clk_timing(rate=sample_rate, samps_per_chan=num_samples)#se configura la obtención de datos de gauss
+                # Leer los datos
+                data = task.read(num_samples)
+                # Convertir los datos a un array de numpy
+                data_array_0 = np.array(data[0])  # Datos del canal 0
+                promedio_data_0 = np.mean(data_array_0)#Se promedian dato
+
+                # Usar la sonda ST
+                probe_type = 'ST'  
+                # Convertir a Gauss
+                promedio_data_0 = self.volts_a_gauss(promedio_data_0, probe_type)
+                # Mostrar los resultados
+                return promedio_data_0
+        except DaqError as e:
+            messagebox.showwarning("Advertencia",f"Ha ocurrido un error con el GaussMeter,{e}")
+
+    def obtener_ecuacion(self):
+        array_prom_gauss_volts = []
+        def obtener_ecuacion():
+            addresses = ["6"]
+            try:
+                if verificar_dispositivo(addresses, self.menu):
+                    # Configuración inicial de la fuente
+                    self.rm = pyvisa.ResourceManager()
+                    fuente = self.rm.open_resource('GPIB::6::INSTR')  
+                    self.configurar_fuente(fuente)      
+                    start_voltaje = 20
+                    step_size = 40  # Número de pasos
+                    delay = 1
+                    voltajes = np.linspace(start_voltaje, -start_voltaje, num=step_size)  # Genera voltajes 
+                    
+                    # Bucle para establecer voltajes
+                    for voltaje in voltajes:
+                        voltaje = round(voltaje, 1)  # Redondear el voltaje
+                        if -20 <= voltaje <= 20:  # Asegurar que el voltaje esté dentro del rango
+                            fuente.write(f'SOUR:VOLT {voltaje}')  # Establecer el voltaje
+                            time.sleep(delay)  # Espera para permitir la estabilización
+                            array_prom_gauss_volts.append((voltaje, self.obtener_gauss())) # Promedio gauss
+                    fuente.write("OUTP OFF")  # Apagar después del bucle
+                    fuente.write('*CLS')  # Limpiar el estado
+                    fuente.write('*RST')  # Reiniciar el sistema
+                    fuente.close()  # Cerrar la conexión
+
+                    # Guardar voltaje y señal de gauss respectivamente
+                    voltaje, senal_ni = zip(*array_prom_gauss_volts)
+
+                    # Calcular pendiente e intercepto
+                    m, b = np.polyfit(voltaje, senal_ni, 1)
+                    ecuacion_dia = {
+                        "fecha": datetime.now().strftime("%Y-%m-%d"),
+                        "pendiente": m,
+                        "intercepto": b
+                    }
+                    
+                    # Guardar ecuación del día
+                    ruta_archivo = 'utils/ecuaciones/ecuacion.json'
+                    os.makedirs(os.path.dirname(ruta_archivo), exist_ok=True)  # Crear carpeta si no existe
+                    with open(ruta_archivo, 'w') as archivo:
+                        json.dump(ecuacion_dia, archivo, indent=4)
+
+
+            except pyvisa.errors.VisaIOError as e:
+                print("Error de VISA:", e)
+            
+        # Ejecutar la medición en un hilo separado
+        self.hilo_medicion = threading.Thread(target=obtener_ecuacion)
+        self.hilo_medicion.start()
+
     def cargar_ecuacion_del_dia(self):
         ruta_archivo = 'utils/ecuaciones/ecuacion.json'
 
         try:
+            # Abrir y cargar el archivo JSON
             with open(ruta_archivo, 'r') as archivo:
                 ecuacion = json.load(archivo)
 
@@ -385,14 +476,14 @@ class Ventana2:
             if ecuacion['fecha'] == dia_actual:
                 m = ecuacion['pendiente']  # Pendiente
                 b = ecuacion['intercepto']  # Intercepto
-                return m,b
-
+                return m, b
             else:
                 return f"No hay ecuación disponible para la fecha actual: {dia_actual}. Por favor, genera una nueva."
 
         except FileNotFoundError:
-            return "El archivo de la ecuación no se encontró. Asegúrate de haberlo generado previamente."
-
+            # Manejar el caso donde el archivo no exista
+            messagebox.showwarning("Advertencia", "El archivo de la ecuación no se encontró. Por favor, genera una ecuación nueva.")
+            return None
 
     def actualizar_interfaz_despues_de_medir(self):
         self.menu.after(0, self.mostrar_grafico(), "Información", "Medición completada")
@@ -416,10 +507,12 @@ class Ventana2:
                 self.array_prom_gauss_volts = []
                 # Inicializar el gestor de recursos VISA
                 self.rm = pyvisa.ResourceManager()
-                self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
+
                 # Abrir la conexión con el multímetro y realizar la medición
-                if verificar_dispositivo("9", self.menu):
+                addresses= ["9","6"]
+                if verificar_dispositivo(addresses, self.menu):
                     try:
+                        self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
                         multimetro = self.rm.open_resource('GPIB0::9::INSTR')
                         fuente = self.rm.open_resource('GPIB0::6::INSTR')# Conectar a la fuente de alimentación
                         # Configurar el multímetro para ser una fuente de corriente y medir voltaje
@@ -461,6 +554,8 @@ class Ventana2:
 
 
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
+        if self.array_prom_gauss_volts is not None and self.voltajes is not None:
+            # Obtener el título actual de la ventana como sugerencia de nombre
         if self.array_prom_gauss_volts is not None and self.array_prom_gauss_volts is not None:
             # Obtener el título actual de la ventana como sugerencia de nombre_v2
             proyecto_titulo = "test_gauss_"
@@ -598,16 +693,18 @@ class Ventana2:
 
     def borrar_grafico(self):
                 # Agregar un marco para contener el gráfico y la barra de herramientas
-
-        self.ax.legend()
         self.ax.grid(True)
-        self.ax.set_title('Gráfico')
+
         self.ax.clear()  # Limpiar el eje actual
+        self.ax.set_title('Gráfico')
         self.ax.set_ylabel('G')
         self.ax.set_xlabel('Delta V')
         plt.xlim(-20,20)
         plt.ylim(-6000,6000)
-        self.ax.legend()
+                # Mostrar la leyenda solo si hay etiquetas
+        handles, labels = self.ax.get_legend_handles_labels()
+        if labels:  # Solo mostrar la leyenda si hay etiquetas
+            self.ax.legend()
         self.ax.grid(True)
         
         self.canvas.draw()
