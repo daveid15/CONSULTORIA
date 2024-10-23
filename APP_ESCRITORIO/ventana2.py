@@ -554,8 +554,6 @@ class Ventana2:
 
 
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
-        if self.array_prom_gauss_volts is not None and self.voltajes is not None:
-            # Obtener el título actual de la ventana como sugerencia de nombre
         if self.array_prom_gauss_volts is not None and self.array_prom_gauss_volts is not None:
             # Obtener el título actual de la ventana como sugerencia de nombre_v2
             proyecto_titulo = "test_gauss_"
