@@ -311,6 +311,13 @@ def editar_prueba(request, prueba_id):
         # Actualizar los campos editables
         prueba.prueba_name = prueba_name
 
+        # Guardar cambios en mediciones
+        for medicion in prueba.medicion_set.all():
+            medicion.voltaje = request.POST.get(f'voltaje_{medicion.id}')
+            medicion.corriente = request.POST.get(f'corriente_{medicion.id}')
+            medicion.campo = request.POST.get(f'campo_{medicion.id}')
+            medicion.save()
+
         # Solo actualizar el gráfico si se ha subido un nuevo archivo
         if grafico:
             prueba.grafico = grafico
@@ -344,7 +351,42 @@ def desbloquear_prueba(request, prueba_id):
     prueba.save()
     return redirect('pruebas_bloqueadas')
 
+@login_required
 def eliminar_prueba(request, prueba_id):
     prueba = get_object_or_404(Prueba, id=prueba_id)
     prueba.delete()
     return redirect('pruebas_bloqueadas')
+
+@login_required
+def crear_prueba(request):
+    if request.method == 'POST':
+        perfil_parametro = Perfil_Parametro.objects.get(id=request.POST.get('perfil_parametro'))
+        user = User.objects.get(id=request.POST.get('user_id'))
+        
+        # Crear la Prueba
+        nueva_prueba = Prueba.objects.create(
+            id_perfil_parametro=perfil_parametro,
+            id_user=user,
+            prueba_name=request.POST.get('prueba_name'),
+            tipo=request.POST.get('tipo'),
+            prueba_state='t'
+        )
+        
+        # Crear las Mediciones asociadas
+        voltajes = request.POST.getlist('voltaje')
+        corrientes = request.POST.getlist('corriente')
+        campos = request.POST.getlist('campo')
+
+        for v, c, cm in zip(voltajes, corrientes, campos):
+            Medicion.objects.create(
+                id_prueba=nueva_prueba,
+                voltaje=float(v),
+                corriente=float(c),
+                campo=float(cm) if cm else None
+            )
+        
+        return redirect('listar_pruebas')  # Redirige a la lista de pruebas después de crearla
+
+    perfiles = Perfil_Parametro.objects.all()
+    usuarios = User.objects.all()
+    return render(request, 'caracterizacion/crear_prueba.html', {'perfiles': perfiles, 'usuarios': usuarios})

@@ -1,0 +1,61 @@
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+<main role="main">
+    <div class="titu-mein">
+        <h3 class='h2 medium text-blue'>Crear Nueva Prueba</h3>
+    </div>  
+    <div class="col-md-11 cont-form">
+        <form action="" method="post">
+            {% csrf_token %}
+            
+            <!-- Selección de Perfil de Parámetro -->
+            <div class="row col-md-11 casilla1">
+                <label for="perfil_parametro" class="custom-label">Perfil de Parámetro:</label>
+                <select name="perfil_parametro" class="form-control">
+                    {% for perfil in perfiles %}
+                        <option value="{{ perfil.id }}">{{ perfil.perfil_parametro_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Selección de Usuario -->
+            <div class="row col-md-11 casilla2">
+                <label for="user_id" class="custom-label">Usuario:</label>
+                <select name="user_id" class="form-control">
+                    {% for usuario in usuarios %}
+                        <option value="{{ usuario.id }}">{{ usuario.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Nombre de la Prueba -->
+            <div class="row col-md-11 casilla3">
+                <label for="prueba_name" class="custom-label">Nombre de la Prueba:</label>
+                <input type="text" name="prueba_name" class="form-control" required />
+            </div>
+
+            <!-- Tipo de Prueba -->
+            <div class="row col-md-11 casilla4">
+                <label for="tipo" class="custom-label">Tipo:</label>
+                <input type="text" name="tipo" class="form-control" required />
+            </div>
+
+            <!-- Mediciones (voltaje, corriente, campo) -->
+            <h4>Mediciones</h4>
+            <div id="mediciones">
+                <div class="medicion">
+                    <label>Voltaje:</label>
+                    <input type="number" step="0.01" name="voltaje" class="form-control" required />
+                    <label>Corriente:</label>
+                    <input type="number" step="0.01" name="corriente" class="form-control" required />
+                    <label>Campo (opcional):</label>
+                    <input type="number" step="0.01" name="campo" class="form-control" />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Crear Prueba</button>
+        </form>
+    </div>
+</main>
+{% endblock %}

@@ -1241,3 +1241,159 @@ body {
 .btn-confirm:hover {
   background-color: #88e688;
 }
+
+/* Media query para pantallas pequeñas (iPhone SE, hasta 375px) */
+@media only screen and (max-width: 375px) {
+  .table-user, .table-user thead, .table-user tbody, .table-user th, .table-user td, .table-user tr {
+      display: block;
+  }
+
+  /* Oculta los encabezados de la tabla */
+  .table-user thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+  }
+
+  /* Estilo para cada fila */
+  .table-user tr {
+      margin-bottom: 15px;
+  }
+
+  .table-user td {
+      position: relative;
+      padding-left: 50%;
+      text-align: right;
+      border-bottom: 1px solid #ddd;
+  }
+
+  /* Añadir etiquetas antes de cada celda con el nombre del encabezado */
+  .table-user td:before {
+      content: attr(data-label);
+      position: absolute;
+      left: 15px;
+      width: 45%;
+      padding-right: 10px;
+      text-align: left;
+      font-weight: bold;
+  }
+
+  /* Ajustes del contenedor */
+  .cont-table {
+      width: 95%;
+  }
+
+  .barra-busqueda, .botones-2-carac {
+      width: 95%;
+  }
+}
+
+
+/* Media query para pantallas tipo tablet (768px - 1024px) */
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+  .table-user {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+  }
+
+  .table-user tbody {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between; /* Distribuye las tarjetas */
+  }
+
+  .table-user tr {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin: 10px;
+      box-sizing: border-box;
+      width: calc(50% - 20px); /* Las tarjetas ocupan el 50% del ancho */
+  }
+
+  .table-user td {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+  }
+
+  .table-user td:before {
+      content: attr(data-label);
+      font-weight: bold;
+      flex: 1;
+      padding-right: 10px;
+  }
+
+  .cont-table {
+      width: 90%;
+  }
+
+  .barra-busqueda, .botones-2-carac {
+      width: 45%;
+      margin: 10px;
+  }
+}
+
+
+/* Para pantallas tipo laptop (1024px - 1600px) */
+@media only screen and (min-width: 1024px) and (max-width: 1600px) {
+  .table-user tbody {
+      justify-content: space-around;
+  }
+
+  .table-user tr {
+      width: calc(33.33% - 20px); /* Las tarjetas ocupan un tercio del ancho */
+  }
+
+  .cont-table {
+      width: 80%;
+  }
+
+  .barra-busqueda, .botones-2-carac {
+      width: 30%;
+  }
+}
+
+
+/* Para pantallas mayores a 1600px, volvemos al formato original de tabla */
+@media only screen and (min-width: 1601px) {
+  .table-user, .table-user tbody, .table-user thead, .table-user tr, .table-user th, .table-user td {
+      display: table;
+  }
+
+  .table-user tbody {
+      display: table-row-group;
+  }
+
+  .table-user thead {
+      display: table-header-group;
+  }
+
+  .table-user tr {
+      display: table-row;
+      width: 100%; /* Aseguramos que la tabla ocupe todo el ancho */
+      margin-bottom: 0;
+  }
+
+  .table-user td, .table-user th {
+      display: table-cell;
+      padding-left: 8px;
+      text-align: left;
+  }
+
+  .table-user td:before {
+      content: none; /* Eliminamos las etiquetas antes de las celdas */
+  }
+
+  .cont-table {
+      width: 70%;
+      margin: 20px auto;
+  }
+
+  .barra-busqueda, .botones-2-carac {
+      width: 20%;
+      margin: 10px;
+  }
+}
