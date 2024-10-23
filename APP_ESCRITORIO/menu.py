@@ -6,6 +6,8 @@ from ventana2 import Ventana2
 from ventana3 import Ventana3
 from ventana4 import Ventana4
 import os            
+from ventana4 import Ventana4
+import os            
 
 class Menu:
     def __init__(self, main):
@@ -30,19 +32,26 @@ class Menu:
         ruta_relativa = os.path.join("fotos", "FuentePoder.png")
         imagen_fuente = Image.open(ruta_relativa)
 
+
+        ruta_relativa = os.path.join("fotos", "FuentePoder.png")
+        imagen_fuente = Image.open(ruta_relativa)
+
         #Imagenes
+        #imagen_fuente = Image.open(self.imagen_fuente)
+        self.imagen_fuente = "fotos\FuentePoder.png"
+        imagen_fuente = Image.open(self.imagen_fuente)
         #imagen_fuente = Image.open(self.imagen_fuente)
         imagen_tk_fuente = ImageTk.PhotoImage(imagen_fuente)
         label_fuente = tk.Label(right_frame, image=imagen_tk_fuente, width=175, height=120)
         label_fuente.place(relx=0.315, rely=0.3)
 
-        self.imagen_gaussmeter = "fotos/Gaussmeter.png"
+        self.imagen_gaussmeter = "fotos\Gaussmeter.png"
         imagen_gaussmeter = Image.open(self.imagen_gaussmeter)
         imagen_tk_gaussmeter = ImageTk.PhotoImage(imagen_gaussmeter)
         label_gaussmeter = tk.Label(right_frame, image=imagen_tk_gaussmeter, width=175, height=120)
         label_gaussmeter.place(relx=0.5575, rely=0.3)
 
-        self.imagen_multimetro = "fotos/Multimetro.png"
+        self.imagen_multimetro = "fotos\Multimetro.png"
         imagen_multimetro = Image.open(self.imagen_multimetro)
         imagen_tk_multimetro = ImageTk.PhotoImage(imagen_multimetro)
         label_multimetro = tk.Label(right_frame, image=imagen_tk_multimetro, width=175, height=120)
@@ -96,6 +105,6 @@ class Menu:
     
 if __name__ == "__main__":
     main= tk.Tk()
-    #imagen = tk.PhotoImage("fotos\complaint-exist.png")
+    imagen = tk.PhotoImage("APP_ESCRITORIO\fotos\complaint-exist.png")
     app = Menu(main)
     main.mainloop()
