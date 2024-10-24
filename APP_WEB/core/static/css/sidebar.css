@@ -43,6 +43,15 @@ body {
   flex: 1;
 }
 
+.flex__container__masive{
+  display: flex;
+  gap: 1rem;
+  flex-flow: row wrap;
+}
+.btn--masive {
+  flex: 3;
+}
+
 .flex--item{
   padding: 20px;
   margin-left: 280px;
@@ -86,6 +95,9 @@ body {
   color: var(--blue);
   font-family: 'Nunito', sans-serif;
 }
+
+
+
 
 .sidebar {
   position: fixed;
@@ -402,6 +414,8 @@ border-radius: 90px
   display: flex;
   flex-flow: row wrap;
   align-content: space-between;
+  flex-direction: row-reverse;
+  gap: 10%;
 }
 .flex__form__label{
   font-size: 22px;
@@ -783,6 +797,12 @@ border-radius: 90px
     margin-top: 10px;
     box-sizing: border-box;
     flex: 2;
+}
+.button--white {
+  background-color: #fff;
+  color: #001F3F;
+  border: 2px solid var(--white);
+  font-family: 'Nunito', sans-serif;
 }
 .custom-button-volver {
   position: absolute;

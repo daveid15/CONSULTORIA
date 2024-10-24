@@ -15,50 +15,46 @@
     }
 </script>
 {% endblock %}
-    <main role="main">
-        <div class="titu-mein">
-            <h3 class='h2 medium text-blue'>Información de Usuario</h3>
-        </div>  
-        <div class="col-md-11 cont-form">
-            <form action="" method="post" onsubmit="mostrarAlerta()">
-                {% csrf_token %}
-                <input type="hidden" value="{{ user_data.id }}" name="user_id" id="user_id">
-                <input type="hidden" value="{{ groups.id }}" name="grupo" id="grupo">
-                <div class="col-12 col-sm-8 mb-3 casilla1">
-                    <label for="rut" class="custom-label">Rut: </label>
-                </div>
-                <div class="col-12 col-sm-8 mb-3 dato1">
-                    <input type="text" name="rut" id="id_rut"  value="{{user_data.username}}" class="form-control border custom-input" readonly/>
-                </div>
-                <div class="row col-md-11 casilla2">
-                    <label for="name" class="custom-label">Nombre: </label>
-                </div>
-                <div class="row col-md-11 dato2">   
-                    <input type="text"  id="name" name="name" value="{{user_data.first_name}}" class="form-control border custom-input" required readonly/>
-                </div> 
-                <div class="row col-md-11 casilla3">
-                    <label for="last_name" class="custom-label">Apellidos: </label>
-                </div>
-                <div class="row col-md-11 dato3">
-                    <input type="text" id="last_name1" name="last_name1" value="{{user_data.last_name}}" class="form-control border custom-input" required readonly/>                      
-                </div>
-                <div class="row col-md-11 casilla5">
-                    <label for="email" class="custom-label">Correo: </label>
-                </div>
-                <div class="row col-md-11 dato5">
-                    <input type="email" id="email" name="email" value="{{user_data.email}}" class="form-control border custom-input" required readonly/>
-                </div>
-                <div class="col-12 col-sm-4 mb-3 casilla6">
-                    <label for="grupo" class="custom-label">Perfil: </label>
-                </div>
-                <div class="col-12 col-sm-4 mb-3 dato6">
-                    <input type="text" name="group" id="group" class="form-control border custom-input" value="{% for p in profile_list %}{% if p.id == groups.id %}{{p.name}}{% endif %}{% endfor %}" readonly>
-                    <input type="hidden" name="group_id" value="{{ groups.id }}">
-                </div>
-            </form>
-        </div>
-        <div class="botones-4-crear">
-            <a href="{% url 'list_user_active2' %}" class="button button--gray_volver form-control custom-button_ver" title="Volver a Lista">Volver</a>
-        </div>
-    </main>
+
+<div class="flex__action flex__action__title">
+    <h2 class='flex__action h2 medium text-blue'>Información de Usuario</h2>
+</div>
+<form class="flex__form" action="" method="post" onsubmit="mostrarAlerta()">
+    {% csrf_token %}
+    <input type="hidden" value="{{ user_data.id }}" name="user_id" id="user_id">
+    <input type="hidden" value="{{ groups.id }}" name="grupo" id="grupo">
+    <div class="flex__form__input">
+        <label for="rut" class="flex__form__label">Rut: </label>
+        <input type="text" name="rut" id="id_rut" value="{{user_data.username}}"
+            class="form-control border custom-input" readonly />
+    </div>
+    <div class="flex__form__input ">
+        <label for="name" class="flex__form__label">Nombre: </label>
+        <input type="text" id="name" name="name" value="{{user_data.first_name}}"
+            class="form-control border custom-input" required readonly />
+    </div>
+    <div class="flex__form__input ">
+        <label for="last_name" class="flex__form__label">Apellidos: </label>
+        <input type="text" id="last_name1" name="last_name1" value="{{user_data.last_name}}"
+            class="form-control border custom-input" required readonly />
+    </div>
+    <div class="flex__form__input ">
+        <label for="email" class="flex__form__label">Correo: </label>
+        <input type="email" id="email" name="email" value="{{user_data.email}}" class="form-control border custom-input"
+            required readonly />
+    </div>
+    <div class="flex__form__input ">
+        <label for="grupo" class="flex__form__label">Perfil: </label>
+        <input type="text" name="group" id="group" class="form-control border custom-input"
+            value="{% for p in profile_list %}{% if p.id == groups.id %}{{p.name}}{% endif %}{% endfor %}" readonly>
+        <input type="hidden" name="group_id" value="{{ groups.id }}">
+    </div>
+    <div class="flex__form__input flex__form__button ">
+        <a href="{% url 'list_user_active2' %}" class="button--white custom-button"
+            title="Volver a Lista">Volver</a>
+
+    </div>
+</form>
+
+
 {% endblock %}
