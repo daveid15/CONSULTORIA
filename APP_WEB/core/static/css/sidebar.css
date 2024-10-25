@@ -2,8 +2,8 @@
 @import url(https://fonts.googleapis.com/css?family=Inter:100,200,300,regular,500,600,700,800,900);
 @media (min-width: 1200px) {
   .dashboard-container {
-      margin-right: 60px;
-      padding-left: 6.2rem;
+    margin-right: 60px;
+    padding-left: 6.2rem;
 
   }
 }
@@ -12,6 +12,7 @@ body {
   background-color: #fff !important;
   overflow-x: hidden
 }
+
 .flex__container {
   display: flex;
   align-items: flex-start;
@@ -32,7 +33,7 @@ body {
   align-content: stretch;
 }
 
-.flex__action__title{
+.flex__action__title {
   width: 100vw;
 
 }
@@ -43,25 +44,28 @@ body {
   flex: 1;
 }
 
-.flex__container__masive{
+.flex__container__masive {
   display: flex;
   gap: 1rem;
   flex-flow: row wrap;
 }
+
 .btn--masive {
   flex: 3;
 }
 
-.flex--item{
+.flex--item {
   padding: 20px;
   margin-left: 280px;
   flex: 2;
   width: 100vw;
   transition: margin-left 0.3s;
 }
+
 /* Ajuste del margen del contenido cuando el sidebar está cerrado */
-.sidebar.active + .flex--item{
-  margin-left: 116px; /* Reducir margen cuando el sidebar está cerrado */
+.sidebar.active+.flex--item {
+  margin-left: 116px;
+  /* Reducir margen cuando el sidebar está cerrado */
 }
 
 .input-container-search {
@@ -89,6 +93,7 @@ body {
 .input-container-search input:focus {
   outline: none;
 }
+
 .button--gray {
   background: var(--gray);
   border: 2px solid var(--gray);
@@ -112,24 +117,28 @@ body {
   transition: all 0.3s;
   top: 0;
   left: 0;
-  
+
 }
+
 .sidebar .head {
   display: flex;
   gap: 20px;
   padding-bottom: 20px;
   border-bottom: 1px solid #f6f6f6;
 }
+
 .user-img {
-    width: 100px; 
-    height: 75px; 
-    border-radius: 2px; 
-    overflow: hidden;
-  }
+  width: 100px;
+  height: 75px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
 .user-img img {
   width: 100%;
   object-fit: cover;
 }
+
 .user-details .title,
 .menu .title {
   font-size: 16px;
@@ -138,19 +147,23 @@ body {
   text-transform: uppercase;
   margin-bottom: 10px;
 }
+
 .user-details .name {
   font-size: 14px;
   font-weight: 500;
 }
+
 .nav {
   flex: 1;
 }
+
 .menu ul li {
   position: relative;
   list-style: none;
   margin-bottom: 5px;
   font-family: 'Nunito', sans-serif;
 }
+
 .menu ul li a {
   display: flex;
   align-items: center;
@@ -164,25 +177,31 @@ body {
   transition: all 0.3s;
   font-family: 'Nunito', sans-serif;
 }
-.menu ul li > a:hover,
-.menu ul li.active > a {
+
+.menu ul li>a:hover,
+.menu ul li.active>a {
   color: #000;
   background-color: #f6f6f6;
   font-family: 'Nunito', sans-serif;
 }
+
 .menu ul li .icon {
   font-size: 20px;
 }
+
 .menu ul li .text {
   flex: 1;
 }
+
 .menu ul li .arrow {
   font-size: 14px;
   transition: all 0.3s;
 }
+
 .menu ul li.active .arrow {
   transform: rotate(180deg);
 }
+
 .menu .sub-menu {
   display: none;
   margin-left: 20px;
@@ -190,15 +209,18 @@ body {
   padding-top: 5px;
   border-left: 1px solid #f6f6f6;
 }
+
 .menu .sub-menu li a {
   padding: 10px 8px;
   font-size: 12px;
 }
+
 .menu:not(:last-child) {
   padding-bottom: 10px;
   margin-bottom: 20px;
   border-bottom: 2px solid #f6f6f6;
 }
+
 .menu-btn {
   position: absolute;
   right: -14px;
@@ -215,36 +237,45 @@ body {
   background-color: #fff;
   font-family: 'Nunito', sans-serif;
 }
+
 .menu-btn:hover i {
   color: #000;
 }
+
 .menu-btn i {
   transition: all 0.3s;
 }
+
 .sidebar.active {
   width: 92px;
 }
+
 .sidebar.active .menu-btn i {
   transform: rotate(180deg);
 }
+
 .sidebar.active .user-details {
   display: none;
 }
+
 .sidebar.active .menu .title {
   text-align: center;
   font-family: 'Nunito', sans-serif;
-  
+
 }
+
 .sidebar.active .menu ul li .arrow {
   display: none;
 }
-.sidebar.active .menu > ul > li > a {
+
+.sidebar.active .menu>ul>li>a {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.sidebar.active .menu > ul > li > a .text {
+
+.sidebar.active .menu>ul>li>a .text {
   position: absolute;
   left: 70px;
   top: 50%;
@@ -257,7 +288,8 @@ body {
   visibility: hidden;
   transition: all 0.3s;
 }
-.sidebar.active .menu > ul > li > a .text::after {
+
+.sidebar.active .menu>ul>li>a .text::after {
   content: "";
   position: absolute;
   left: -5px;
@@ -269,11 +301,13 @@ body {
   transform: rotate(45deg);
   z-index: -1;
 }
-.sidebar.active .menu > ul > li > a:hover .text {
+
+.sidebar.active .menu>ul>li>a:hover .text {
   left: 50px;
   opacity: 1;
   visibility: visible;
 }
+
 .sidebar.active .menu .sub-menu {
   position: absolute;
   top: 0;
@@ -282,7 +316,8 @@ body {
   border-radius: 20px;
   padding: 10px 20px;
   border: 1px solid #f6f6f6;
-  background-color: #001F3F;;
+  background-color: #001F3F;
+  ;
   box-shadow: 0px 10px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -295,17 +330,19 @@ body {
 
 /* Sidebar oculto en resoluciones menores a 768px */
 @media (max-width: 768px) {
-  .flex--item{
+  .flex--item {
     padding: 20px;
     margin-top: 280px;
     flex: 2;
     width: 100vw;
     transition: margin-top 0.3s;
   }
-  .sidebar.active + .flex--item{
+
+  .sidebar.active+.flex--item {
     margin: 0;
     margin-top: 116px;
   }
+
   .sidebar {
     position: fixed;
     width: 100%;
@@ -319,19 +356,29 @@ body {
     z-index: 1000;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   }
-  
+
+  .nav {
+    flex: 1;
+    display: flex;
+
+    align-items: flex-start;
+    flex-flow: row wrap;
+    justify-content: space-between;
+  }
+
   .sidebar .head {
-    display: none; /* Ocultamos la sección de cabecera en el header */
+    display: none;
+    /* Ocultamos la sección de cabecera en el header */
   }
 
   .user-img {
-    width: 50px; 
+    width: 50px;
     height: 50px;
   }
 
   .menu ul {
     display: flex;
-    flex-direction: row;
+    flex-flow: row wrap;
     gap: 15px;
   }
 
@@ -349,8 +396,16 @@ body {
     font-size: 18px;
   }
 
-  .menu ul li .text {
+
+  /* Aplica el desplazamiento solo cuando .flex--item tiene la clase .shifted */
+  .flex--item.shifted {
+    margin-top: 400px;
+    /* Desplazamiento del .flex--item */
+    transition: margin-top 0.3s ease;
   }
+
+  .menu ul li .text {}
+
   .menu-btn {
     position: absolute;
     left: 14px;
@@ -367,102 +422,152 @@ body {
     background-color: #fff;
     font-family: 'Nunito', sans-serif;
     transform: rotate(90deg);
-}
-  .sidebar.active {
-  height: 92px; 
-  width: 100%;
   }
-  .flex--item{
+
+  .sidebar.active {
+    height: 92px;
+    width: 100%;
+  }
+
+  .sidebar.active .menu .sub-menu {
+    top: auto;
+
+  }
+
+  .sidebar.active .nav {
+    flex: 1;
+    display: flex;
+    flex-flow: row wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .flex--item {
     margin: 0;
     margin-top: 200px;
-    
+
   }
-  .menu:last-child{
-    display:grid;
+
+  .menu:last-child {
+    display: grid;
   }
+
   .menu-btn:hover i {
     color: #000;
-}
+  }
+
   .sidebar.active .menu-btn i {
     transform: rotate(180deg);
-}
+  }
+
+  .sidebar.active .menu>ul>li>a:hover .text {
+    display: none;
+  }
+
+  .user-details .title,
+  .menu .title {
+    display: none;
+  }
+
+  .menu:not(:last-child) {
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    border-bottom: none;
+  }
 }
 
-.cont-form-carac-crear label{
+
+.cont-form-carac-crear label {
   font-size: x-large;
   padding-left: 5%;
 }
-.cont-form-carac-crear input{
+
+.cont-form-carac-crear input {
   font-size: x-large;
-  
+
   display: flex;
   justify-content: flex-end;
   align-items: center;
 }
-.upbar{
-    background-color: #001F3F;
-    height: 65px;
-    display: flex;
-    align-items: center;
-    width: 100%;
+
+.upbar {
+  background-color: #001F3F;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
-.icon-border{
-    border-radius: 20px;
-    overflow: hidden; 
-    display: inline-block;
-} 
-.latbar{
-    background-color:#001F3F;
-     width: 13%;
-     height: 100vh;
-} 
+
+.icon-border {
+  border-radius: 20px;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.latbar {
+  background-color: #001F3F;
+  width: 13%;
+  height: 100vh;
+}
+
 /*Listas GENERALES*/
 
 /*Botones generales de cada lista de izquierda a derecha*/
 
-.flex__action__btn--block{ /*boton lista block*/
-    position: absolute; 
-    top: 21%; 
-    left: 57.5%; 
-    width: 13%; 
-    height: 10%;
+.flex__action__btn--block {
+  /*boton lista block*/
+  position: absolute;
+  top: 21%;
+  left: 57.5%;
+  width: 13%;
+  height: 10%;
 }
 
-.barra-busqueda{ /*barra BUSQUEDA General*/
-    top: 20%;
-    left: 15%;
-    height: 10%; 
-    border-radius: 90px;
+.barra-busqueda {
+  /*barra BUSQUEDA General*/
+  top: 20%;
+  left: 15%;
+  height: 10%;
+  border-radius: 90px;
 }
 
-.barra-op{ /*nose?*/
-   position: absolute; 
-   top: 3%;
-   left: 105%; 
-   width: 90%; 
-   height: 60%; 
-   border-radius: 90px;
+.barra-op {
+  /*nose?*/
+  position: absolute;
+  top: 3%;
+  left: 105%;
+  width: 90%;
+  height: 60%;
+  border-radius: 90px;
 }
 
 /*tablas*/
 
-.estilo-table{  /*ESTILO DE TABLAS GENERALES Titulos */
-    background-color: #001F3F; 
-    color: #fff;
-    
-    
-}
-.all-lightgray-carro{ /*ESTILO DE TABLAS GENERALES datos */
-    background-color: lightgray;
+.estilo-table {
+  /*ESTILO DE TABLAS GENERALES Titulos */
+  background-color: #001F3F;
+  color: #fff;
+
 
 }
-.redondeo{ /*nose??????*/
-border-radius: 90px
+
+.all-lightgray-carro {
+  /*ESTILO DE TABLAS GENERALES datos */
+  background-color: lightgray;
+
 }
+
+.redondeo {
+  /*nose??????*/
+  border-radius: 90px
+}
+
 /*FORMULARIOS GENERALES DE nuevo usuario, vista*/
 
 
-.flex__form{  /*Borde GENERAL DE FORMULARIOS*/
+.flex__form {
+  /*Borde GENERAL DE FORMULARIOS*/
   display: flex;
   width: 70vw;
   background-color: #001f3f;
@@ -472,13 +577,14 @@ border-radius: 90px
   flex-flow: row wrap;
   gap: 10%;
 }
-.flex__form__input{
+
+.flex__form__input {
   min-width: 30vw;
   flex: 2;
   padding: 10px;
 }
 
-.flex__form__button{
+.flex__form__button {
   width: 100%;
   display: flex;
   flex-flow: row wrap;
@@ -486,36 +592,41 @@ border-radius: 90px
   flex-direction: row-reverse;
   gap: 10%;
 }
-.flex__form__label{
+
+.flex__form__label {
   font-size: 22px;
   font-family: 'Nunito', sans-serif;
   color: #fff;
 }
 
 
-.view--parameter{
+.view--parameter {
   min-height: 42.2vh;
   width: 35vw;
 }
-.form--parameter{
+
+.form--parameter {
   flex: 1;
 }
 
-.cont-form-carac-crear{  /*Borde GENERAL DE FORMULARIOS*/
-  position: absolute; 
-  top: 100px;  
-  width: 16%; 
-  height: 550px; 
+.cont-form-carac-crear {
+  /*Borde GENERAL DE FORMULARIOS*/
+  position: absolute;
+  top: 100px;
+  width: 16%;
+  height: 550px;
   background-color: #001f3f;
   border-radius: 50px;
 }
-.cont-form-carac-crear h1{
+
+.cont-form-carac-crear h1 {
   color: white;
   position: absolute;
   padding: 10px;
   left: 25%;
 }
-.mover{
+
+.mover {
   position: absolute;
   left: 40px;
   top: 50px;
@@ -527,7 +638,8 @@ border-radius: 90px
 .form-perfil-crear input[type="number"],
 .form-perfil-crear input[type="password"],
 .form-perfil-crear select {
-  width: 70%; /* Ajusta el tamaño de los inputs */
+  width: 70%;
+  /* Ajusta el tamaño de los inputs */
   margin: 10px 0;
   padding: 10px;
   border: 1px solid #ccc;
@@ -543,7 +655,7 @@ border-radius: 90px
 
 
 
-.cont-form-carac-ver h1{
+.cont-form-carac-ver h1 {
   color: white;
   position: absolute;
   padding: 10px;
@@ -553,179 +665,258 @@ border-radius: 90px
 
 
 
-.cont-form-carac th{
+.cont-form-carac th {
   position: relative;
   padding-top: 15px;
   border-bottom: 3px solid rgb(255, 255, 255);
   color: #fff;
-} 
-.cont-form-crud{  /*Borde GENERAL DE FORMULARIOS*/
+}
+
+.cont-form-crud {
+  /*Borde GENERAL DE FORMULARIOS*/
 
   width: 100vw;
   background-color: #001f3f;
   border-radius: 50px;
   padding: 10px;
 }
-.cont-form-crud th{
+
+.cont-form-crud th {
   position: relative;
   padding-top: 15px;
   border-bottom: 3px solid rgb(255, 255, 255);
   color: #fff;
-} 
+}
 
-.letra_color{ /* COLOR boton DESCARGA ARCHIVO*/
-    color: #ffff;
+.letra_color {
+  /* COLOR boton DESCARGA ARCHIVO*/
+  color: #ffff;
 }
 
 
 /* para tablas */
 .user-action {
-    display: inline-block;
-    font-size: 20px; /* Tamaño de fuente */
-    color: #fff; /* Color del texto */
-    text-decoration: none; /* Sin subrayado */
-     /* Fondo del enlace */
-    border-radius: 5px; /* Bordes redondeados */
+  display: inline-block;
+  font-size: 20px;
+  /* Tamaño de fuente */
+  color: #fff;
+  /* Color del texto */
+  text-decoration: none;
+  /* Sin subrayado */
+  /* Fondo del enlace */
+  border-radius: 5px;
+  /* Bordes redondeados */
 }
 
 .user-action i {
-    margin-right: 5px; /* Espacio entre el icono y el texto */
+  margin-right: 5px;
+  /* Espacio entre el icono y el texto */
 }
+
 .table-user th {
-  font-family: 'Nunito', sans-serif;/* Tipo de letra */
-  font-size: 20px; /* Tamaño de la fuente para los encabezados */
-  font-weight:inherit; /* Grosor de la fuente para los encabezados */
-  text-align:center; /* Alineación del texto en los encabezados */
- /* Espaciado interno en los encabezados */
+  font-family: 'Nunito', sans-serif;
+  /* Tipo de letra */
+  font-size: 20px;
+  /* Tamaño de la fuente para los encabezados */
+  font-weight: inherit;
+  /* Grosor de la fuente para los encabezados */
+  text-align: center;
+  /* Alineación del texto en los encabezados */
+  /* Espaciado interno en los encabezados */
 }
 
 .table-user td {
-    font-size: 20px; /* Tamaño de la fuente para las celdas */
-    color: #fff; /* Color del texto para las celdas */
-    padding: 10px; /* Espaciado interno en las celdas */
-    text-align:center;/* Alineación del texto */
-    border-bottom: 3px solid rgb(255, 255, 255);
+  font-size: 20px;
+  /* Tamaño de la fuente para las celdas */
+  color: #fff;
+  /* Color del texto para las celdas */
+  padding: 10px;
+  /* Espaciado interno en las celdas */
+  text-align: center;
+  /* Alineación del texto */
+  border-bottom: 3px solid rgb(255, 255, 255);
 }
 
 .table-user .user-actions {
-    display:block; /* Usar flexbox para alinear los elementos */
-    gap: 5px; /* Espacio entre los enlaces */
+  display: block;
+  /* Usar flexbox para alinear los elementos */
+  gap: 5px;
+  /* Espacio entre los enlaces */
 }
 
 .table-user .action-link {
-    display: inline-block; /* Mostrar como bloque en línea */
-    font-size: 20px; /* Tamaño de la fuente para los enlaces */
-    color: #000; /* Color del texto para los enlaces */
-    text-decoration: none; /* Sin subrayado en los enlaces */
-    padding: 5px 10px; /* Espaciado interno en los enlaces */
-    border-radius: 5px; /* Bordes redondeados */
+  display: inline-block;
+  /* Mostrar como bloque en línea */
+  font-size: 20px;
+  /* Tamaño de la fuente para los enlaces */
+  color: #000;
+  /* Color del texto para los enlaces */
+  text-decoration: none;
+  /* Sin subrayado en los enlaces */
+  padding: 5px 10px;
+  /* Espaciado interno en los enlaces */
+  border-radius: 5px;
+  /* Bordes redondeados */
 }
 
 .table-user .action-link:hover {
-    background-color: #d0d0d0; /* Cambio de color al pasar el cursor */
+  background-color: #d0d0d0;
+  /* Cambio de color al pasar el cursor */
 }
+
 .custom-button {
-    font-size: 20px; /* Tamaño de la fuente */
-    font-family: 'Nunito', sans-serif;/* Tipo de letra */
-    padding: 10px 30px; /* Espaciado interno */
-    background-color: #001F3F; /* Fondo del botón */
-    border: none; /* Sin borde */
-    color: #fff; /* Color del texto */
-    border-radius: 50px; /* Bordes redondeados */
-    display: inline-block; /* Mostrar como bloque en línea */
-    text-align: center; /* Alineación del texto */
-    text-decoration: none; /* Sin subrayado */
-    width: 100%; /* Ancho del botón */
-    margin-top: 10px;
-    box-sizing: border-box;
-    flex: 2;
+  font-size: 20px;
+  /* Tamaño de la fuente */
+  font-family: 'Nunito', sans-serif;
+  /* Tipo de letra */
+  padding: 10px 30px;
+  /* Espaciado interno */
+  background-color: #001F3F;
+  /* Fondo del botón */
+  border: none;
+  /* Sin borde */
+  color: #fff;
+  /* Color del texto */
+  border-radius: 50px;
+  /* Bordes redondeados */
+  display: inline-block;
+  /* Mostrar como bloque en línea */
+  text-align: center;
+  /* Alineación del texto */
+  text-decoration: none;
+  /* Sin subrayado */
+  width: 100%;
+  /* Ancho del botón */
+  margin-top: 10px;
+  box-sizing: border-box;
+  flex: 2;
 }
+
 .button--white {
   background-color: #fff;
   color: #001F3F;
   border: 2px solid var(--white);
   font-family: 'Nunito', sans-serif;
 }
+
 .custom-button-carac {
-  position:absolute;
+  position: absolute;
   left: 300px;
-  font-size: 20px; /* Tamaño de la fuente */
+  font-size: 20px;
+  /* Tamaño de la fuente */
   padding: 10px 60px;
-   /* Espaciado interno */
-  background-color: #001F3F; /* Fondo del botón */
-  border: none; /* Sin borde */
-  color: #fff; /* Color del texto */
-  border-radius: 50px; /* Bordes redondeados */ /* Mostrar como bloque en línea */
-  text-decoration: none; /* Sin subrayado */ 
+  /* Espaciado interno */
+  background-color: #001F3F;
+  /* Fondo del botón */
+  border: none;
+  /* Sin borde */
+  color: #fff;
+  /* Color del texto */
+  border-radius: 50px;
+  /* Bordes redondeados */
+  /* Mostrar como bloque en línea */
+  text-decoration: none;
+  /* Sin subrayado */
   transition: 0.5s;
   cursor: pointer;
   width: 160%;
 }
 
 .custom-button:hover {
-    background-color: lightgray; /* Cambio de color al pasar el cursor */
-    color:#000 /* Color del texto */
-    
+  background-color: lightgray;
+  /* Cambio de color al pasar el cursor */
+  color: #000
+    /* Color del texto */
+
 }
 
 /* Agregar cajas de texto*/
 .custom-label {
-    font-size: 22px; /* Tamaño de la fuente para las etiquetas */
-    font-family: 'Nunito', sans-serif; /* Tipo de letra para las etiquetas */
-    color: #fff; /* Color del texto para las etiquetas */
+  font-size: 22px;
+  /* Tamaño de la fuente para las etiquetas */
+  font-family: 'Nunito', sans-serif;
+  /* Tipo de letra para las etiquetas */
+  color: #fff;
+  /* Color del texto para las etiquetas */
 }
 
 .custom-input {
-    font-size: 20px; /* Tamaño de la fuente para las cajas de texto */
-    font-family: 'Nunito', sans-serif; /* Tipo de letra para las cajas de texto */
-    color: #333; /* Color del texto para las cajas de texto */
-    padding: 0.6em; /* Espaciado interno para las cajas de texto */
-    background-color: #f9f9f9; /* Fondo de las cajas de texto */
-    border: 1px solid #ccc; /* Borde de las cajas de texto */
-    border-radius: 10px; /* Bordes redondeados para las cajas de texto */
-    width: 95%; /* Ancho de las cajas de texto */
+  font-size: 20px;
+  /* Tamaño de la fuente para las cajas de texto */
+  font-family: 'Nunito', sans-serif;
+  /* Tipo de letra para las cajas de texto */
+  color: #333;
+  /* Color del texto para las cajas de texto */
+  padding: 0.6em;
+  /* Espaciado interno para las cajas de texto */
+  background-color: #f9f9f9;
+  /* Fondo de las cajas de texto */
+  border: 1px solid #ccc;
+  /* Borde de las cajas de texto */
+  border-radius: 10px;
+  /* Bordes redondeados para las cajas de texto */
+  width: 95%;
+  /* Ancho de las cajas de texto */
 }
+
 .custom-input2 {
-    font-size: 20px; /* Tamaño de la fuente para las cajas de texto */
-    font-family: 'Nunito', sans-serif; /* Tipo de letra para las cajas de texto */
-    color: #333; /* Color del texto para las cajas de texto */
-    padding: 50px; /* Espaciado interno para las cajas de texto */
-    background-color: #f9f9f9; /* Fondo de las cajas de texto */
-    border: 1px solid #ccc; /* Borde de las cajas de texto */
-    border-radius: 10px; /* Bordes redondeados para las cajas de texto */
-    width: 100%; /* Ancho de las cajas de texto */
- 
+  font-size: 20px;
+  /* Tamaño de la fuente para las cajas de texto */
+  font-family: 'Nunito', sans-serif;
+  /* Tipo de letra para las cajas de texto */
+  color: #333;
+  /* Color del texto para las cajas de texto */
+  padding: 50px;
+  /* Espaciado interno para las cajas de texto */
+  background-color: #f9f9f9;
+  /* Fondo de las cajas de texto */
+  border: 1px solid #ccc;
+  /* Borde de las cajas de texto */
+  border-radius: 10px;
+  /* Bordes redondeados para las cajas de texto */
+  width: 100%;
+  /* Ancho de las cajas de texto */
+
 }
+
 .custom-input2:focus {
-    border-color: #3A1B78; /* Cambio de color del borde al enfocar */
-    box-shadow: 0 0 5px rgba(58, 27, 120, 0.5); /* Sombra al enfocar */
-    outline: none; /* Eliminar el contorno al enfocar */
+  border-color: #3A1B78;
+  /* Cambio de color del borde al enfocar */
+  box-shadow: 0 0 5px rgba(58, 27, 120, 0.5);
+  /* Sombra al enfocar */
+  outline: none;
+  /* Eliminar el contorno al enfocar */
 }
 
 .custom-input:focus {
-    border-color: #3A1B78; /* Cambio de color del borde al enfocar */
-    box-shadow: 0 0 5px rgba(58, 27, 120, 0.5); /* Sombra al enfocar */
-    outline: none; /* Eliminar el contorno al enfocar */
+  border-color: #3A1B78;
+  /* Cambio de color del borde al enfocar */
+  box-shadow: 0 0 5px rgba(58, 27, 120, 0.5);
+  /* Sombra al enfocar */
+  outline: none;
+  /* Eliminar el contorno al enfocar */
 }
 
 /*CAMBIOS EN EL PASSWORD*/
 
-.cont-form-password {  /*Borde General PASSWORD*/
-    position: absolute; 
-    top: 20%; 
-    left: 10%; 
-    width: 83%; 
-    height: 60%; 
-    background-color: #D9D9D9;
-    border-radius: 50px;
+.cont-form-password {
+  /*Borde General PASSWORD*/
+  position: absolute;
+  top: 20%;
+  left: 10%;
+  width: 83%;
+  height: 60%;
+  background-color: #D9D9D9;
+  border-radius: 50px;
 }
 
-.botones-password{ /*boton VOLVER DERECHO De Formularios*/
-    position: absolute; 
-    top: 117%; 
-    left: 1%; 
-    width: 16%; 
-    height: 10%;
+.botones-password {
+  /*boton VOLVER DERECHO De Formularios*/
+  position: absolute;
+  top: 117%;
+  left: 1%;
+  width: 16%;
+  height: 10%;
 }
 
 
