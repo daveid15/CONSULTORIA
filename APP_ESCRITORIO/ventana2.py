@@ -144,9 +144,9 @@ class Ventana2:
         tk.Entry(menuecu, textvariable=self._delay).place(x=30, y=160, width=220)
 
         #Botones
-        self.boton_cerrar = ttk.Button(menuecu, text="Cancelar", command=self.destroy)
+        self.boton_cerrar = tk.Button(menuecu, text="Cancelar", command=self.destroy)
         self.boton_cerrar.place(x=50, y=220)
-        self.boton_calcular = ttk.Button(menuecu, text="Calcular", command=self.obtener_ecuacion)
+        self.boton_calcular = tk.Button(menuecu, text="Calcular", command=self.obtener_ecuacion)
         self.boton_calcular.place(x=150, y=220)
 
     def obtener_ecuacion(self):
@@ -556,7 +556,7 @@ class Ventana2:
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
         if self.array_prom_gauss_volts is not None and self.voltajes is not None:
             # Obtener el título actual de la ventana como sugerencia de nombre
-        if self.array_prom_gauss_volts is not None and self.array_prom_gauss_volts is not None:
+        #if self.array_prom_gauss_volts is not None and self.array_prom_gauss_volts is not None:
             # Obtener el título actual de la ventana como sugerencia de nombre_v2
             proyecto_titulo = "test_gauss_"
             file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")],initialfile=proyecto_titulo)
