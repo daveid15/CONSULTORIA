@@ -333,13 +333,6 @@ body {
     width: 13%; 
     height: 10%;
 }
-.botones-1-carac{ /*boton lista block*/
-  position: absolute; 
-  top: 21%; 
-  left: 57.5%; 
-  width: 13%; 
-  height: 10%;
-}
 
 .barra-busqueda{ /*barra BUSQUEDA General*/
     top: 20%;
@@ -374,16 +367,6 @@ border-radius: 90px
 }
 /*FORMULARIOS GENERALES DE nuevo usuario, vista*/
 
-.cont-form{  /*Borde GENERAL DE FORMULARIOS*/
-    position: absolute; 
-    top: 20%; 
-    left: 15%; 
-    width: 83%; 
-    height: 520px; 
-    background-color: #001f3f;
-    border-radius: 50px;
-    
-}
 
 .flex__form{  /*Borde GENERAL DE FORMULARIOS*/
   display: flex;
@@ -459,34 +442,13 @@ border-radius: 90px
 }
 
 /* Botones */
-.custom-button-crear1, .custom-button-volver1 {
-  width: 150px;
-  padding: 10px;
-  margin-top: 20px;
-  font-size: 16px;
-}
+
 
 /* Alinear el botón Volver */
-.custom-button-volver1 {
-  margin-left: 10px;
-}
-
-.mover-ver{
-  position: absolute;
-  left: 40px;
-  top: 100px;
-  color: #fff;
-}
 
 
-.cont-form-carac-ver{  /*Borde GENERAL DE FORMULARIOS*/
-  position: absolute; 
-  top: 50px;  
-  width: 40%; 
-  height: 350px; 
-  background-color: #001f3f;
-  border-radius: 50px;
-}
+
+
 .cont-form-carac-ver h1{
   color: white;
   position: absolute;
@@ -517,199 +479,11 @@ border-radius: 90px
   color: #fff;
 } 
 
-
-.casilla1{
-    position: absolute; 
-    top: 15%; 
-    left: 5%; 
-    width: 23%; 
-    height: 70%;
-}
-
-.casilla2{
-    position: absolute; 
-    top: 40%; 
-    left: 5%; 
-    width: 23%; 
-    height: 70%;
-}
-.casilla3{
-    position: absolute; 
-    top: 70%; 
-    left: 5%; 
-    width: 23%; 
-    height: 70%;
-}
-.casilla4{
-    position: absolute; 
-    top: 75%; 
-    left: 5%; 
-    width: 23%; 
-    height: 70%;
-}
-.casilla5{
-    position: absolute; 
-    top: 15%; 
-    left: 50%; 
-    width: 23%; 
-    height: 70%;
-}
-.casilla6{
-    position: absolute; 
-    top: 40%; 
-    left: 50%; 
-    width: 23%; 
-    height: 10px;
-}
-.casilla7{
-    position: absolute; 
-    top: 55%; 
-    left: 50%; 
-    width: 23%; 
-    height: 10px;
-}
-.casilla8{
-    position: absolute; 
-    top: 75%; 
-    left: 50%; 
-    width: 23%; 
-    height: 70%;
-}
-
-
-.dato1{
-    position: absolute; 
-    top: 13%; 
-    left: 17%; 
-    width: 23%; 
-    height: 70%;
-}
-.dato2{
-    position: absolute; 
-    top: 38%; 
-    left: 17%; 
-    width: 23%; 
-    height: 70%;
-}
-
-.dato3{
-    position: absolute; 
-    top: 67%; 
-    left: 17%; 
-    width: 23%; 
-    height: 70%;
-}
-.dato4{
-    position: absolute; 
-    top: 73%; 
-    left: 17%; 
-    width: 23%; 
-    height: 70%;
-}
-.dato5{
-    position: absolute; 
-    top: 13%; 
-    left: 67%; 
-    width: 23%; 
-    height: 70%;
-}
-.dato6{
-    position: absolute; 
-    top: 38%; 
-    left: 67%;  
-    width: 23%; 
-    height: 70%;
-}
-.dato7{
-    position: absolute; 
-    top: 53%; 
-    left: 67%;  
-    width: 23%; 
-    height: 70%;
-}
-.dato8{
-    position: absolute; 
-    top: 73%; 
-    left: 67%; 
-    width: 23%; 
-    height: 50%;
-}
-/*botones globales de cada main*/
-.boton_global1 {  
-    position: absolute; 
-    top: 18%; 
-    left: 15%; 
-    width: 13%; 
-    height: 10%;
-}
-
-.boton_global2 {
-    position: absolute; 
-    top: 26%; 
-    left: 15%; 
-    width: 13%; 
-    height: 10%;
-}
-
-/*botones globales CARGA MASIVA*/
-.boton_carga1 {   /*boton DESCARGA ARCHIVO*/
-    position: absolute; 
-    top: 25%; 
-    left: 15%; 
-    width: 20%; 
-    height: 10%;
-}
 .letra_color{ /* COLOR boton DESCARGA ARCHIVO*/
     color: #ffff;
 }
 
-.boton_carga2 { /*boton SELECCIONA ARCHIVO*/
-    position: absolute; 
-    top: 25%; 
-    left: 42.5%; 
-    width: 20%; 
-    height: 10%;
-}
 
-.boton_carga3 { /*boton CARGAR ARCHIVO*/
-    position: absolute; 
-    top: 25%; 
-    left: 70%; 
-    width: 20%; 
-    height: 10%;
-    
-}
-
-/*Funciones CARRITO */
-.cont-table_producto{ /*TABLAS GENERALES */
-    font-family: 'Nunito', sans-serif;/* Tipo de letra */
-    position: absolute; 
-    top: 30%; 
-    left: 15%; 
-    width: 53%; 
-    height: 50%;
-    
-}
-.cont-table_carrito2{ /*TABLAS GENERALES */
-    position: absolute; 
-    top: 9%; 
-    left: 70%; 
-    width: 30%; 
-    height: 80%;
-  border-radius: 90px;
-}
-.total_carrito{
-    top: 80%;
-    left: 10%;
-    width: 70;
-    height: 10%;
-}
-
-
-/*color del banner*/
-
-
-/*color del banner*/
 /* para tablas */
 .user-action {
     display: inline-block;
@@ -756,34 +530,6 @@ border-radius: 90px
 .table-user .action-link:hover {
     background-color: #d0d0d0; /* Cambio de color al pasar el cursor */
 }
-
-/* botones */
-.custom-button_ver {
-  font-size: 20px; /* Tamaño de la fuente */
-  font-family: 'Nunito', sans-serif;/* Tipo de letra */
-  padding: 10px 30px; /* Espaciado interno */
-  background-color: #d9d9d9; /* Fondo del botón */
-  border: none; /* Sin borde */
-  color: #000; /* Color del texto */
-  border-radius: 50px; /* Bordes redondeados */
-  display: inline-block; /* Mostrar como bloque en línea */
-  text-align: center; /* Alineación del texto */
-  text-decoration: none; /* Sin subrayado */
-  width: 100%; /* Ancho del botón */
-}
-.custom-button-editar {
-  font-size: 20px; /* Tamaño de la fuente */
-  font-family: 'Nunito', sans-serif;/* Tipo de letra */
-  padding: 10px 30px; /* Espaciado interno */
-  background-color: #d9d9d9; /* Fondo del botón */
-  border: none; /* Sin borde */
-  color: #000; /* Color del texto */
-  border-radius: 50px; /* Bordes redondeados */
-  display: inline-block; /* Mostrar como bloque en línea */
-  text-align: center; /* Alineación del texto */
-  text-decoration: none; /* Sin subrayado */
-  width: 100%; /* Ancho del botón */
-}
 .custom-button {
     font-size: 20px; /* Tamaño de la fuente */
     font-family: 'Nunito', sans-serif;/* Tipo de letra */
@@ -805,54 +551,6 @@ border-radius: 90px
   color: #001F3F;
   border: 2px solid var(--white);
   font-family: 'Nunito', sans-serif;
-}
-.custom-button-volver {
-  position: absolute;
-  top: 400px;
-  left: 50px;
-  font-size: 20px; /* Tamaño de la fuente */
-  font-family: 'Nunito', sans-serif;/* Tipo de letra */
-  padding: 10px 10px; /* Espaciado interno */
-  background-color: #f00; /* Fondo del botón */
-  border: none; /* Sin borde */
-  color: #fff; /* Color del texto */
-  border-radius: 50px; /* Bordes redondeados */
-  display: inline-block; /* Mostrar como bloque en línea */
-  text-align: center; /* Alineación del texto */
-  text-decoration: none; /* Sin subrayado */
-  width: 60%; /* Ancho del botón */
-}
-.custom-button-volver-ver {
-  position: absolute;
-  top: 250px;
-  left: 80px;
-  font-size: 20px; /* Tamaño de la fuente */
-  font-family: 'Nunito', sans-serif;/* Tipo de letra */
-  padding: 10px 10px; /* Espaciado interno */
-  background-color: #f00; /* Fondo del botón */
-  border: none; /* Sin borde */
-  color: #fff; /* Color del texto */
-  border-radius: 50px; /* Bordes redondeados */
-  display: inline-block; /* Mostrar como bloque en línea */
-  text-align: center; /* Alineación del texto */
-  text-decoration: none; /* Sin subrayado */
-  width: 60%; /* Ancho del botón */
-}
-.custom-button-crear {
-  position: absolute;
-  top: 330px;
-  left: 50px;
-  font-size: 20px; /* Tamaño de la fuente */
-  font-family: 'Nunito', sans-serif;/* Tipo de letra */
-  padding: 10px 10px; /* Espaciado interno */
-  background-color: #2bff00; /* Fondo del botón */
-  border: none; /* Sin borde */
-  color: #fff; /* Color del texto */
-  border-radius: 50px; /* Bordes redondeados */
-  display: inline-block; /* Mostrar como bloque en línea */
-  text-align: center; /* Alineación del texto */
-  text-decoration: none; /* Sin subrayado */
-  width: 60%; /* Ancho del botón */
 }
 .custom-button-carac {
   position:absolute;
@@ -927,42 +625,7 @@ border-radius: 90px
     background-color: #D9D9D9;
     border-radius: 50px;
 }
-.titu-2{ /*Titulo password*/
-    position: absolute; 
-    top: 15%; 
-    left: 5%; 
-    width: 70%; 
-    height: 70%;    
-}
-.titu-3{
-    position: absolute; 
-    top: 25%; 
-    left: 5%; 
-    width: 70%; 
-    height: 80%;
-}
 
-.titu-4{
-    position: absolute; 
-    top: 35%; 
-    left: 5%; 
-    width: 50%; 
-    height: 80%;
-}
-.titu-5{
-    position: absolute; 
-    top: 50%; 
-    left: 5%; 
-    width: 70%; 
-    height: 80%;
-}
-.titu-6{
-    position: absolute; 
-    top: 50%; 
-    left: 5%; 
-    width: 50%; 
-    height: 80%;
-}
 .botones-password{ /*boton VOLVER DERECHO De Formularios*/
     position: absolute; 
     top: 117%; 
