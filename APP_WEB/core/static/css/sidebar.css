@@ -324,14 +324,6 @@ body {
 } 
 /*Listas GENERALES*/
 
-.titu-mein{ /*Titulos en general*/
-    position: absolute; 
-    top: 5%; 
-    left: 15%; 
-    width: 50%; 
-    height: 5%; 
-    border-radius: 10px;
-}
 /*Botones generales de cada lista de izquierda a derecha*/
 
 .flex__action__btn--block{ /*boton lista block*/
@@ -422,6 +414,16 @@ border-radius: 90px
   font-family: 'Nunito', sans-serif;
   color: #fff;
 }
+
+
+.view--parameter{
+  min-height: 42.2vh;
+  width: 35vw;
+}
+.form--parameter{
+  flex: 1;
+}
+
 .cont-form-carac-crear{  /*Borde GENERAL DE FORMULARIOS*/
   position: absolute; 
   top: 100px;  
@@ -885,7 +887,7 @@ border-radius: 90px
     font-size: 20px; /* Tamaño de la fuente para las cajas de texto */
     font-family: 'Nunito', sans-serif; /* Tipo de letra para las cajas de texto */
     color: #333; /* Color del texto para las cajas de texto */
-    padding: 0.9em; /* Espaciado interno para las cajas de texto */
+    padding: 0.6em; /* Espaciado interno para las cajas de texto */
     background-color: #f9f9f9; /* Fondo de las cajas de texto */
     border: 1px solid #ccc; /* Borde de las cajas de texto */
     border-radius: 10px; /* Bordes redondeados para las cajas de texto */

@@ -186,7 +186,13 @@ def bloquear_perfil(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
     perfil.perfil_parametro_state = 'f'
     perfil.save()
-    return redirect('listar_perfiles')  # Redirige a la lista de perfiles
+    try:
+
+        messages.success(request, 'Perfil '+perfil.perfil_parametro_name + 'bloqueado con éxito')
+        return redirect('listar_perfiles')
+    except:
+        messages.error(request, 'El perfil '+perfil.perfil_parametro_name + ' no se ha podido bloquear')
+        return redirect('listar_perfiles')
 
 @login_required
 def listar_perfiles_bloqueados(request):
@@ -196,9 +202,17 @@ def listar_perfiles_bloqueados(request):
 @login_required
 def desbloquear_perfil(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
-    perfil.bloqueado = False
+    perfil.perfil_parametro_state = 't'
     perfil.save()
-    return redirect('listar_perfiles_bloqueados')
+    try:
+
+        messages.success(request, 'Perfil '+perfil.perfil_parametro_name + 'desbloqueado con éxito')
+        return redirect('listar_perfiles_bloqueados')
+    except:
+        messages.error(request, 'El perfil '+perfil.perfil_parametro_name + ' no se ha podido desbloquear')
+        return redirect('listar_perfiles_bloqueados')
+
+    
 
 @login_required
 def eliminar_perfil_bloqueado(request, perfil_id):
