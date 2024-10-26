@@ -28,9 +28,9 @@ body {
   padding: 6px;
   width: 80vw;
   max-height: 50vh;
-  flex-wrap: wrap;
-  flex-direction: row;
+  flex-flow: row wrap;
   align-content: stretch;
+  gap: 10px;
 }
 
 .flex__action__title {
@@ -40,7 +40,6 @@ body {
 
 
 .flex__action__btn {
-  max-width: 17.78vw;
   flex: 1;
 }
 
@@ -791,6 +790,7 @@ body {
   /* Ancho del botón */
   margin-top: 10px;
   box-sizing: border-box;
+  min-width: 200px;
   flex: 2;
 }
 
