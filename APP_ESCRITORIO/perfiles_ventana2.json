@@ -1,7 +1,12 @@
 {
     "Prueba 2": {
-        "Corriente_fija": "13",
-        "Saturacion_de_campo": "2",
-        "Tiempo_entre_mediciones": "0.3"
+        "Corriente_fija": "1",
+        "Saturacion_de_campo": "21",
+        "Tiempo_entre_mediciones": "1"
+    },
+    "Prueba 3": {
+        "Corriente_fija": "1",
+        "Saturacion_de_campo": "21",
+        "Tiempo_entre_mediciones": "1"
     }
 }

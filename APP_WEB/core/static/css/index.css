@@ -12,6 +12,7 @@
 .h2.medium.text-blue {
     font-family: 'Nunito', sans-serif; /* Cambia la fuente a Nunito */
     font-weight: 600; /* Ajusta el peso del texto según sea necesario */
+    font-size: xx-large;
 }
 .nav-index::before {
     content: "";

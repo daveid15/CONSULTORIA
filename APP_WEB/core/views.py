@@ -23,7 +23,7 @@ from django.contrib import messages
 
 
 def num_pag():
-    return 10
+    return 1
 
 
 

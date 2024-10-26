@@ -1,0 +1,132 @@
+body {
+    font-family: 'Nunito', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  .cont-form-carac-responsive {
+    position: relative;
+    background-color: #001f3f;
+    border-radius: 20px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+  }
+  
+  .cont-form-carac-responsive th {
+    padding-top: 15px;
+    border-bottom: 3px solid #ffffff;
+    color: #ffffff;
+  }
+  
+  .table-responsive {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .table-user-responsive th, .table-user-responsive td {
+    padding: 12px 10px;
+    color: #ffffff;
+    background-color: #001f3f;
+    word-wrap: break-word;
+  }
+  
+  .table-user-responsive td {
+    border-bottom: 2px solid;
+    color: #fff;
+    font-size: 16px;
+  }
+  
+  .btn {
+    background-color: #001f3f;
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-right: 5px;
+  }
+  
+  .btn-icon i {
+    margin-right: 5px;
+  }
+  
+  @media only screen and (min-width: 768px) and (max-width: 1600px) {
+    .table-user-responsive td{
+        text-align: right;
+        }
+    }
+    @media only screen and (min-width: 1601px){
+        .table-user-responsive td{
+            text-align: center;
+        }
+    }
+  /* Responsive adjustments */
+  @media only screen and (max-width: 768px) {
+    .cont-form-carac-responsive {
+        background-color: white;
+        margin-top: 10px;
+    }
+    .custom-button {
+        width: 100%;
+        margin-top: 10px;  
+        display: inline-flex; 
+        flex-direction: row; 
+        text-align: center;            
+    }
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+  
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+  
+    tr {
+        margin-bottom: 10px;
+        background-color: #001f3f;
+        border: 1px solid #001f3f;
+        border-radius: 10px;
+        padding: 10px;
+        width: 100%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    th {
+        position: relative;
+        border-radius: 0%;
+        border-bottom: 3px solid;
+        color: white;
+    }
+    td {
+        text-align: right;
+        position: relative;
+        border-radius: 0%;
+        border-bottom: 3px solid;
+        color: white;
+    }
+  
+    td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        padding-right: 5px;
+        text-align: right;
+    }
+    th:before {
+        content: attr(data-label);
+        position: absolute;
+        right: 15px;
+        width: 45%;
+        padding-right: 5px;
+        font-weight: bold;
+        text-align: left;
+    }
+  
+    .custom-button {
+        padding: 10px 20px;
+    }
+
+  }

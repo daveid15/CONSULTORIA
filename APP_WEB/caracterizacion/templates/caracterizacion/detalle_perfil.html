@@ -3,18 +3,41 @@
 {% block content %}
 {% block extrahead %}
 {% endblock %}
-<div class="titu-mein">
-    <div class="cont-form-carac-ver">
-        <h1>Detalles del Perfil: {{ perfil.perfil_parametro_name }}</h1>
-        <div class="mover-ver">
-            <br>
-            <br>
-            <p>Intervalo Simétrico: {{ perfil.intervalo_simetrico }} A</p>
-            <p>Intervalo de Corriente: {{ perfil.intervalo_corriente }} A</p>
-            <p>Delay: {{ perfil.delay }} s</p>
-            <p>Estado: {{ perfil.perfil_parametro_state }}</p>
-        </div>    
-        <a class="button button--gray_volver form-control custom-button-volver-ver" href="{% url 'listar_perfiles' %}">Volver a la lista</a>
+<div class="flex__action flex__action__title">
+    <h2 class='flex__action h2 medium text-blue'>Información de Parámetro</h2>
+</div>
+<div class="flex__form view--parameter">
+    <div class="flex__form__input form--parameter">
+        <label for="name" class="flex__form__label">Nombre: </label>
+        <input type="text" name="name" id="id_name" value="{{perfil.perfil_parametro_name}}"
+            class="form-control border custom-input" readonly />
+    </div>
+    <div class="flex__form__input form--parameter">
+        <label for="symmetric_interval" class="flex__form__label">Intervalo Simétrico(A): </label>
+        <input type="text" name="symmetric_interval" id="id_symmetric_interval" value="{{perfil.intervalo_simetrico}}"
+            class="form-control border custom-input" readonly />
+    </div>
+    <div class="flex__form__input form--parameter">
+        <label for="current_ranges" class="flex__form__label">Intervalos de Corriente: </label>
+        <input type="text" name="current_ranges" id="id_current_ranges" value="{{ perfil.intervalo_corriente}}"
+            class="form-control border custom-input" readonly />
+    </div>
+    <div class="flex__form__input form--parameter">
+        <label for="delay" class="flex__form__label">Tiempo entre medición(s) </label>
+        <input type="text" name="delay" id="id_delay" value="{{ perfil.delay}}" class="form-control border custom-input"
+            readonly />
+    </div>
+    <div class="flex__form__input form--parameter">
+        <label for="delay" class="flex__form__label">Estado </label>
+        <input type="text" name="delay" id="id_delay" value="{% if perfil.perfil_parametro_state == 't' %}Activo{% else %}Bloqueado{% endif %}" class="form-control border custom-input"
+            readonly />
+    </div>
+    <div class="flex__form__input flex__form__button form--parameter">
+        <a class="button--white custom-button" href="{% url 'listar_perfiles' %}">Volver</a>
     </div>
 </div>
+
+
+</div>
+
 {% endblock %}
