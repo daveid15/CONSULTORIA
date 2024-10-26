@@ -395,13 +395,15 @@ body {
   .menu ul li .icon {
     font-size: 18px;
   }
+.sidebar .nav .menu ul li.active{
 
+}
 
   /* Aplica el desplazamiento solo cuando .flex--item tiene la clase .shifted */
   .flex--item.shifted {
     margin-top: 400px;
     /* Desplazamiento del .flex--item */
-    transition: margin-top 0.3s ease;
+    transition: margin-top 0.3s ;
   }
 
   .menu ul li .text {}
