@@ -2,7 +2,6 @@
 {% load static %}
 {% block content %}
 {% block extrahead %}
-<link href="{% static 'css/styles.css' %}" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -12,58 +11,56 @@
     }
 </script>
 {% endblock %}
-    <main role="main">
-        <div class="titu-mein">
-            <h3 class='h2 medium text-blue'>Nuevo Usuario</h3>
-        </div>  
-        <div class="col-md-11 cont-form">
-                <form action="" method="post" onsubmit="mostrarAlerta()">
-                    {% csrf_token %}
-                        <div class="col-12 col-sm-8 mb-3 casilla1">
-                            <label for="rut" class="custom-label">Rut: </label>
-                        </div>
-                        <div class="col-12 col-sm-8 mb-3 dato1">
-                            <input type="text" name="rut" required oninput="checkRut(this)" autofocus maxlength="254" required id="id_rut" class="form-control border custom-input" placeholder="Rut (Ej: 17605812-2)"/>
-                        </div>
-                        <div class="row col-md-11 casilla2" >
-                            <label for="name" class="custom-label">Nombre: </label>
-                        </div>
-                        <div class="row col-md-11 dato2">
-                            <input type="text" class="form-control border custom-input" id="name" name="name" autofocus maxlength="254" required  placeholder="Alonso"/>
-                        </div>
-                        <div class="row col-md-11 casilla3">
-                            <label for="last_name" class="custom-label">Apellidos: </label>
-                        </div>
-                        <div class="row col-md-11 dato3">
-                            <input type="text" class="form-control border custom-input" id="last_name1" name="last_name1" required  placeholder="Rojas"/>
-                        </div>
-                        <div class="row col-md-11 casilla5">
-                            <label for="email" class="custom-label">Correo: </label>
-                        </div>
-                        <div class="row col-md-11 dato5">
-                            <input type="email" class="form-control border custom-input" placeholder="nombre@autonoma.cl" name="email"/>
-                        </div>
 
-                        <div class="col-12 col-sm-4 mb-3 casilla6">
-                            <label for="grupo" class="custom-label">Perfil: </label>
-                        </div>
-                        <div class="col-12 col-sm-4 mb-3 dato6">
-                            <select name="grupo" id="grupo" class="form-control border custom-input" required>
-                                <option value="">----------</option>
-                                {% for g in groups %}
-                                <option value="{{g.id}}">{{g.name}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="botones-5-crear">
-                            <input type="submit" value="Crear Usuario" class="button button--gray form-control custom-button" title="Crear Nuevo Usuario">
-                        </div>
-                </form>
-            </div>
-        </div>
-        <div class="botones-4-crear">
-            <a href="{% url 'list_user_active2' %}" class="button button--gray_volver form-control custom-button" title="Volver a Lista">Volver</a>
-        </div>
-    </main>
+<div class="flex__action flex__action__title">
+    <h2 class='flex__action h2 medium text-blue'>Crear Usuario</h2>
+</div>
+
+<form class="flex__form" action="" method="post" onsubmit="mostrarAlerta()">
+    {% csrf_token %}
+    <div class="flex__form__input">
+        <label for="rut" class="flex__form__label">Rut: </label>
+        <input type="text" name="rut" required oninput="checkRut(this)" autofocus maxlength="254" required id="id_rut"
+            class="form-control border custom-input" placeholder="Rut (Ej: 17605812-2)" />
+    </div>
+
+    <div class="flex__form__input">
+        <label for="name" class="flex__form__label">Nombre: </label>
+        <input type="text" class="form-control border custom-input" id="name" name="name" autofocus maxlength="254"
+            required placeholder="Alonso" />
+    </div>
+
+    <div class="flex__form__input">
+        <label for="last_name" class="flex__form__label">Apellidos: </label>
+        <input type="text" class="form-control border custom-input" id="last_name1" name="last_name1" required
+            placeholder="Rojas" />
+    </div>
+
+    <div class="flex__form__input">
+        <label for="email" class="flex__form__label">Correo: </label>
+        <input type="email" class="form-control border custom-input" placeholder="nombre@autonoma.cl" name="email" />
+    </div>
+
+    <div class="flex__form__input">
+        <label for="grupo" class="flex__form__label">Perfil: </label>
+        <select name="grupo" id="grupo" class="form-control border custom-input" required>
+            <option value="">----------</option>
+            {% for g in groups %}
+            <option value="{{g.id}}">{{g.name}}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="flex__form__input flex__form__button ">
+        <input type="submit" value="Crear Usuario" class="  button--white custom-button"
+            title="Crear Nuevo Usuario">
+        <a href="{% url 'list_user_active2' %}" class="   button--white custom-button"
+            title="Volver a Lista">Volver</a>
+    </div>
+</form>
+</div>
+
+
+
 
 {% endblock %}
