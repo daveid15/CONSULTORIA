@@ -43,7 +43,7 @@
     <div class="flex__action barra-busqueda">
         <form method="post" action="" class='col-12 col-lg-6 input-container-search my-auto me-3 redondeo'>
             {% csrf_token %}
-            <input name="search" id="search" type="text" placeholder='Buscar por Usuario, Primer Nombre' />
+            <input name="search" id="search" type="text" placeholder='Buscar por Nombre' />
             <button type="submit" class="button button--gray">
                 <span class="material-icons-outlined">
                     search
@@ -56,10 +56,6 @@
         <a href="{% url 'listar_perfiles' %}"
             class="button button--gray form-control custom-button" title="Agregar Usuarios">
             Activos</a>
-    </div>
-    <div class="flex__action flex__action__btn">
-        <a href="{% url 'crear_perfil' %}" class="button button--gray form-control custom-button"
-            title="Agregar Usuarios">Crear nuevo perfil</a>
     </div>
 
 </header>
