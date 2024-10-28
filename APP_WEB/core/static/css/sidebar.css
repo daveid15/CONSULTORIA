@@ -47,6 +47,7 @@ body {
   display: flex;
   gap: 1rem;
   flex-flow: row wrap;
+  max-width: 40vh;
 }
 
 .btn--masive {
