@@ -132,26 +132,20 @@ def listar_perfiles(request):
 def crear_perfil(request):
     if request.method == 'POST':
         nombre_perfil = request.POST.get('perfil_parametro_name')
-        
-        # Comprobar si el nombre ya existe
         if Perfil_Parametro.objects.filter(perfil_parametro_name=nombre_perfil).exists():
             error_message = "El nombre del perfil ya existe. Por favor, elija otro."
             return render(request, 'caracterizacion/crear_perfil.html', {'error_message': error_message})
-        
-        # Continuar con el proceso de guardado si no existe
         else:
-            # Crear el perfil con los demás campos
+
             form = PerfilParametroForm(request.POST)
             if form.is_valid():
                 form.save()
+                messages.success(request,'¡Perfil creado correctamente!')
                 return redirect('listar_perfiles')
-
     else:
         form = PerfilParametroForm()
-    
     return render(request, 'caracterizacion/crear_editar_perfil.html', {'form': form})
- 
-    
+
 # Editar un perfil de parámetros
 @login_required
 def editar_perfil(request, pk):
@@ -160,6 +154,7 @@ def editar_perfil(request, pk):
         form = PerfilParametroForm(request.POST, instance=perfil)
         if form.is_valid():
             form.save()
+            messages.success(request,'¡Perfil '+perfil.perfil_parametro_name+' actualizado correctamente!')
             return redirect('listar_perfiles')
     else:
         form = PerfilParametroForm(instance=perfil)
@@ -172,6 +167,7 @@ def eliminar_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     if request.method == 'POST':
         perfil.delete()
+        messages.success(request,'¡Perfil eliminado correctamente!')
         return redirect('listar_perfiles')
     return render(request, 'caracterizacion/eliminar_perfil.html', {'perfil': perfil})
 
@@ -205,7 +201,6 @@ def desbloquear_perfil(request, perfil_id):
     perfil.perfil_parametro_state = 't'
     perfil.save()
     try:
-
         messages.success(request, 'Perfil '+perfil.perfil_parametro_name + 'desbloqueado con éxito')
         return redirect('listar_perfiles_bloqueados')
     except:
