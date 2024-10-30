@@ -300,36 +300,25 @@ def detalle_prueba(request, prueba_id):
 
 
 def editar_prueba(request, prueba_id):
-    # Recuperar la prueba específica usando su ID
-    prueba = get_object_or_404(Prueba, pk=prueba_id)
-
+    prueba = get_object_or_404(Prueba, id=prueba_id)
+    
     if request.method == 'POST':
-        # Capturar datos del formulario manualmente
-        prueba_name = request.POST.get('prueba_name')
-        grafico = request.FILES.get('grafico')
-
-        # Actualizar los campos editables
-        prueba.prueba_name = prueba_name
-
-        # Guardar cambios en mediciones
-        for medicion in prueba.medicion_set.all():
-            medicion.voltaje = request.POST.get(f'voltaje_{medicion.id}')
-            medicion.corriente = request.POST.get(f'corriente_{medicion.id}')
-            medicion.campo = request.POST.get(f'campo_{medicion.id}')
-            medicion.save()
-
-        # Solo actualizar el gráfico si se ha subido un nuevo archivo
-        if grafico:
-            prueba.grafico = grafico
-
-        # Guardar cambios en la prueba
+        prueba.prueba_name = request.POST.get('prueba_name', prueba.prueba_name)
+        prueba.voltaje = request.POST.get('voltaje') or 0.0  # Asigna un valor predeterminado
+        prueba.corriente = request.POST.get('corriente') or 0.0
+        prueba.resistencia = request.POST.get('resistencia') or 0.0
+        prueba.campo = request.POST.get('campo') or 0.0
+        
+        # Si hay un nuevo archivo de gráfico, actualízalo
+        if 'grafico' in request.FILES:
+            prueba.grafico = request.FILES['grafico']
+            
         prueba.save()
 
         # Mostrar mensaje de éxito y redirigir
         messages.success(request, 'Prueba actualizada correctamente.')
         return redirect('listar_pruebas')
 
-    # Renderizar la plantilla de edición con los datos actuales de la prueba
     return render(request, 'caracterizacion/editar_prueba.html', {'prueba': prueba})
 
 @login_required

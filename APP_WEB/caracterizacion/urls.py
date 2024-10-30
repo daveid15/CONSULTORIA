@@ -26,4 +26,5 @@ caracterizacion_patterns = [
     path('pruebas/desbloquear/<int:prueba_id>/', views.desbloquear_prueba, name='desbloquear_prueba'),
     path('pruebas/eliminar/<int:prueba_id>/', views.eliminar_prueba, name='eliminar_prueba'),
     path('crear_prueba/', views.crear_prueba, name='crear_prueba'),
+    path('editar_prueba/<int:prueba_id>/', views.editar_prueba, name='editar_prueba')
 ]  

@@ -35,17 +35,39 @@
             <div class="row col-md-11 dato3">
                 <input type="text" id="prueba_state" name="prueba_state" value="{{ prueba.prueba_state|yesno:"Activo,Bloqueado" }}" class="form-control border custom-input" readonly />
             </div>
+            
+            <!-- Voltaje -->
+            <div class="row col-md-11 casilla5">
+               <label for="voltaje" class="custom-label">Voltaje:</label>
+            </div>
+            <div class="row col-md-11 dato5">
+               <input type="number" id="voltaje" name="voltaje" value="{{ prueba.voltaje }}" class="form-control border custom-input" required step="any" />
+            </div>
 
-            <!-- Gráfico -->
-            <div class="row col-md-11 casilla4">
-                <label for="grafico" class="custom-label">Gráfico:</label>
+            <!-- Corriente -->
+            <div class="row col-md-11 casilla6">
+              <label for="corriente" class="custom-label">Corriente:</label>
             </div>
-            <div class="row col-md-11 dato4">
-                <input type="file" id="grafico" name="grafico" class="form-control border custom-input">
-                {% if prueba.grafico %}
-                    <p>Archivo actual: <a href="{{ prueba.grafico.url }}" target="_blank">Ver Gráfico</a></p>
-                {% endif %}
+            <div class="row col-md-11 dato6">
+              <input type="number" id="corriente" name="corriente" value="{{ prueba.corriente }}" class="form-control border custom-input" required step="any" />
             </div>
+
+            <!-- Resistencia -->
+            <div class="row col-md-11 casilla7">
+               <label for="resistencia" class="custom-label">Resistencia:</label>
+            </div>
+            <div class="row col-md-11 dato7">
+            <input type="number" id="resistencia" name="resistencia" value="{{ prueba.resistencia }}" class="form-control border custom-input" required step="any" />
+            </div>
+
+            <!-- Campo -->
+            <div class="row col-md-11 casilla8">
+               <label for="campo" class="custom-label">Campo:</label>
+            </div>
+            <div class="row col-md-11 dato8">
+               <input type="number" id="campo" name="campo" value="{{ prueba.campo }}" class="form-control border custom-input" required step="any" />
+            </div>
+
 
             <!-- Botón de Guardar Cambios -->
             <div class="botones-5-crear">

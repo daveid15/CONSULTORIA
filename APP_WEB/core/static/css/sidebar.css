@@ -291,6 +291,11 @@ body {
   left: 86%; 
   width: 13%; 
   height: 10%;
+  display: flex;
+  justify-content: flex-start; /* Cambia a center si quieres centrar el botón */
+  align-items: center;
+  padding: 10px; /* Añade un poco de padding si es necesario */
+  gap: 10px; /* Espacio entre botones */
 }
 
 .botones-3{ /*boton carga masiva*/
@@ -1087,7 +1092,7 @@ body {
   background-color: #D3D3D3;
   border-radius: 15px;
   padding: 30px;
-  width: 500px;
+  width: 90%;
   margin: 100px auto;
   text-align: center;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
@@ -1396,4 +1401,16 @@ body {
       width: 20%;
       margin: 10px;
   }
+}
+
+.header .button--gray--carac {
+  width: auto; /* Evita que el botón ocupe todo el ancho */
+  display: inline-block; /* Asegura que el botón se alinee correctamente */
+  margin-left: 10px; /* Agrega espacio si es necesario */
+}
+
+.row {
+  display: flex;
+  align-items: center; /* Alinea verticalmente el contenido */
+  justify-content: space-between; /* Asegura que el título y el botón se ubiquen en extremos opuestos */
 }

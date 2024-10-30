@@ -45,7 +45,7 @@
                 <label for="fecha" class="custom-label">Fecha: </label>
             </div>
             <div class="row col-md-11 dato4">
-                <input type="text" id="fecha" name="fecha" value="{{ prueba_data.fecha|date:'d-m-Y H:i' }}" class="form-control border custom-input" readonly />
+                <input type="text" id="fecha" name="fecha" value="{{ prueba_data.fecha|date:'d-m-Y' }}" class="form-control border custom-input" readonly />
             </div>
             
             <div class="col-12 col-sm-8 mb-3 casilla5">
@@ -103,7 +103,7 @@
     </div>
 
     <div class="botones-4-crear">
-        <a href="{% url 'list_pruebas' %}" class="button button--gray_volver form-control custom-button_ver" title="Volver a Lista">Volver</a>
+        <a href="{% url 'listar_pruebas' %}" class="button button--gray_volver form-control custom-button_ver" title="Volver a Lista">Volver</a>
     </div>
 </main>
 {% endblock %}
