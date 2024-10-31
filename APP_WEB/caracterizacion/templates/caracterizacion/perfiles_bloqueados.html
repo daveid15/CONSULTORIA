@@ -21,33 +21,32 @@
     }
 </script> 
 {% endblock %}
-<header class='mb-5'>
-    <div class="titu-mein">
-        <div class="col-12 col-sm-8 mb-3">
-            <h2 class='h2 medium text-blue'>Lista de Perfiles Bloqueados</h2>
-        </div>
+<header class='flex__action'>
+    <div class="flex__action flex__action__title">
+        <h2 class='flex__action h2 medium text-blue'>Perfiles de Parámetros Bloqueados</h2>
     </div>
-    <div class="botones-4">
-        <a href="{% url 'listar_perfiles' %}" class="button button--gray form-control custom-button" title="Volver a Lista">Volver</a>
+    <div class="flex__action barra-busqueda">
+        <form method="post" action="" class='col-12 col-lg-6 input-container-search my-auto me-3 redondeo'>
+            {% csrf_token %}
+            <input name="search" id="search" type="text" placeholder='Buscar por Nombre' />
+            <button type="submit" class="button button--gray">
+                <span class="material-icons-outlined">
+                    search
+                </span>
+            </button>
+
+            <form>
     </div>
+    <div class="flex__action flex__action__btn">
+        <a href="{% url 'listar_perfiles' %}"
+            class="button button--gray form-control custom-button" title="Agregar Usuarios">
+            Activos</a>
+    </div>
+
 </header>
-<div class="d-flex flex-column flex-lg-row my-5 barra-busqueda">
-    <div class="my-auto d-flex flex-column flex-lg-row ms-lg-auto">
-        <div class="feedback body--small normal"></div>
-    </div>
-    <form method="post" action="" class='col-12 col-lg-6 input-container-search my-auto me-3'>
-        {% csrf_token %}
-        <input name="search" id="search" type="text" placeholder='Buscar por Perfil, Intervalo Simétrico'/>
-        <button type="submit" class="button button--gray">
-            <span class="material-icons-outlined">
-                search
-            </span>
-        </button>
-    <form>       
-</div>
-<div class="col-md-11 cont-table">
-    <table class="table table-perfiles">
-        <thead class="estilo-table">
+<div class="flex__action cont-form-carac-responsive">
+    <table class="table-responsive table-user-responsive ">
+        <thead >
             <tr>
                 <th width="1%" scope="col">Nombre Perfil</th>
                 <th width="1%" scope="col">Intervalo Simétrico</th>

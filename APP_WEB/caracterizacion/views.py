@@ -41,8 +41,8 @@ def ejecutar_medicion(start_current, step_size, delay, simular=False):
     if simular:  # Modo de simulación
         corrientes = np.linspace(start_current, -start_current, num=step_size)
         for corriente in corrientes:
-            V = random.uniform(-5, 5)  # Simula un voltaje entre -5 y 5 V
-            resultados.append((corriente, V))
+            V = corriente*2
+            resultados.append((round(corriente,1), round(V,1)))
             time.sleep(delay)  # Simula el tiempo de espera
     else:
         try:
@@ -78,6 +78,9 @@ def ejecutar_medicion(start_current, step_size, delay, simular=False):
 
 
 def medir_iv_view(request):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    array_current = [0]
+    array_voltaje = [0]
     if request.method == 'POST':
         # Obtener parámetros del formulario
         start_current = float(request.POST.get('start_current', 0))
@@ -86,13 +89,15 @@ def medir_iv_view(request):
 
         # Ejecutar medición
         resultado = ejecutar_medicion(start_current, step_size, delay, simular=True)  # Cambia a False si no es simulación
-
-        if 'error' in resultado:  # Verifica si hubo un error
-            return JsonResponse({'error': resultado['error']})
-
-        return JsonResponse({'resultados': resultado['resultados']})
-
-    return render(request, 'caracterizacion/medir_iv.html')
+        
+        current, voltaje  = zip(*resultado['resultados'])
+        array_current = list(current)
+        array_voltaje = list(voltaje)
+        print(resultado)
+    template_name = 'caracterizacion/medir_iv.html'
+    return render(request,template_name,{'profiles':profiles,
+                                        'currents': array_current, 
+                                        'volts': array_voltaje})
 @login_required
 def caracterizacion_main(request):
     profiles = Profile.objects.get(user_id = request.user.id)
@@ -127,26 +132,20 @@ def listar_perfiles(request):
 def crear_perfil(request):
     if request.method == 'POST':
         nombre_perfil = request.POST.get('perfil_parametro_name')
-        
-        # Comprobar si el nombre ya existe
         if Perfil_Parametro.objects.filter(perfil_parametro_name=nombre_perfil).exists():
             error_message = "El nombre del perfil ya existe. Por favor, elija otro."
             return render(request, 'caracterizacion/crear_perfil.html', {'error_message': error_message})
-        
-        # Continuar con el proceso de guardado si no existe
         else:
-            # Crear el perfil con los demás campos
+
             form = PerfilParametroForm(request.POST)
             if form.is_valid():
                 form.save()
+                messages.success(request,'¡Perfil creado correctamente!')
                 return redirect('listar_perfiles')
-
     else:
         form = PerfilParametroForm()
-    
     return render(request, 'caracterizacion/crear_editar_perfil.html', {'form': form})
- 
-    
+
 # Editar un perfil de parámetros
 @login_required
 def editar_perfil(request, pk):
@@ -155,6 +154,7 @@ def editar_perfil(request, pk):
         form = PerfilParametroForm(request.POST, instance=perfil)
         if form.is_valid():
             form.save()
+            messages.success(request,'¡Perfil '+perfil.perfil_parametro_name+' actualizado correctamente!')
             return redirect('listar_perfiles')
     else:
         form = PerfilParametroForm(instance=perfil)
@@ -167,6 +167,7 @@ def eliminar_perfil(request, pk):
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     if request.method == 'POST':
         perfil.delete()
+        messages.success(request,'¡Perfil eliminado correctamente!')
         return redirect('listar_perfiles')
     return render(request, 'caracterizacion/eliminar_perfil.html', {'perfil': perfil})
 
@@ -181,7 +182,13 @@ def bloquear_perfil(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
     perfil.perfil_parametro_state = 'f'
     perfil.save()
-    return redirect('listar_perfiles')  # Redirige a la lista de perfiles
+    try:
+
+        messages.success(request, 'Perfil '+perfil.perfil_parametro_name + 'bloqueado con éxito')
+        return redirect('listar_perfiles')
+    except:
+        messages.error(request, 'El perfil '+perfil.perfil_parametro_name + ' no se ha podido bloquear')
+        return redirect('listar_perfiles')
 
 @login_required
 def listar_perfiles_bloqueados(request):
@@ -191,9 +198,17 @@ def listar_perfiles_bloqueados(request):
 @login_required
 def desbloquear_perfil(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
+    perfil.perfil_parametro_state = 't'
     perfil.perfil_parametro_state = 't'  
     perfil.save()
-    return redirect('listar_perfiles_bloqueados')
+    try:
+        messages.success(request, 'Perfil '+perfil.perfil_parametro_name + 'desbloqueado con éxito')
+        return redirect('listar_perfiles_bloqueados')
+    except:
+        messages.error(request, 'El perfil '+perfil.perfil_parametro_name + ' no se ha podido desbloquear')
+        return redirect('listar_perfiles_bloqueados')
+
+    
 
 @login_required
 def eliminar_perfil_bloqueado(request, perfil_id):

@@ -23,6 +23,8 @@ class Ventana1:
         self._intervalos_corriente = tk.StringVar()
         self._tiempo_entre_mediciones = tk.StringVar()
         self.LineaTendencia = tk.BooleanVar()
+        # Variable de control para el hilo
+        self. detener_medicion = False
 
         # Lista para perfiles de parámetros
         self.perfiles_parametros = self.cargar_perfiles_desde_archivo()
@@ -88,18 +90,16 @@ class Ventana1:
         etiqueta_fecha = tk.Label(self.menu, text=f"Fecha: {fecha_actual}", font=("Arial", 10))
         etiqueta_fecha.place(x=800, y=5)
         
-        # Agregar un marco para contener el gráfico y la barra de herramientas
         self.frame_plot = tk.Frame(self.menu)
         self.frame_plot.place(x=300, y=50, width=700, height=500)
-
 
         # Configurar la figura de Matplotlib y el eje
         self.fig, self.ax = plt.subplots(figsize=(10, 6))
         self.ax.set_title('Gráfico IV')
         self.ax.set_xlabel('Corriente (A)')
         self.ax.set_ylabel('Voltaje (V)')
-        self.ax.legend()
         self.ax.grid(True)
+
 
         # Crear un lienzo de Tkinter para la figura
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.frame_plot)
@@ -110,8 +110,13 @@ class Ventana1:
         self.toolbar.update()
         self.toolbar.pack(side=tk.BOTTOM, fill=tk.X)  # Mover la barra de herramientas abajo
 
+        # Mostrar la leyenda solo si hay etiquetas
+        handles, labels = self.ax.get_legend_handles_labels()
+        if labels:  # Solo mostrar la leyenda si hay etiquetas
+            self.ax.legend()
+
         # Mantener el gráfico arriba
-        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)        
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True) 
         self.rm = None
         self.corrientes = None
 
@@ -145,7 +150,7 @@ class Ventana1:
             "intervalos_corriente": intervalos_corriente,
             "tiempo_entre_mediciones": tiempo_entre_mediciones
         }
-        guardar = validar_perfil(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones)
+        guardar = validar_perfil_v1(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones)
         if guardar == True:
             self.guardar_perfiles_a_archivo()
             self.actualizar_combo_perfiles()
@@ -187,9 +192,9 @@ class Ventana1:
 
     #Guardar Perfil en archivo    
     def guardar_perfiles_a_archivo(self):
-        with open("APP_ESCRITORIO\perfiles_parametros.json", "w") as archivo:
+        with open("perfiles_parametros.json", "w") as archivo:
             json.dump(self.perfiles_parametros, archivo, indent=4)
-
+    #s
     # Obtención de entradas
     @property
     def nombre(self):
@@ -207,6 +212,9 @@ class Ventana1:
     def tiempo_entre_mediciones(self):
         return self._tiempo_entre_mediciones.get()
     
+    def R(self):
+        return self._R.get()
+    
     #Funciones Botones
 
     def iniciar(self):
@@ -220,10 +228,10 @@ class Ventana1:
         self.menu.withdraw()
         self.ventana_principal.deiconify()
 
-    def mostrar_mensaje_inicio(self, titulo, mensaje):
+    def mostrar_mensaje_inicio(self):
         # Crear una nueva ventana de diálogo personalizada
         self.popup = tk.Toplevel(self.menu)
-        self.popup.title(titulo)
+        self.popup.title("Confirmar Detención")
 
         # Calcular las dimensiones de la ventana principal
         ventana_principal_width = self.menu.winfo_width()
@@ -243,16 +251,23 @@ class Ventana1:
         self.popup.geometry(f"{popup_width}x{popup_height}+{x}+{y}")
 
         # Etiqueta con el mensaje
-        mensaje_label = tk.Label(self.popup, text=mensaje, padx=10, pady=10)
+        mensaje_label = tk.Label(self.popup, text="¿Deseas detener la medición?", padx=10, pady=10)
         mensaje_label.pack()
 
-        # Botón para cerrar la ventana, deshabilitado inicialmente
-        self.boton_cerrar = tk.Button(self.popup, text="Cerrar", command=self.cerrar_popup, state=tk.DISABLED)
+        # Botón para cerrar la ventana y confirmar la detención
+        self.boton_cerrar = tk.Button(self.popup, text="Cancelar", command=self.confirmar_detener_medicion)
         self.boton_cerrar.pack(pady=10)
 
-        # Ejecutar la medición en un hilo separado     
-    def cerrar_popup(self):
-        self.popup.destroy()
+        # Manejar el evento de cierre de la ventana emergente
+        self.popup.protocol("WM_DELETE_WINDOW", self.confirmar_detener_medicion)
+
+    def confirmar_detener_medicion(self):
+        # Cambiar la variable de control para detener el hilo
+        self.detener_medicion = True
+        print("Medición detenida desde el popup.")
+        self.popup.destroy()  # Cerrar la ventana emergente
+
+        
     def medir_IV_curve(self):
         def ejecutar_medicion():
             start_current_str = self._intervalo_simetrico.get()
@@ -270,11 +285,13 @@ class Ventana1:
 
                 # Inicializar el gestor de recursos VISA
                 self.rm = pyvisa.ResourceManager()
-                self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
+
                 # Abrir la conexión con el multímetro y realizar la medición
-                if verificar_dispositivo("9", self.menu):
+                addresses= ["9"]
+                if verificar_dispositivo(addresses, self.menu):
                     try:
                         with self.rm.open_resource('GPIB0::9::INSTR') as multimetro:
+                            self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
                             # Configurar el multímetro para ser una fuente de corriente y medir voltaje
                             multimetro.write("*RST")  # Resetear el equipo
                             multimetro.write(":SOUR:FUNC CURR")  # Configurar como fuente de corriente
@@ -284,6 +301,10 @@ class Ventana1:
                             
                             for corriente in self.corrientes:
                                 try:
+                                    self.detener_medicion = False  # Reiniciar la variable de control
+
+                                    if self.detener_medicion:
+                                        break
                                     # Aplicar la corriente
                                     multimetro.write(f":SOUR:CURR {corriente}")
 
@@ -317,12 +338,14 @@ class Ventana1:
                             print("Solución recomendada: Asegúrese de que el software NI-VISA (o su equivalente) esté instalado y correctamente configurado.")
                         else:
                             print(f"Error inesperado de VISA: {e}")
-            else:
-                print("Entradas no válidas, verifique los datos.")
 
         # Ejecutar la medición en un hilo separado
         self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
         self.hilo_medicion.start()
+
+
+
+
 
     def actualizar_interfaz_despues_de_medir(self):
         self.menu.after(0, self.mostrar_grafico(), "Información", "Medición completada")
@@ -349,7 +372,6 @@ class Ventana1:
         coeficientes = np.polyfit(corrientes, voltajes, grado)
         resistencia = 1 / coeficientes[0]
         self._R=resistencia
-
         if self.LineaTendencia.get():
             # Calcular la línea de tendencia usando corrientes para el eje x
             tendencia = np.polyval(coeficientes, corrientes)
@@ -376,7 +398,7 @@ class Ventana1:
         self.entry_end.delete(0, tk.END)
         self.entry_step.delete(0, tk.END)
         self.entry_start.insert(0, file_path)
-   
+
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
         
         if self.corrientes is not None and self.resultados is not None:
@@ -387,12 +409,13 @@ class Ventana1:
 
             if file_path:  # Si el usuario no cancela la selección del archivo
                 with open(file_path, 'w') as file: 
-                    file.write(f"fecha: {datetime.now().strftime("%d-%m-%Y")}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
+                    file.write(f"fecha: {datetime.now().strftime('%d-%m-%Y')}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
+#                    file.write(f"fecha: {datetime.now().strftime("%d-%m-%Y")}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
                     
-                    file.write("Corriente (A),\tVoltaje (V)\n\n")
+                    file.write(f"Corriente (A),\tVoltaje (V), Resistencia (R)\t\n\n")
                     #
                     for corriente, voltaje in self.resultados:
-                        file.write(f"{corriente:.3f}\t\t{voltaje}\n")
+                        file.write(f"{corriente:.3f}\t\t{voltaje}\t\t{(voltaje/corriente):.6f}\n")
                 messagebox.showinfo("Información", f"Datos guardados en: {file_path}")
             else:
                 print("Guardado cancelado.")
@@ -400,10 +423,22 @@ class Ventana1:
             messagebox.showwarning("Advertencia", "No hay datos para guardar. Realiza la medición primero.")
     
     def borrar_grafico(self):
-        self.ax.clear()  # Limpiar el eje actual
+        # Limpiar el eje actual
+        self.ax.clear()
+
+        # Restablecer el título y etiquetas
         self.ax.set_title('Gráfico IV')
         self.ax.set_xlabel('Corriente (A)')
         self.ax.set_ylabel('Voltaje (V)')
-        self.ax.legend()
+
+
+
+        # Mostrar la leyenda solo si hay etiquetas
+        handles, labels = self.ax.get_legend_handles_labels()
+        if labels:  # Solo mostrar la leyenda si hay etiquetas
+            self.ax.legend()
+
+        # Redibujar el gráfico en el lienzo
+            # Reestablecer la cuadrícula
         self.ax.grid(True)
         self.canvas.draw()
