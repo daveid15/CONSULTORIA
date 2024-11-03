@@ -32,9 +32,10 @@ class Ventana1:
         #Diseño Ventana
         self.menu = menu
         self.ventana_principal = ventana_principal
-        self.menu = menu
         self.menu.title('Caracterización Eléctrica')
-        self.menu.geometry('1000x600')
+        widht_menu =1000
+        height_menu = 600
+        centrar_ventana(self.menu,widht_menu,height_menu )
 
         #Pantalla con sus colores y titulo respectivo
         tk.Label(self.menu, text='Caracterización Eléctrica', font=labelFont, bg='#D9D9D9').pack(side=TOP, fill=X)
@@ -42,7 +43,7 @@ class Ventana1:
         right_frame.place(x=0.275, y=30, relheight=1, relwidth=1)
         left_frame = tk.Frame(self.menu, bg="#A6C3FF")
         left_frame.place(x=10, y=45, relheight=0.90, relwidth=0.275)
-
+        
         #Botones
         btn_volver = tk.Button(self.menu, text="volver", bg="#99A8EF", command=self.volver)
         btn_volver.place(x=50, y=1.5)
@@ -211,7 +212,7 @@ class Ventana1:
     @property
     def tiempo_entre_mediciones(self):
         return self._tiempo_entre_mediciones.get()
-    
+    @property
     def R(self):
         return self._R.get()
     
@@ -409,7 +410,7 @@ class Ventana1:
 
             if file_path:  # Si el usuario no cancela la selección del archivo
                 with open(file_path, 'w') as file: 
-                    file.write(f"fecha: {datetime.now().strftime('%d-%m-%Y')}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
+                    file.write(f"fecha: {datetime.now().strftime('%d-%m-%Y')}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: \n")
 #                    file.write(f"fecha: {datetime.now().strftime("%d-%m-%Y")}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
                     
                     file.write(f"Corriente (A),\tVoltaje (V), Resistencia (R)\t\n\n")

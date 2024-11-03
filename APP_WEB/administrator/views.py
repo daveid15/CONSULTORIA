@@ -507,6 +507,7 @@ def carga_masiva_save(request):
     
 @login_required
 def admin_dashboard(request):
+    pre_check_profile(request)
     usuarios_count = User.objects.all().count()
     if usuarios_count == 0:
         usuarios_count = 1

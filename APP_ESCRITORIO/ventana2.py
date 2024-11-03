@@ -25,7 +25,7 @@ class Ventana2:
         self._saturacion_campo = tk.StringVar()
         self._tiempo_entre_mediciones_v2 = tk.StringVar()
         self._pasos = tk.StringVar()
-
+        self.LineaTendencia = tk.BooleanVar()
 
         # Lista para perfiles de parámetros
         self.perfiles_ventana2 = self.cargar_perfiles_desde_archivo()
@@ -34,7 +34,9 @@ class Ventana2:
         self.menu = menu
         self.ventana_principal = ventana_principal
         self.menu.title("Caracterización Magnetoeléctrica")
-        self.menu.geometry("1000x600")
+        widht_menu =1000
+        height_menu = 600
+        centrar_ventana(self.menu,widht_menu,height_menu )
 
         #Pantalla con sus colores y titulo respectivo
         tk.Label(self.menu, text='Caracterización Magnetoeléctrica', font=labelFont, bg='#D9D9D9').pack(side=TOP, fill=X)
@@ -54,6 +56,15 @@ class Ventana2:
         tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones_v2).place(x=25, y=230, width=210)
         tk.Label(self.menu, text="Pasos", bg="#A6C3FF").place(x=25, y=260)
         tk.Entry(self.menu, textvariable=self._pasos).place(x=25, y=280, width=210)
+        checkbutton = tk.Checkbutton(
+            self.menu, 
+            text="Línea de Tendencia", 
+            variable=self.LineaTendencia, 
+            font=("Arial", 7),        # Fuente más pequeña
+            padx=2, pady=2,           # Reducir padding
+            highlightthickness=0      # Borde de enfoque más pequeño
+        )
+        checkbutton.place(x=25, y=350)
 
 
         #Botones
@@ -63,7 +74,7 @@ class Ventana2:
         btn_guardar_perfil.place(x=35, y=375)
         btn_cargar_perfil = tk.Button(self.menu, text="Cargar Perfil", command=self.cargar_perfil)
         btn_cargar_perfil.place(x=135, y=375)
-        btn_iniciar = tk.Button(self.menu, text="Iniciar", command=self.medir_GV_curve)
+        btn_iniciar = tk.Button(self.menu, text="Iniciar", command=self.mostrar_grafico)
         btn_iniciar.place(x=50, y=420)
 
         btn_obtener_ecuacion = tk.Button(self.menu, text="Obtener ecuacion", command=self.abrir_datosecu)
@@ -125,28 +136,30 @@ class Ventana2:
 
             
     def abrir_datosecu(self):
-        menuecu = Toplevel()
-        menuecu.title("Datos Ecuacion")
-        menuecu.geometry("300x300")
-        menuecu.configure(bg="#A6C3FF")
-        
-         #Variables
+        self.menuecu = Toplevel()
+        self.menuecu.title("Datos Ecuacion")
+        widht_menuecu =300
+        height_menuecu = 300
+        centrar_ventana(self.menuecu,widht_menuecu,height_menuecu )
+        self.menuecu.configure(bg="#A6C3FF")
+        self.menuecu.grab_set()
+        #Variables
         self._start_voltaje = tk.StringVar()
         self._step_size = tk.StringVar()
         self._delay = tk.StringVar()
         
         #Entradas
-        tk.Label(menuecu, text="Voltaje", bg="#A6C3FF").place(x=30, y=20)
-        tk.Entry(menuecu, textvariable=self._start_voltaje).place(x=30, y=40, width=220)
-        tk.Label(menuecu, text="Número de Pasos", bg="#A6C3FF").place(x=30, y=80)
-        tk.Entry(menuecu, textvariable=self._step_size).place(x=30, y=100, width=220)
-        tk.Label(menuecu, text="Delay", bg="#A6C3FF").place(x=30, y=140)
-        tk.Entry(menuecu, textvariable=self._delay).place(x=30, y=160, width=220)
+        tk.Label(self.menuecu, text="Voltaje", bg="#A6C3FF").place(x=30, y=20)
+        tk.Entry(self.menuecu, textvariable=self._start_voltaje).place(x=30, y=40, width=220)
+        tk.Label(self.menuecu, text="Número de Pasos", bg="#A6C3FF").place(x=30, y=80)
+        tk.Entry(self.menuecu, textvariable=self._step_size).place(x=30, y=100, width=220)
+        tk.Label(self.menuecu, text="Delay", bg="#A6C3FF").place(x=30, y=140)
+        tk.Entry(self.menuecu, textvariable=self._delay).place(x=30, y=160, width=220)
 
         #Botones
-        self.boton_cerrar = ttk.Button(menuecu, text="Cancelar", command=self.destroy)
+        self.boton_cerrar = tk.Button(self.menuecu, text="Cancelar", command=self.destroy)
         self.boton_cerrar.place(x=50, y=220)
-        self.boton_calcular = ttk.Button(menuecu, text="Calcular", command=self.obtener_ecuacion)
+        self.boton_calcular = tk.Button(self.menuecu, text="Calcular", command=self.obtener_ecuacion)
         self.boton_calcular.place(x=150, y=220)
 
     def obtener_ecuacion(self):
@@ -228,7 +241,8 @@ class Ventana2:
 
     def destroy(self):
             self.__class__.en_uso = False
-            return super().destroy()
+            return self.menuecu.destroy()
+        
 
 
 
@@ -270,7 +284,7 @@ class Ventana2:
             self._nombre_v2.set(nombre_v2)
             self._corriente_fija.set(perfil["corriente_fija"])
             self._saturacion_campo.set(perfil["saturación_campo"])
-            self._tiempo_entre_mediciones_v2.set(perfil["tiempo_entre_mediciones_v2_v2"])
+            self._tiempo_entre_mediciones_v2.set(perfil["tiempo_entre_mediciones_v2"])
             messagebox.showinfo("Información", f"Perfil '{nombre_v2}' cargado correctamente.")
         else:
             messagebox.showwarning("Advertencia", "Seleccione un perfil válido para cargar.")
@@ -494,7 +508,7 @@ class Ventana2:
 
             constant_current_str =self._corriente_fija.get()
             step_size_str = self._pasos.get()
-            delay_str =  self._tiempo_entre_mediciones.get()
+            delay_str =  self._tiempo_entre_mediciones_v2.get()
             start_saturation_str =  self._saturacion_campo.get() 
             # Validar que todos los valores sean válidos
             if verificar_inputs_gauss(start_saturation_str, constant_current_str, step_size_str, delay_str, self.menu):
@@ -561,7 +575,7 @@ class Ventana2:
             m, b = self.cargar_ecuacion_del_dia()
             if file_path:  # Si el usuario no cancela la selección del archivo
                 with open(file_path, 'w') as file:
-                    file.write(f"Ecuación:{m:.6f}x {b:.6f}, Saturación de campo:{self._saturacion_campo.get()}, tiempo entre mediciones:{self._tiempo_entre_mediciones.get()}, Pasos:{self._pasos.get()}\n\n")
+                    file.write(f"Ecuación:{m:.6f}x {b:.6f}, Saturación de campo:{self._saturacion_campo.get()}, tiempo entre mediciones:{self._tiempo_entre_mediciones_v2.get()}, Pasos:{self._pasos.get()}\n\n")
                     file.write("\tCorriente Fija\t\tMedida Voltaje\t\tR\t\tDelta V\t\tGauss Teórico\t\tGauss Real\n\n")
                     
                     for start_current,V,deltaV, saturacion, field in self.array_prom_gauss_volts:
@@ -669,23 +683,34 @@ class Ventana2:
 
     def mostrar_grafico(self):
         try:
-            start_current,V, deltaV, saturacion,field = zip(*self.array_prom_gauss_volts)
+            #start_current,V, deltaV, saturacion,field = zip(*self.array_prom_gauss_volts)
+            deltaV = [1,-1]
+            saturacion = [1000, -1000]
         except ValueError:
             print("Error: self.resultados no tiene el formato esperado.")
             return
        
                         #G vs V
-
+    
         # Graficar los datos experimentales con una etiqueta
         self.ax.plot(deltaV, saturacion, marker='o', linestyle='-', label='Datos Experimentales')
-
+        # Ajustar una línea de tendencia
+        grado = 1
+        coeficientes = np.polyfit(deltaV, saturacion, grado)
+        resistencia = 1 / coeficientes[0]
+        self._R=resistencia
+        if self.LineaTendencia.get():
+            # Calcular la línea de tendencia usando corrientes para el eje x
+            tendencia = np.polyval(coeficientes, deltaV)
+            self.ax.plot(deltaV, tendencia, '--', label=f'Tendencia Lineal (R = {resistencia:.4f} ohms)')
         # Mostrar la leyenda solo si hay etiquetas definidas
         handles = self.ax.get_legend_handles_labels()
         if handles:
             self.ax.legend()
         else:
             print("No se encontraron artistas con etiquetas para la leyenda.")
-
+        plt.xlim(-20, 20)
+        plt.ylim(saturacion[-1] - 100, saturacion[0]+100)
         self.ax.grid(True)
         self.canvas.draw()
 

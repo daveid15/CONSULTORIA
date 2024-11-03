@@ -314,3 +314,25 @@ def guardar_txt(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_med
     f.write(f"{nombre} | {corriente_fija_v3} | {saturacion_campo_v3} | {tiempo_entre_mediciones_v3} | \n")
     f.close()
 
+
+
+
+def centrar_ventana(ventana, ancho_ventana, alto_ventana):
+    """
+    Centra una ventana en la pantalla.
+    
+    Args:
+    - ventana: la ventana de Tkinter que se quiere centrar.
+    - ancho_ventana: el ancho deseado para la ventana.
+    - alto_ventana: la altura deseada para la ventana.
+    """
+    # Obtener el tamaño de la pantalla
+    ancho_pantalla = ventana.winfo_screenwidth()
+    alto_pantalla = ventana.winfo_screenheight()
+    
+    # Calcular la posición centrada
+    x_centrado = (ancho_pantalla - ancho_ventana) // 2
+    y_centrado = (alto_pantalla - alto_ventana) // 2
+    
+    # Configurar las dimensiones y posición de la ventana
+    ventana.geometry(f"{ancho_ventana}x{alto_ventana}+{x_centrado}+{y_centrado}")

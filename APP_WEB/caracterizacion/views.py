@@ -77,8 +77,9 @@ def ejecutar_medicion(start_current, step_size, delay, simular=False):
 
 
 
-def medir_iv_view(request):
+def medir_iv_view(request, id_medicion):
     profiles = Profile.objects.get(user_id = request.user.id)
+    mediciones = Medicion.objects.filter(pk = id_medicion)
     array_current = [0]
     array_voltaje = [0]
     if request.method == 'POST':
