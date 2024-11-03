@@ -304,11 +304,14 @@ def listar_pruebas(request, page=None, search=None):
 
 def detalle_prueba(request, prueba_id):
     prueba = get_object_or_404(Prueba, id=prueba_id)
-    mediciones = Medicion.objects.filter(id_prueba=prueba)
+    perfil_parametro = prueba.id_perfil_parametro  # Asume que `Prueba` tiene un FK a `Perfil_Parametro`
+    
+    # Obtener datos de medición relacionados a esta prueba
+    medicion = Medicion.objects.filter(id_prueba=prueba).first()  # Ajusta si tienes otra lógica para obtener la medición correcta
     
     context = {
-        'prueba_data': prueba,
-        'mediciones': mediciones
+        'perfil_parametro': perfil_parametro,
+        'medicion': medicion
     }
     
     return render(request, 'caracterizacion/detalle_prueba.html', context)

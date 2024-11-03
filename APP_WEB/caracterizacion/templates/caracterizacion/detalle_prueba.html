@@ -1,110 +1,36 @@
 {% extends 'core/base_admin.html' %}
 {% load static %}
 {% block content %}
-<script src="{% static 'lib/highcharts-8.1.2/highcharts.js' %}"></script>
-<script src="{% static 'lib/highcharts-8.1.2/modules/exporting.js' %}"></script>
-<script src="{% static 'lib/highcharts-8.1.2/modules/export-data.js' %}"></script>
-<script src="{% static 'lib/highcharts-8.1.2/modules/accessibility.js' %}"></script>
 
-{% block extrahead %}
-<script>
-    // Opcional: agregar cualquier lógica adicional aquí
-</script>
-{% endblock %}
 <main role="main">
-    <div class="titu-mein">
-        <h3 class='h2 medium text-blue'>Información de Prueba</h3>
-    </div>  
-    <div class="col-md-11 cont-form">
-        <form action="" method="post">
-            {% csrf_token %}
-            <input type="hidden" value="{{ prueba_data.id }}" name="prueba_id" id="prueba_id">
-
-            <div class="col-12 col-sm-8 mb-3 casilla1">
-                <label for="prueba_name" class="custom-label">Nombre de la Prueba: </label>
-            </div>
-            <div class="col-12 col-sm-8 mb-3 dato1">
-                <input type="text" name="prueba_name" id="prueba_name" value="{{ prueba_data.prueba_name }}" class="form-control border custom-input" readonly />
-            </div>
-            
-            <div class="row col-md-11 casilla2">
-                <label for="tipo" class="custom-label">Tipo: </label>
-            </div>
-            <div class="row col-md-11 dato2">   
-                <input type="text" id="tipo" name="tipo" value="{{ prueba_data.tipo }}" class="form-control border custom-input" readonly />
-            </div> 
-            
-            <div class="row col-md-11 casilla3">
-                <label for="id_user" class="custom-label">Usuario: </label>
-            </div>
-            <div class="row col-md-11 dato3">
-                <input type="text" id="id_user" name="id_user" value="{{ prueba_data.id_user.username }}" class="form-control border custom-input" readonly />
-            </div>
-            
-            <div class="row col-md-11 casilla4">
-                <label for="fecha" class="custom-label">Fecha: </label>
-            </div>
-            <div class="row col-md-11 dato4">
-                <input type="text" id="fecha" name="fecha" value="{{ prueba_data.fecha|date:'d-m-Y' }}" class="form-control border custom-input" readonly />
-            </div>
-            
-            <div class="col-12 col-sm-8 mb-3 casilla5">
-                <label for="perfil_parametro" class="custom-label">Perfil Parámetro: </label>
-            </div>
-            <div class="col-12 col-sm-8 mb-3 dato5">
-                <input type="text" name="perfil_parametro" id="perfil_parametro" class="form-control border custom-input" value="{{ prueba_data.id_perfil_parametro.perfil_parametro_name }}" readonly>
-            </div>
-
-            <div class="col-12 col-sm-8 mb-3 casilla6">
-                <label for="prueba_state" class="custom-label">Estado de la Prueba: </label>
-            </div>
-            <div class="col-12 col-sm-8 mb-3 dato6">
-                <input type="text" name="prueba_state" id="prueba_state" class="form-control border custom-input" value="{{ prueba_data.prueba_state }}" readonly>
-            </div>
-            
-            {% if prueba_data.grafico %}
-            <div class="col-12 col-sm-8 mb-3 casilla7">
-                <label class="custom-label">Gráfico de Resultados: </label>
-            </div>
-            <div class="col-12 col-sm-8 mb-3 dato7">
-                <img src="{{ prueba_data.grafico.url }}" alt="Gráfico de Prueba" class="img-fluid">
-            </div>
+    <div class="container">
+        <h2>Detalle de Prueba</h2>
+        
+        <!-- Contenedor de Perfil de Parámetros -->
+        <div class="perfil-parametro-container">
+            <h3>Perfil de Parámetro</h3>
+            <ul>
+                <li><strong>Nombre del Perfil:</strong> {{ perfil_parametro.perfil_parametro_name }}</li>
+                <li><strong>Intervalo Simétrico (A):</strong> {{ perfil_parametro.intervalo_simetrico }} A</li>
+                <li><strong>Intervalo de Corriente (A):</strong> {{ perfil_parametro.intervalo_corriente }} A</li>
+                <li><strong>Tiempo entre Mediciones (s):</strong> {{ perfil_parametro.delay }} s</li>
+            </ul>
+        </div>
+        
+        <!-- Contenedor de Datos de Medición -->
+        <div class="medicion-container">
+            <h3>Datos de la Medición</h3>
+            {% if medicion %}
+                <ul>
+                    <li><strong>Voltaje:</strong> {{ medicion.voltaje }} V</li>
+                    <li><strong>Corriente:</strong> {{ medicion.corriente }} A</li>
+                    <li><strong>Resistencia:</strong> {{ medicion.resistencia }} Ω</li>
+                </ul>
+            {% else %}
+                <p>No hay datos de medición disponibles para esta prueba.</p>
             {% endif %}
-        </form>
-    </div>
-
-    <!-- Nueva Sección: Mediciones Asociadas -->
-    <div class="col-md-11 cont-form">
-        <h3 class='h2 medium text-blue'>Mediciones Asociadas</h3>
-        {% if mediciones %}
-        <table class="table-user">
-            <thead>
-                <tr>
-                    <th>Voltaje (V)</th>
-                    <th>Corriente (A)</th>
-                    <th>Resistencia (Ω)</th>
-                    <th>Campo (T)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for medicion in mediciones %}
-                <tr>
-                    <td data-label="Voltaje">{{ medicion.voltaje }}</td>
-                    <td data-label="Corriente">{{ medicion.corriente }}</td>
-                    <td data-label="Resistencia">{{ medicion.resistencia }}</td>
-                    <td data-label="Campo">{{ medicion.campo }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <p>No hay mediciones registradas para esta prueba.</p>
-        {% endif %}
-    </div>
-
-    <div class="botones-4-crear">
-        <a href="{% url 'listar_pruebas' %}" class="button button--gray_volver form-control custom-button_ver" title="Volver a Lista">Volver</a>
+        </div>
     </div>
 </main>
-{% endblock %}
 
+{% endblock %}
