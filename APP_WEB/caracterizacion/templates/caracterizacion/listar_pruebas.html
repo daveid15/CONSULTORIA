@@ -1,31 +1,92 @@
 {% extends 'core/base_admin.html' %}
 {% load static %}
 {% block content %}
-<h1>Listado de Pruebas</h1>
-<table>
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Tipo</th>
-            <th>Fecha</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for prueba in pruebas %}
-        <tr>
-            <td>{{ prueba.prueba_name }}</td>
-            <td>{{ prueba.tipo }}</td>
-            <td>{{ prueba.fecha }}</td>
-            <td>{{ prueba.prueba_state }}</td>
-            <td>
-                <a href="{% url 'editar_prueba' prueba.pk %}">Editar</a>
-                <a href="{% url 'eliminar_prueba' prueba.pk %}">Eliminar</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<a href="{% url 'crear_prueba' %}">Crear nueva Prueba</a>
+{% block extrahead %}
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmarCambio(url) {
+        Swal.fire({
+            title: "¿Está seguro de que desea realizar esta acción?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, confirmar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Redirect to the URL if confirmed
+                window.location.href = url;
+            }
+        });
+    }
+</script>
+
+<header class='flex__action'>
+
+    <div class="flex__action flex__action__title">
+        <h2 class='flex__action h2 medium text-blue'>Historial de Pruebas</h2>
+    </div>
+    <div class="flex__action barra-busqueda">
+        <form method="post" action="" class='col-12 col-lg-6 input-container-search my-auto me-3 redondeo'>
+            {% csrf_token %}
+            <input name="search" id="search" type="text" placeholder='Buscar por Nombre' />
+            <button type="submit" class="button button--gray">
+                <span class="material-icons-outlined">
+                    search
+                </span>
+            </button>
+
+            <form>
+    </div>
+</header>
+
+<!-- Tabla de perfiles de parámetros -->
+<div class="flex__action cont-form-carac-responsive">
+    <table class="table-responsive table-user-responsive">
+        <thead>
+            <tr>
+                <th data-label="Nombre">Nombre Prueba</th>
+                <th data-label="Fecha y Hora">Fecha y Hora</th>
+                <th data-label="Tipos">Tipos</th>
+                <th data-label="Estado">Estado</th>
+                <th data-label="Funciones">Funciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prueba in pruebas %}
+            <tr>
+                <td data-label="Nombre Prueba">{{ prueba.prueba_name }}</td>
+                <td data-label="Fecha y Hora">{{ prueba.fecha }}</td>
+                <td data-label="Tipos">{{ prueba.tipo }}</td>
+                <td data-label="Estado">{{ prueba.prueba_state }}</td>
+                <td data-label="Funciones">
+                    <a href="#" onclick="confirmarCambio('{% url 'eliminar_prueba' prueba.pk %}')" class="btn btn-icon">
+                        <i class="fas fa-lock" style="color: white;"></i> <!-- Icono de Bloquear -->
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No hay pruebas disponibles.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% block scripts %}
+{% if messages %}
+<script>
+    {% for message in messages %}
+    Swal.fire({
+        position: 'medium',
+        icon: '{{ message.tags }}',
+        title: '{{ message }}',
+        showConfirmButton: true,
+    });
+    {% endfor %}
+</script>
+{% endif %}
+{% endblock %}
 {% endblock %}

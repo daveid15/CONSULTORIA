@@ -89,9 +89,9 @@ DATABASES = {
     'default': {
         'HOST': 'localhost',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'consultoria',
+        'NAME': 'Ciencias',
         'USER': 'postgres',
-        'PASSWORD': 'n4ik3l4m3l4'
+        'PASSWORD': 'shompy'
     }
 }
 

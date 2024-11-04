@@ -19,4 +19,9 @@ caracterizacion_patterns = [
     path('perfiles_bloqueados/', views.listar_perfiles_bloqueados, name='listar_perfiles_bloqueados'),
     path('desbloquear/<int:perfil_id>/', views.desbloquear_perfil, name='desbloquear_perfil'),
     path('eliminar_bloqueado/<int:perfil_id>/', views.eliminar_perfil_bloqueado, name='eliminar_perfil_bloqueado'),
+    path('pruebas/', views.listar_pruebas, name='listar_pruebas'),
+    #path('pruebas/crear/', views.crear_prueba, name='crear_prueba'),
+    #path('pruebas/editar/<int:pk>/', views.editar_prueba, name='editar_prueba'),
+    path('pruebas/eliminar/<int:pk>/', views.eliminar_prueba, name='eliminar_prueba')
+         
 ]  
