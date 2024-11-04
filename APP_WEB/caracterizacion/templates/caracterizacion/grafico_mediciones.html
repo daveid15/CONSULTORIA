@@ -1,0 +1,179 @@
+{% extends 'core/base_admin.html' %}
+{% load manifest %}
+{% load static %}
+{% block content %}
+{% block extra_css %}
+<style>
+
+    .main-content {
+        position:inherit;
+        padding: 20px;
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+        
+    }
+
+    h1 {
+        color: #333;
+        font-size: 32px;
+    }
+
+    .form-container {
+        background-color: #001F3F;
+        padding: 20px;
+        border-radius: 10px;
+        width: 400px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        font-size: 14px;
+        color: #ffffff;
+        margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        box-sizing: border-box;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        color: white;
+    }
+
+    .checkbox-group label {
+        margin-left: 10px;
+    }
+
+    .guardar-btn,
+    .iniciar-btn {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: none;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+
+    .guardar-btn {
+        background-color: #d9d9d9;
+        color: black;
+    }
+
+    .iniciar-btn {
+        background-color: #cfffd5;
+    }
+
+    .guardar-btn:hover,
+    .iniciar-btn:hover {
+        opacity: 0.9;
+    }
+
+    #resultados {
+        margin-top: 20px;
+    }
+    .chart-container {
+    width: 60%;
+    }
+</style>
+{% endblock extra_css %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico de Medición</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
+</head>
+<body>
+    <div class="chart-container">
+        <h1>Gráfico I vs V - {{ prueba.prueba_name }}</h1>
+        <canvas id="myChart" width="800" height="400"></canvas>
+        <a href="{% url 'listar_pruebas' %}" class="btn btn-primary">Volver al listado</a>
+    </div>
+
+    <script>
+        var currents = {{ currents|safe }};
+        var volts = {{ volts|safe }};
+
+        function calcularLineadeTendencia(x, y) {
+            var n = x.length;
+            var xSum = x.reduce((a, b) => a + b, 0);
+            var ySum = y.reduce((a, b) => a + b, 0);
+            var xySum = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+            var xSqSum = x.reduce((sum, xi) => sum + xi * xi, 0);
+
+            var m = (n * xySum - xSum * ySum) / (n * xSqSum - xSum * xSum);
+            var b = (ySum - m * xSum) / n;
+
+            return { m: m, b: b };
+        }
+
+        var ctx = document.getElementById('myChart').getContext('2d');
+
+        if (currents.length > 0 && volts.length > 0) {
+            var tendencia = calcularLineadeTendencia(currents, volts);
+            var trendLine = currents.map(x => tendencia.m * x + tendencia.b);
+
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: currents,
+                    datasets: [
+                        {
+                            label: 'Voltaje (V)',
+                            data: volts,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2,
+                            fill: false
+                        },
+                        {
+                            label: 'Línea de Tendencia',
+                            data: trendLine,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: 'Corriente (A)' } },
+                        y: { title: { display: true, text: 'Voltaje (V)' } }
+                    },
+                    plugins: {
+                        zoom: {
+                            pan: { enabled: true, mode: 'xy', speed: 20, threshold: 10 },
+                            zoom: { enabled: true, mode: 'xy', speed: 0.1 }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+{% endblock %}

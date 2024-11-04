@@ -52,8 +52,6 @@
             <tr>
                 <th scope="col">Nombre de la Prueba</th>
                 <th scope="col">Tipo</th>
-                <th scope="col">Perfil de Parámetro</th>
-                <th scope="col">Usuario</th>
                 <th scope="col">Fecha</th>
                 <th scope="col">Estado</th>
                 <th scope="col">Acciones</th>
@@ -65,8 +63,6 @@
                     <tr>
                         <td>{{ prueba.prueba_name }}</td>
                         <td>{{ prueba.tipo }}</td>
-                        <td>{{ prueba.id_perfil_parametro.perfil_parametro_name }}</td>
-                        <td>{{ prueba.id_user.username }}</td>
                         <td>{{ prueba.fecha|date:"Y-m-d" }}</td>
                         <td>
                             {% if prueba.prueba_state == 't' %}
@@ -76,15 +72,19 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'detalle_prueba' prueba.id %}" title="Ver Prueba" class="user-action">
+                            <a href="{% url 'detalle_prueba' prueba.id %}" title="Ver Mediciones" class="user-action">
                                 <i class="fa-solid fa-eye"></i> 
                             </a>
                             &nbsp;
-                            <a href="{% url 'editar_prueba' prueba.id %}" title="Editar Prueba" class="user-action">
-                                <i class="fas fa-edit"></i> 
+                            <a href="{% url 'grafico_mediciones' prueba.id %}" title="Mostrar Gráfico" class="user-action">
+                                <i class="fa-solid fa-chart-line"></i> <!-- Icono de Gráfico -->
                             </a>
                             &nbsp;
-                            <a href="{% url 'bloquear_prueba' prueba.id %}" onclick="confirmarCambio('{% url 'bloquear_prueba' prueba.id %}')" class="btn btn-icon">
+                            <a href="{% url 'descargar_datos' prueba.id %}" title="Descargar Archivo" class="user-action">
+                                <i class="fa-solid fa-download"></i> <!-- Icono de Descargar -->
+                            </a>
+                            &nbsp;
+                            <a href="{% url 'bloquear_prueba' prueba.id %}" onclick="confirmarCambio('{% url 'bloquear_prueba' prueba.id %}')" title="Bloquear prueba" class="btn btn-icon">
                                 <i class="fas fa-lock" style="color: white;"></i> <!-- Icono de Bloquear -->
                             </a>                      
                         </td>

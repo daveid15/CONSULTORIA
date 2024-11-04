@@ -59,7 +59,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for prueba in pruebas_bloqueadas %}
+            {% for prueba in pruebas %}
                 <tr>
                     <td>{{ prueba.prueba_name }}</td>
                     <td>{{ prueba.tipo }}</td>
@@ -71,7 +71,7 @@
                         <a href="#" class="user-action" onclick="confirmarCambio('{% url 'desbloquear_prueba' prueba.id %}')" title="Desbloquear Prueba">
                             <i class="fa-solid fa-check" style="color:black;"></i>
                         </a>
-                        <a href="#" class="user-action" onclick="confirmarCambio('{% url 'eliminar_prueba_bloqueada' prueba.id %}')" title="Eliminar Prueba">
+                        <a href="#" class="user-action" onclick="confirmarCambio('{% url 'eliminar_prueba' prueba.id %}')" title="Eliminar Prueba">
                             <i class="fa-solid fa-trash" style="color:black;"></i>
                         </a>
                     </td>

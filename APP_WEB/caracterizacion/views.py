@@ -348,8 +348,8 @@ def bloquear_prueba(request, prueba_id):
 
 @login_required
 def pruebas_bloqueadas(request):
-    pruebas_bloqueadas = Prueba.objects.filter(prueba_state='f')
-    return render(request, 'caracterizacion/pruebas_bloqueadas.html', {'pruebas': pruebas_bloqueadas})
+    pruebas = Prueba.objects.filter(prueba_state='f')
+    return render(request, 'caracterizacion/pruebas_bloqueadas.html', {'pruebas': pruebas})
 
 @login_required
 def desbloquear_prueba(request, prueba_id):
@@ -365,35 +365,35 @@ def eliminar_prueba(request, prueba_id):
     return redirect('pruebas_bloqueadas')
 
 @login_required
-def crear_prueba(request):
-    if request.method == 'POST':
-        perfil_parametro = Perfil_Parametro.objects.get(id=request.POST.get('perfil_parametro'))
-        user = User.objects.get(id=request.POST.get('user_id'))
-        
-        # Crear la Prueba
-        nueva_prueba = Prueba.objects.create(
-            id_perfil_parametro=perfil_parametro,
-            id_user=user,
-            prueba_name=request.POST.get('prueba_name'),
-            tipo=request.POST.get('tipo'),
-            prueba_state='t'
-        )
-        
-        # Crear las Mediciones asociadas
-        voltajes = request.POST.getlist('voltaje')
-        corrientes = request.POST.getlist('corriente')
-        campos = request.POST.getlist('campo')
+def mostrar_grafico(request, prueba_id):
+    prueba = Prueba.objects.get(id=prueba_id)
+    mediciones = Medicion.objects.filter(id_prueba=prueba_id)
 
-        for v, c, cm in zip(voltajes, corrientes, campos):
-            Medicion.objects.create(
-                id_prueba=nueva_prueba,
-                voltaje=float(v),
-                corriente=float(c),
-                campo=float(cm) if cm else None
-            )
-        
-        return redirect('listar_pruebas')  # Redirige a la lista de pruebas después de crearla
+    array_current = [medicion.corriente for medicion in mediciones]
+    array_voltaje = [medicion.voltaje for medicion in mediciones]
 
-    perfiles = Perfil_Parametro.objects.all()
-    usuarios = User.objects.all()
-    return render(request, 'caracterizacion/crear_prueba.html', {'perfiles': perfiles, 'usuarios': usuarios})
+    template_name = 'caracterizacion/grafico_mediciones.html'
+    return render(request, template_name, {
+        'prueba': prueba,
+        'currents': array_current,
+        'volts': array_voltaje
+    })
+
+@login_required
+def descargar_datos(request, prueba_id):
+    prueba = Prueba.objects.get(id=prueba_id)
+    mediciones = Medicion.objects.filter(id_prueba=prueba_id)
+
+    # Crear contenido del archivo .txt
+    contenido = f"Prueba: {prueba.prueba_name}\n\nPerfil de Parámetro Asociado:\n"
+    contenido += f"ID del Perfil: {prueba.id_perfil_parametro.id}\n"
+    contenido += f"Nombre del Perfil: {prueba.id_perfil_parametro.perfil_parametro_name}\n"
+    contenido += "\nMediciones:\nCorriente (A) \t Voltaje (V)\n"
+
+    for medicion in mediciones:
+        contenido += f"{medicion.corriente}\t{medicion.voltaje}\n"
+
+    # Crear y devolver el archivo .txt como respuesta
+    response = HttpResponse(contenido, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename="detalle_prueba_{prueba.prueba_name}.txt"'
+    return response
