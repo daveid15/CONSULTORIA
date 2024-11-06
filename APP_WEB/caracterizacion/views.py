@@ -236,7 +236,7 @@ def listar_pruebas(request, page=None, search=None):
         search = request.GET.get('search')
     else:
         search = search
-    if request.GET.get('search') is None:
+    if request.GET.get('search') is None:  
         search = search
     else:
         search = request.GET.get('search')
@@ -304,16 +304,14 @@ def listar_pruebas(request, page=None, search=None):
 
 def detalle_prueba(request, prueba_id):
     prueba = get_object_or_404(Prueba, id=prueba_id)
-    perfil_parametro = prueba.id_perfil_parametro  # Asume que `Prueba` tiene un FK a `Perfil_Parametro`
-    
-    # Obtener datos de medición relacionados a esta prueba
-    medicion = Medicion.objects.filter(id_prueba=prueba).first()  # Ajusta si tienes otra lógica para obtener la medición correcta
-    
+    perfil_parametro = prueba.id_perfil_parametro  # Suponiendo que la prueba tiene un perfil de parámetro relacionado
+    mediciones = Medicion.objects.filter(id_prueba=prueba)  # Obtén todas las mediciones relacionadas con la prueba
+
     context = {
+        'prueba': prueba,
         'perfil_parametro': perfil_parametro,
-        'medicion': medicion
+        'mediciones': mediciones,
     }
-    
     return render(request, 'caracterizacion/detalle_prueba.html', context)
 
 
@@ -366,17 +364,28 @@ def eliminar_prueba(request, prueba_id):
 
 @login_required
 def mostrar_grafico(request, prueba_id):
-    prueba = Prueba.objects.get(id=prueba_id)
+    # Obtener la prueba, o mostrar un error 404 si no existe
+    prueba = get_object_or_404(Prueba, id=prueba_id)
+    perfil_parametro = prueba.id_perfil_parametro
+    # Filtrar mediciones asociadas a la prueba
     mediciones = Medicion.objects.filter(id_prueba=prueba_id)
 
+    # Si no hay mediciones, lanzar una excepción o mostrar un mensaje en el template
+    if not mediciones:
+        raise Http404("No se encontraron mediciones para esta prueba.")
+
+    # Generar listas de corriente y voltaje
     array_current = [medicion.corriente for medicion in mediciones]
     array_voltaje = [medicion.voltaje for medicion in mediciones]
 
+    # Preparar los datos para el template
     template_name = 'caracterizacion/grafico_mediciones.html'
     return render(request, template_name, {
         'prueba': prueba,
+        'perfil_parametro': perfil_parametro,
         'currents': array_current,
-        'volts': array_voltaje
+        'volts': array_voltaje,
+        'num_mediciones': len(array_current)  # Opcional: para mostrar la cantidad de puntos
     })
 
 @login_required

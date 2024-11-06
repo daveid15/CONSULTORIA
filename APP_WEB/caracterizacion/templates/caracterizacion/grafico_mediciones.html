@@ -108,33 +108,39 @@
 <body>
     <div class="chart-container">
         <h1>Gráfico I vs V - {{ prueba.prueba_name }}</h1>
+        <!-- Mostrar detalles del Perfil de Parámetro -->
+        <ul>
+             <li><strong>Intervalo Simétrico (A):</strong> {{ perfil_parametro.intervalo_simetrico }} A</li>
+             <li><strong>Intervalo de Corriente (A):</strong> {{ perfil_parametro.intervalo_corriente }} A</li>
+             <li><strong>Tiempo entre Mediciones (s):</strong> {{ perfil_parametro.delay }} s</li>
+        </ul>
         <canvas id="myChart" width="800" height="400"></canvas>
         <a href="{% url 'listar_pruebas' %}" class="btn btn-primary">Volver al listado</a>
     </div>
-
+    
     <script>
         var currents = {{ currents|safe }};
         var volts = {{ volts|safe }};
-
+    
         function calcularLineadeTendencia(x, y) {
             var n = x.length;
             var xSum = x.reduce((a, b) => a + b, 0);
             var ySum = y.reduce((a, b) => a + b, 0);
             var xySum = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
             var xSqSum = x.reduce((sum, xi) => sum + xi * xi, 0);
-
+    
             var m = (n * xySum - xSum * ySum) / (n * xSqSum - xSum * xSum);
             var b = (ySum - m * xSum) / n;
-
+    
             return { m: m, b: b };
         }
-
+    
         var ctx = document.getElementById('myChart').getContext('2d');
-
+    
         if (currents.length > 0 && volts.length > 0) {
             var tendencia = calcularLineadeTendencia(currents, volts);
             var trendLine = currents.map(x => tendencia.m * x + tendencia.b);
-
+    
             var myChart = new Chart(ctx, {
                 type: 'line',
                 data: {

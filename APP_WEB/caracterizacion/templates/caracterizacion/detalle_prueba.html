@@ -19,12 +19,19 @@
         
         <!-- Contenedor de Datos de Medición -->
         <div class="medicion-container">
-            <h3>Datos de la Medición</h3>
-            {% if medicion %}
+            <h3>Datos de las Mediciones</h3>
+            {% if mediciones %}
                 <ul>
-                    <li><strong>Voltaje:</strong> {{ medicion.voltaje }} V</li>
-                    <li><strong>Corriente:</strong> {{ medicion.corriente }} A</li>
-                    <li><strong>Resistencia:</strong> {{ medicion.resistencia }} Ω</li>
+                    {% for medicion in mediciones %}
+                        <li>
+                            <strong>Medición {{ forloop.counter }}:</strong>
+                            <ul>
+                                <li><strong>Voltaje:</strong> {{ medicion.voltaje }} V</li>
+                                <li><strong>Corriente:</strong> {{ medicion.corriente }} A</li>
+                                <li><strong>Resistencia:</strong> {{ medicion.resistencia }} Ω</li>
+                            </ul>
+                        </li>
+                    {% endfor %}
                 </ul>
             {% else %}
                 <p>No hay datos de medición disponibles para esta prueba.</p>
