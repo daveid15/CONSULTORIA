@@ -1,0 +1,38 @@
+{
+    "asd": {
+        "corriente_fija": "1",
+        "saturacion_campo": "1",
+        "tiempo_entre_mediciones_v2": "1",
+        "pasos": "1"
+    },
+    "zxczxc": {
+        "corriente_fija": "2",
+        "saturacion_campo": "1",
+        "tiempo_entre_mediciones_v2": "1",
+        "pasos": "1"
+    },
+    "xd": {
+        "Corriente_fija": "1",
+        "Saturacion_de_campo": "2",
+        "tiempo_entre_mediciones_v2": "22",
+        "Pasos": "4"
+    },
+    "xdd": {
+        "Corriente_fija": "1",
+        "Saturacion_de_campo": "2",
+        "tiempo_entre_mediciones_v2": "222",
+        "Pasos": "4"
+    },
+    "prueba_2": {
+        "Corriente_fija": "1000",
+        "Saturacion_de_campo": "1",
+        "tiempo_entre_mediciones_v2": "1",
+        "Pasos": "1"
+    },
+    "prueba1": {
+        "Corriente_fija": "10",
+        "Saturacion_de_campo": "1",
+        "tiempo_entre_mediciones_v2": "1",
+        "Pasos": "1"
+    }
+}

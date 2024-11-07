@@ -210,72 +210,72 @@ def validar_perfil_v1(nombre, intervalo_simetrico, intervalos_corriente, tiempo_
             else:
                 messagebox.showwarning('Advertencia', 'Ya existe un perfil con ese nombre')
                 return False
-        guardar_txt(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones)
+        guardar_txt_v1(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones)
         return True
     
     except (FileNotFoundError, json.JSONDecodeError) as e:
         messagebox.showerror('Error', f'Error al cargar los perfiles: {str(e)}')
         return False
     
-def guardar_txt(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones):
+def guardar_txt_v1(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones):
     f = open("APP_ESCRITORIO\v1_perfiles_parametros.txt", "a")
     f.write(f"{nombre} | {intervalo_simetrico} | {intervalos_corriente} | {tiempo_entre_mediciones} | \n")
     f.close()
 
 
 def comparar_perfiles_v2(perfil1, perfil2):
-    #compara dos perfiles ingresados en la ventana 2
     return (
         perfil1['corriente_fija'] == perfil2['corriente_fija'] and
-        perfil1['saturacion_campo'] ==perfil2['saturacion_campo'] and
-        perfil1['tiempo_entre_mediciones_v2'] == perfil2['tiempo_entre_mediciones_v2']
+        perfil1['saturacion_campo'] == perfil2['saturacion_campo'] and
+        perfil1['tiempo_entre_mediciones_v2'] == perfil2['tiempo_entre_mediciones_v2'] and
+        perfil1['pasos'] == perfil2['pasos']
     )
 
-def validar_perfil_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2):
-    json_path = os.path.join('APP_ESCRITORIO\perfiles_ventana2.json')
+def validar_perfil_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2, pasos):
+    json_path = os.path.join('APP_ESCRITORIO', 'perfiles_parametros2.json')
+    
     try:
         with open(json_path, 'r') as file:
             datos_perfiles = json.load(file)
-
+        
         perfil_nuevo = {
-            'corriente_fija_fija': str(corriente_fija),
-            'saturacion_campo_campo': str(saturacion_campo),
-            'tiempo_entre_mediciones_v2': str(tiempo_entre_mediciones_v2)
+            'corriente_fija': str(corriente_fija),
+            'saturacion_campo': str(saturacion_campo),
+            'tiempo_entre_mediciones_v2': str(tiempo_entre_mediciones_v2),
+            'pasos': str(pasos)
         }
-
-        for nombres in datos_perfiles:
-            #compara los nombres existentes con el ingresado
-            if nombres != nombre:
-                for perfil in datos_perfiles.values():
-                    #compara el perfil ingresado don el que esta iterando
-                    if (comparar_perfiles_v2(perfil, perfil_nuevo)):
-                        print(comparar_perfiles_v2(perfil, perfil_nuevo))
-                        messagebox.showwarning('Advertencia','Ya existe un perfil con esos datos')
-                        return False
-                    return False
-            else:
+        
+        for nombre_existente, perfil_existente in datos_perfiles.items():
+            if comparar_perfiles_v2(perfil_existente, perfil_nuevo):
+                messagebox.showwarning('Advertencia', 'Ya existe un perfil con esos datos')
+                return False
+            elif nombre_existente == nombre:
                 messagebox.showwarning('Advertencia', 'Ya existe un perfil con ese nombre')
                 return False
-        guardar_txt(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2)
+
+        # Guardar nuevo perfil en el archivo JSON
+        datos_perfiles[nombre] = perfil_nuevo
+        with open(json_path, 'w') as file:
+            json.dump(datos_perfiles, file, indent=4)
+
+        # Guardar también en el archivo TXT
+        guardar_txt_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2, pasos)
+        
+        return True
+
+    except (FileNotFoundError, json.JSONDecodeError):
+        # Si el archivo no existe o está corrupto, crearlo con el perfil actual
+        with open(json_path, 'w') as file:
+            json.dump({nombre: perfil_nuevo}, file, indent=4)
+        
+        guardar_txt_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2, pasos)
         return True
     
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        messagebox.showerror('Error', f'Error al cargar los perfiles: {str(e)}')
-        return False
+def guardar_txt_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2, pasos):
+    ruta_archivo = os.path.join('APP_ESCRITORIO', 'v2_perfiles_parametros2.txt')
     
-def guardar_txt(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2):
-    f = open("APP_ESCRITORIO\v2_perfiles_parametros.txt", "a")
-    f.write(f"{nombre} | {corriente_fija} | {saturacion_campo} | {tiempo_entre_mediciones_v2} | \n")
-    f.close()
-
-
-def comparar_perfiles_v3(perfil1, perfil2):
-    #compara dos perfiles ingresados en la ventana 3
-    return (
-        perfil1['corriente_fija_v3'] == perfil2['corriente_fija_v3'] and
-        perfil1['saturacion_campo_v3'] ==perfil2['saturacion_campo_v3'] and
-        perfil1['tiempo_entre_mediciones_v3'] == perfil2['tiempo_entre_mediciones_v3']
-    )
+    with open(ruta_archivo, 'a') as f:
+        f.write(f"{nombre} | {corriente_fija} | {saturacion_campo} | {tiempo_entre_mediciones_v2} | {pasos} |\n")
 
 def validar_perfil_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3):
     json_path = os.path.join('APP_ESCRITORIO\perfiles_ventana3.json')
@@ -302,14 +302,14 @@ def validar_perfil_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_ent
             else:
                 messagebox.showwarning('Advertencia', 'Ya existe un perfil con ese nombre')
                 return False
-        guardar_txt(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3)
+        guardar_txt_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3)
         return True
     
     except (FileNotFoundError, json.JSONDecodeError) as e:
         messagebox.showerror('Error', f'Error al cargar los perfiles: {str(e)}')
         return False
     
-def guardar_txt(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3):
+def guardar_txt_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3):
     f = open("APP_ESCRITORIO\v3_perfiles_parametros.txt", "a")
     f.write(f"{nombre} | {corriente_fija_v3} | {saturacion_campo_v3} | {tiempo_entre_mediciones_v3} | \n")
     f.close()

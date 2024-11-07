@@ -5,9 +5,7 @@ from ventana1 import Ventana1
 from ventana2 import Ventana2
 from ventana3 import Ventana3
 from ventana4 import Ventana4
-import os            
-from ventana4 import Ventana4
-import os            
+import os           
 
 class Menu:
     def __init__(self, main):
