@@ -25,7 +25,7 @@ from core.views import *
 #validaciones .py!!!!! <---------------------------------
 from extensiones import validacion
 #from django.shortcuts import render, get_object_or_404, redirect
-from .models import Perfil_Parametro ##Prueba, Medicion
+from .models import Perfil_Parametro, Prueba #, Medicion
 from .forms import PerfilParametroForm ##, PruebaForm, MedicionForm
 import pyvisa
 import numpy as np
