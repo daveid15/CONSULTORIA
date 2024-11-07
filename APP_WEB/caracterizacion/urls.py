@@ -28,4 +28,5 @@ caracterizacion_patterns = [
     path('editar_prueba/<int:prueba_id>/', views.editar_prueba, name='editar_prueba'),
     path('mostrar_grafico/<int:prueba_id>/', views.mostrar_grafico, name='grafico_mediciones'),
     path('descargar_datos/<int:prueba_id>/', views.descargar_datos, name='descargar_datos'),
+    path('perfil/<int:perfil_id>/pruebas/', views.listar_pruebas_perfil, name='listar_pruebas_perfil'),
 ]  

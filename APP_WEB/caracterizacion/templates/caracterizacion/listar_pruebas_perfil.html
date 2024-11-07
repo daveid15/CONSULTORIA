@@ -1,0 +1,36 @@
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+
+<main role="main">
+    <div class="container">
+        <h2>Pruebas Asociadas al Perfil: {{ perfil.perfil_parametro_name }}</h2>
+        
+        {% if pruebas %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre de la Prueba</th>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prueba in pruebas %}
+                    <tr>
+                        <td>{{ prueba.prueba_name }}</td>
+                        <td>{{ prueba.tipo }}</td>
+                        <td>{{ prueba.fecha }}</td>
+                        <td>{{ prueba.prueba_state }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No hay pruebas asociadas a este perfil.</p>
+        {% endif %}
+    </div>
+</main>
+
+{% endblock %}
