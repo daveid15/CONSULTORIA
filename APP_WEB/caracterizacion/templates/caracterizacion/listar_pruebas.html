@@ -70,15 +70,11 @@
                             <i class="fas fa-eye" style="color: white;"></i> <!-- Icono de Ver Detalles -->
                         </a>
                         &nbsp;
-                        <a href="{%url 'editar_prueba' prueba.id %}" title="Editar Prueba" class="user-action">
-                            <i class="fas fa-edit" style="color: white;"></i> <!-- Icono de Editar -->
-                        </a>
-                        &nbsp;
                         <a href="{% url 'eliminar_prueba' prueba.id %}" title="Eliminar Prueba" class="user-action">
                             <i class="fas fa-trash" style="color:white;"> </i>
                         </a>
                         &nbsp;
-                        <a href="{% url 'grafico_mediciones' prueba.id %}" title="Mostrar Gráfico" class="user-action">
+                        <a href="{% url 'mostrar_grafico' prueba.id %}" title="Mostrar Gráfico" class="user-action">
                             <i class="fa-solid fa-chart-line">  </i>
                         </a>
                         &nbsp;

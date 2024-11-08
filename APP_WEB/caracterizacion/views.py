@@ -207,16 +207,14 @@ def desbloquear_perfil(request, perfil_id):
         messages.error(request, 'El perfil '+perfil.perfil_parametro_name + ' no se ha podido desbloquear')
         return redirect('listar_perfiles_bloqueados')
 
-    
-
 @login_required
 def eliminar_perfil_bloqueado(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
     perfil.delete()
     return redirect('listar_perfiles_bloqueados')
 
-# Apartado prueba
 
+# Apartado prueba
 @login_required
 def listar_pruebas(request):
     pruebas = Prueba.objects.all()
@@ -230,29 +228,6 @@ def eliminar_prueba(request, pk):
         return redirect('listar_pruebas')
     return render(request, 'caracterizacion/eliminar_prueba.html', {'prueba': prueba})
 
-
-def editar_prueba(request, prueba_id):
-    prueba = get_object_or_404(Prueba, id=prueba_id)
-    
-    if request.method == 'POST':
-        prueba.prueba_name = request.POST.get('prueba_name', prueba.prueba_name)
-        prueba.voltaje = request.POST.get('voltaje') or 0.0  # Asigna un valor predeterminado
-        prueba.corriente = request.POST.get('corriente') or 0.0
-        prueba.resistencia = request.POST.get('resistencia') or 0.0
-        prueba.campo = request.POST.get('campo') or 0.0
-        
-        # Si hay un nuevo archivo de gráfico, actualízalo
-        if 'grafico' in request.FILES:
-            prueba.grafico = request.FILES['grafico']
-            
-        prueba.save()
-
-        # Mostrar mensaje de éxito y redirigir
-        messages.success(request, 'Prueba actualizada correctamente.')
-        return redirect('listar_pruebas')
-
-    return render(request, 'caracterizacion/editar_prueba.html', {'prueba': prueba})
-
 @login_required
 def detalle_prueba(request, prueba_id):
     prueba = get_object_or_404(Prueba, id=prueba_id)
@@ -261,9 +236,14 @@ def detalle_prueba(request, prueba_id):
 @login_required
 def bloquear_prueba(request, prueba_id):
     prueba = get_object_or_404(Prueba, id=prueba_id)
-    prueba.prueba_state = 'f'  
+    prueba.prueba_state = 'f'
     prueba.save()
-    return redirect('listar_pruebas')  
+    try:
+        messages.success(request, 'Prueba '+prueba.prueba_name + 'bloqueado con éxito')
+        return redirect('listar_pruebas')
+    except:
+        messages.error(request, 'La prueba '+prueba.prueba_name + ' no se ha podido bloquear')
+        return redirect('listar_pruebas')
 
 @login_required
 def pruebas_bloqueadas(request):

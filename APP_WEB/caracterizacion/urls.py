@@ -25,8 +25,7 @@ caracterizacion_patterns = [
     path('pruebas/bloqueadas/', views.pruebas_bloqueadas, name='pruebas_bloqueadas'),
     path('pruebas/desbloquear/<int:prueba_id>/', views.desbloquear_prueba, name='desbloquear_prueba'),
     path('pruebas/eliminar/<int:prueba_id>/', views.eliminar_prueba, name='eliminar_prueba'),
-    path('editar_prueba/<int:prueba_id>/', views.editar_prueba, name='editar_prueba'),
-    path('mostrar_grafico/<int:prueba_id>/', views.mostrar_grafico, name='grafico_mediciones'),
+    path('mostrar_grafico/<int:prueba_id>/', views.mostrar_grafico, name='mostrar_grafico'),
     path('descargar_datos/<int:prueba_id>/', views.descargar_datos, name='descargar_datos'),
     path('pruebas/eliminar_prueba_bloqueado/<int:prueba_id>/', views.eliminar_prueba_bloqueado, name='eliminar_prueba_bloqueado')
 ]  
