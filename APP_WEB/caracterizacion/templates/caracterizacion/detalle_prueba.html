@@ -1,0 +1,38 @@
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+{% block extrahead %}
+{% endblock %}
+<div class="flex__action flex__action__title">
+    <h2 class='flex__action h2 medium text-blue'>Información de Prueba</h2>
+</div>
+<div class="flex__form view--parameter">
+    <div class="flex__form__input form--parameter">
+        <label for="name" class="flex__form__label">Nombre: </label>
+        <input type="text" name="name" id="id_name" value="{{prueba.prueba_name}}"
+            class="form-control border custom-input" readonly />
+    </div>
+    <div class="flex__form__input form--parameter">
+        <label for="tiempo" class="flex__form__label">Fecha y Hora: </label>
+        <input type="text" name="tiempo" id="id_tiempo" value="{{prueba.fecha}}"
+            class="form-control border custom-input" readonly />
+    </div>
+    <div class="flex__form__input form--parameter">
+        <label for="tipo" class="flex__form__label">Tipo: </label>
+        <input type="text" name="tipo" id="id_tipo" value="{{ prueba.tipo}}" class="form-control border custom-input"
+            readonly />
+    </div>
+    <div class="flex__form__input form--parameter">
+        <label for="estado" class="flex__form__label">Estado </label>
+        <input type="text" name="estado" id="id_estado" value="{% if prueba.prueba_state == 't' %}Activo{% else %}Bloqueado{% endif %}" class="form-control border custom-input"
+            readonly />
+    </div>
+    <div class="flex__form__input flex__form__button form--parameter">
+        <a class="button--white custom-button" href="{% url 'listar_pruebas' %}">Volver</a>
+    </div>
+</div>
+
+
+</div>
+
+{% endblock %}

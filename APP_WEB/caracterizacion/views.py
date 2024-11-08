@@ -25,7 +25,7 @@ from core.views import *
 #validaciones .py!!!!! <---------------------------------
 from extensiones import validacion
 #from django.shortcuts import render, get_object_or_404, redirect
-from .models import Perfil_Parametro, Prueba #, Medicion
+from .models import Perfil_Parametro, Prueba, Medicion
 from .forms import PerfilParametroForm ##, PruebaForm, MedicionForm
 import pyvisa
 import numpy as np
@@ -229,3 +229,95 @@ def eliminar_prueba(request, pk):
         prueba.delete()
         return redirect('listar_pruebas')
     return render(request, 'caracterizacion/eliminar_prueba.html', {'prueba': prueba})
+
+
+def editar_prueba(request, prueba_id):
+    prueba = get_object_or_404(Prueba, id=prueba_id)
+    
+    if request.method == 'POST':
+        prueba.prueba_name = request.POST.get('prueba_name', prueba.prueba_name)
+        prueba.voltaje = request.POST.get('voltaje') or 0.0  # Asigna un valor predeterminado
+        prueba.corriente = request.POST.get('corriente') or 0.0
+        prueba.resistencia = request.POST.get('resistencia') or 0.0
+        prueba.campo = request.POST.get('campo') or 0.0
+        
+        # Si hay un nuevo archivo de gráfico, actualízalo
+        if 'grafico' in request.FILES:
+            prueba.grafico = request.FILES['grafico']
+            
+        prueba.save()
+
+        # Mostrar mensaje de éxito y redirigir
+        messages.success(request, 'Prueba actualizada correctamente.')
+        return redirect('listar_pruebas')
+
+    return render(request, 'caracterizacion/editar_prueba.html', {'prueba': prueba})
+
+@login_required
+def detalle_prueba(request, prueba_id):
+    prueba = get_object_or_404(Prueba, id=prueba_id)
+    return render(request, 'caracterizacion/detalle_prueba.html', {'prueba': prueba})
+
+@login_required
+def bloquear_prueba(request, prueba_id):
+    prueba = get_object_or_404(Prueba, id=prueba_id)
+    prueba.prueba_state = 'f'  
+    prueba.save()
+    return redirect('listar_pruebas')  
+
+@login_required
+def pruebas_bloqueadas(request):
+    pruebas = Prueba.objects.filter(prueba_state='f')
+    return render(request, 'caracterizacion/pruebas_bloqueadas.html', {'pruebas': pruebas})
+    
+@login_required
+def eliminar_prueba_bloqueado(request, prueba_id):
+    prueba = get_object_or_404(Prueba, id=prueba_id)
+    prueba.delete()
+    return redirect('pruebas_bloqueadas')
+
+@login_required
+def desbloquear_prueba(request, prueba_id):
+    prueba = get_object_or_404(Prueba, id=prueba_id)
+    prueba.prueba_state = 't'
+    prueba.save()
+    try:
+        messages.success(request, 'Prueba '+prueba.prueba_name + 'desbloqueado con éxito')
+        return redirect('pruebas_bloqueadas')
+    except:
+        messages.error(request, 'La prueba '+prueba.prueba_name + ' no se ha podido desbloquear')
+        return redirect('pruebas_bloqueadas')
+
+@login_required
+def mostrar_grafico(request, prueba_id):
+    prueba = Prueba.objects.get(id=prueba_id)
+    mediciones = Medicion.objects.filter(id_prueba=prueba_id)
+
+    array_current = [medicion.corriente for medicion in mediciones]
+    array_voltaje = [medicion.voltaje for medicion in mediciones]
+
+    template_name = 'caracterizacion/grafico_mediciones.html'
+    return render(request, template_name, {
+        'prueba': prueba,
+        'currents': array_current,
+        'volts': array_voltaje
+    })
+
+@login_required
+def descargar_datos(request, prueba_id):
+    prueba = Prueba.objects.get(id=prueba_id)
+    mediciones = Medicion.objects.filter(id_prueba=prueba_id)
+
+    # Crear contenido del archivo .txt
+    contenido = f"Prueba: {prueba.prueba_name}\n\nPerfil de Parámetro Asociado:\n"
+    contenido += f"ID del Perfil: {prueba.id_perfil_parametro.id}\n"
+    contenido += f"Nombre del Perfil: {prueba.id_perfil_parametro.perfil_parametro_name}\n"
+    contenido += "\nMediciones:\nCorriente (A) \t Voltaje (V)\n"
+
+    for medicion in mediciones:
+        contenido += f"{medicion.corriente}\t{medicion.voltaje}\n"
+
+    # Crear y devolver el archivo .txt como respuesta
+    response = HttpResponse(contenido, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename="listar_pruebas_{prueba.prueba_name}.txt"'
+    return response
