@@ -1,10 +1,8 @@
 {% extends 'core/base_admin.html' %}
 {% load static %}
-{% load mathfilters %}
-
 {% block content %}
 {% block extrahead %}
-
+{% endblock %}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function confirmarCambio(url) {
@@ -21,33 +19,32 @@
             }
         });
     }
-</script> 
-{% endblock %}
+</script>
 
-<header class='mb-5'>
-    <div class="row">
-        <div class="titu-mein">
-            <h2 class='h2 medium text-blue'>Lista de Pruebas</h2>
-        </div>
+<header class='flex__action'>
+    <div class="flex__action flex__action__title">
+        <h2 class='flex__action h2 medium text-blue'>Lista de Pruebas</h2>
     </div>
-    <div class="botones-2-carac">
-        <a href="{% url 'pruebas_bloqueadas' %}" class="button button--gray--carac form-control custom-button-carac" title="Ver Pruebas Bloqueadas">Pruebas Bloqueadas</a>
+    <div class="flex__action barra-busqueda">
+        <form method="get" action="" class='col-12 col-lg-6 input-container-search my-auto me-3 redondeo'>
+            <input name="search" id="search" type="text" placeholder='Buscar por Nombre, Tipo, Fecha, Estado...' value="{{ search|default_if_none:'' }}"/>
+            <button type="submit" class="button button--gray">
+                <span class="material-icons-outlined">
+                    search
+                </span>
+            </button>
+        </form>
+    </div>
+    <div class="flex__action flex__action__btn">
+        <a href="{% url 'pruebas_bloqueadas' %}" class="button button--gray form-control custom-button" title="Ver Pruebas Bloqueadas">
+            Pruebas Bloqueadas
+        </a>
     </div>
 </header>
 
-<div class="d-flex flex-column flex-lg-row my-5 barra-busqueda">
-    <form method="get" action="" class='col-12 col-lg-6 input-container-search my-auto me-3 redondeo'>
-        <input name="search" id="search" type="text" placeholder='Buscar por Nombre, Tipo, Fecha, Estado...' value="{{ search|default_if_none:'' }}"/>
-        <button type="submit" class="button button--gray">
-            <span class="material-icons-outlined">
-                search
-            </span>
-        </button>
-    </form>
-</div>
-
-<div class="col-md-11 cont-table">
-    <table class="table table-user cont-form-crud">
+<!-- Tabla de pruebas -->
+<div class="flex__action cont-form-carac-responsive">
+    <table class="table-responsive table-user-responsive">
         <thead>
             <tr>
                 <th scope="col">Nombre de la Prueba</th>
@@ -58,98 +55,38 @@
             </tr>
         </thead>
         <tbody>
-            {% if pruebas_list %}
-                {% for prueba in pruebas_list %}
-                    <tr>
-                        <td>{{ prueba.prueba_name }}</td>
-                        <td>{{ prueba.tipo }}</td>
-                        <td>{{ prueba.fecha|date:"Y-m-d" }}</td>
-                        <td>
-                            {% if prueba.prueba_state == 't' %}
-                                <span class="badge badge-success">Activa</span>
-                            {% else %}
-                                <span class="badge badge-danger">Inactiva</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="{% url 'detalle_prueba' prueba.id %}" title="Ver Mediciones" class="user-action">
-                                <i class="fa-solid fa-eye"></i> 
-                            </a>
-                            &nbsp;
-                            <a href="{% url 'grafico_mediciones' prueba.id %}" title="Mostrar Gráfico" class="user-action">
-                                <i class="fa-solid fa-chart-line"></i> <!-- Icono de Gráfico -->
-                            </a>
-                            &nbsp;
-                            <a href="{% url 'descargar_datos' prueba.id %}" title="Descargar Archivo" class="user-action">
-                                <i class="fa-solid fa-download"></i> <!-- Icono de Descargar -->
-                            </a>
-                            &nbsp;
-                            <a href="{% url 'bloquear_prueba' prueba.id %}" onclick="confirmarCambio('{% url 'bloquear_prueba' prueba.id %}')" title="Bloquear prueba" class="btn btn-icon">
-                                <i class="fas fa-lock" style="color: white;"></i> <!-- Icono de Bloquear -->
-                            </a>                      
-                        </td>
-                    </tr>
-                {% endfor %}
-            {% else %}
-                <tr>
-                    <td colspan="7" class="text-center">No se encontraron pruebas.</td>
-                </tr>
-            {% endif %}
+            {% for prueba in pruebas_list %}
+            <tr>
+                <td data-label="Nombre de la Prueba">{{ prueba.prueba_name }}</td>
+                <td data-label="Tipo">{{ prueba.tipo }}</td>
+                <td data-label="Fecha">{{ prueba.fecha|date:"d/m/Y" }}</td>
+                <td data-label="Estado">{{ prueba.estado }}</td>
+                <td data-label="Acciones">
+                    <a href="{% url 'detalle_prueba' prueba.id %}" title="Ver Mediciones" class="user-action">
+                        <i class="fa-solid fa-eye"></i> 
+                    </a>
+                    &nbsp;
+                    <a href="{% url 'grafico_mediciones' prueba.id %}" title="Mostrar Gráfico" class="user-action">
+                        <i class="fa-solid fa-chart-line"></i> <!-- Icono de Gráfico -->
+                    </a>
+                    &nbsp;
+                    <a href="{% url 'descargar_datos' prueba.id %}" title="Descargar Archivo" class="user-action">
+                        <i class="fa-solid fa-download"></i> <!-- Icono de Descargar -->
+                    </a>
+                    &nbsp;
+                    <a href="{% url 'bloquear_prueba' prueba.id %}" onclick="confirmarCambio('{% url 'bloquear_prueba' prueba.id %}')" title="Bloquear prueba" class="btn btn-icon">
+                        <i class="fas fa-lock" style="color: white;"></i> <!-- Icono de Bloquear -->
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No hay pruebas disponibles.</td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
 </div>
-
-<!-- Paginación -->
-{% if prueba_list.has_other_pages %}
-<div class="d-flex">
-    <nav aria-label="Page navigation example" class="ms-auto">
-        <ul class="pagination pagination-table">
-            {% if prueba_list.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ prueba_list.previous_page_number }}&search={{ search }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-            {% else %}
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1">&laquo;</a>
-                </li>
-            {% endif %}
-            {% for i in prueba_list.paginator.page_range %}
-                {% if i >= prueba_list.number|sub:2 and i <= prueba_list.number|add:2 %}
-                    <li class="page-item {% if prueba_list.number == i %}active{% endif %}">
-                        <a class="page-link" href="?page={{ i }}&search={{ search }}">{{ i }}</a>
-                    </li>
-                {% endif %}
-            {% endfor %}
-            {% if prueba_list.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ prueba_list.next_page_number }}&search={{ search }}">&raquo;</a>
-                </li>
-            {% else %}
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1">&raquo;</a>
-                </li>
-            {% endif %}
-        </ul>
-    </nav>
-</div>
-{% endif %}
-<!-- Fin Paginación -->
-
-{% block scripts %}
-    {% if messages %}
-        <script>
-            {% for message in messages %}
-                Swal.fire({
-                    position: 'medium',
-                    icon: '{{ message.tags }}',
-                    title: '{{ message }}',
-                    showConfirmButton: true,
-                });
-            {% endfor %}
-        </script>
-    {% endif %}
 {% endblock %}
-{% endblock %}
+
 
