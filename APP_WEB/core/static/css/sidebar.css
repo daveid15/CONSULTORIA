@@ -363,7 +363,6 @@ body {
 
     align-items: flex-start;
     flex-flow: row wrap;
-    justify-content: space-between;
   }
 
   .sidebar .head {
@@ -377,8 +376,6 @@ body {
   }
 
   .menu ul {
-    display: flex;
-    flex-flow: row wrap;
     gap: 15px;
   }
 
@@ -428,7 +425,7 @@ body {
 
   .sidebar.active {
     height: 92px;
-    width: 100%;
+    width: 100vw;
   }
 
   .sidebar.active .menu .sub-menu {
