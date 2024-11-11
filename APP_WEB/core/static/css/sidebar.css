@@ -16,7 +16,7 @@ body {
 .flex__container {
   display: flex;
   align-items: flex-start;
-  width: 100%;
+  width: 100vw;
   min-height: 100vh;
   justify-content: flex-start;
   flex-wrap: wrap;
@@ -331,7 +331,7 @@ body {
 /* Sidebar oculto en resoluciones menores a 768px */
 @media (max-width: 768px) {
   .flex--item {
-    padding: 20px;
+    padding: 0;
     margin-top: 280px;
     flex: 2;
     width: 100vw;
@@ -345,7 +345,7 @@ body {
 
   .sidebar {
     position: fixed;
-    width: 100%;
+    width: 100vw;
     height: auto;
     flex-direction: row;
     top: 0;
@@ -443,8 +443,14 @@ body {
   }
 
   .flex--item {
+
+    justify-content: center;
+    align-items: center;
+    display: flex;
     margin: 0;
     margin-top: 200px;
+    text-align: center;
+    flex-direction: column;
 
   }
 
@@ -495,7 +501,7 @@ body {
   height: 65px;
   display: flex;
   align-items: center;
-  width: 100%;
+  width: 100vw;
 }
 
 .icon-border {
