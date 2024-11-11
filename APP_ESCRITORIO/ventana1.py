@@ -77,13 +77,13 @@ class Ventana1:
         tk.Label(self.menu, text="Nombre", bg="#A6C3FF").place(x=25, y=60)
         tk.Entry(self.menu, textvariable=self._nombre).place(x=25, y=80, width=210)
 
-        tk.Label(self.menu, text="Intervalo Simétrico", bg="#A6C3FF").place(x=25, y=110)
+        tk.Label(self.menu, text="Intervalo Simétrico(A)", bg="#A6C3FF").place(x=25, y=110)
         tk.Entry(self.menu, textvariable=self._intervalo_simetrico).place(x=25, y=130, width=210)
 
         tk.Label(self.menu, text="Intervalos de Corriente", bg="#A6C3FF").place(x=25, y=160)
         tk.Entry(self.menu, textvariable=self._intervalos_corriente).place(x=25, y=180, width=210)
 
-        tk.Label(self.menu, text="Tiempo entre Mediciones", bg="#A6C3FF").place(x=25, y=210)
+        tk.Label(self.menu, text="Tiempo entre Mediciones(s)", bg="#A6C3FF").place(x=25, y=210)
         tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones).place(x=25, y=230, width=210)
 
         # Fecha
@@ -413,7 +413,7 @@ class Ventana1:
                     file.write(f"fecha: {datetime.now().strftime('%d-%m-%Y')}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: \n")
 #                    file.write(f"fecha: {datetime.now().strftime("%d-%m-%Y")}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
                     
-                    file.write(f"Corriente (A),\tVoltaje (V), Resistencia (R)\t\n\n")
+                    file.write(f"Corriente (A),\tVoltaje (V), Resistencia (Ohm)\t\n\n")
                     #
                     mediciones=[]
                     for corriente, voltaje in self.resultados:

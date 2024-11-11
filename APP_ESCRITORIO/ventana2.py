@@ -48,13 +48,13 @@ class Ventana2:
         #Entradas
         tk.Label(self.menu, text="Nombre", bg="#A6C3FF").place(x=25, y=60)
         tk.Entry(self.menu, textvariable=self._nombre_v2).place(x=25, y=80, width=210)
-        tk.Label(self.menu, text="Corriente Fija", bg="#A6C3FF").place(x=25, y=110)
+        tk.Label(self.menu, text="Corriente Fija(A)", bg="#A6C3FF").place(x=25, y=110)
         tk.Entry(self.menu, textvariable=self._corriente_fija).place(x=25, y=130, width=210)
-        tk.Label(self.menu, text="Saturacion de Campo", bg="#A6C3FF").place(x=25, y=160)
+        tk.Label(self.menu, text="Saturacion de Campo(G)", bg="#A6C3FF").place(x=25, y=160)
         tk.Entry(self.menu, textvariable=self._saturacion_campo).place(x=25, y=180, width=210)
-        tk.Label(self.menu, text="Tiempo entre Mediciones", bg="#A6C3FF").place(x=25, y=210)
+        tk.Label(self.menu, text="Tiempo entre Mediciones(s)", bg="#A6C3FF").place(x=25, y=210)
         tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones_v2).place(x=25, y=230, width=210)
-        tk.Label(self.menu, text="Pasos", bg="#A6C3FF").place(x=25, y=260)
+        tk.Label(self.menu, text="Intervalos de Campos", bg="#A6C3FF").place(x=25, y=260)
         tk.Entry(self.menu, textvariable=self._pasos).place(x=25, y=280, width=210)
         checkbutton = tk.Checkbutton(
             self.menu, 
@@ -149,11 +149,11 @@ class Ventana2:
         self._delay = tk.StringVar()
         
         #Entradas
-        tk.Label(self.menuecu, text="Voltaje", bg="#A6C3FF").place(x=30, y=20)
+        tk.Label(self.menuecu, text="Intervalo Simétrico(V)", bg="#A6C3FF").place(x=30, y=20)
         tk.Entry(self.menuecu, textvariable=self._start_voltaje).place(x=30, y=40, width=220)
-        tk.Label(self.menuecu, text="Número de Pasos", bg="#A6C3FF").place(x=30, y=80)
+        tk.Label(self.menuecu, text="Intervalos de Voltajes", bg="#A6C3FF").place(x=30, y=80)
         tk.Entry(self.menuecu, textvariable=self._step_size).place(x=30, y=100, width=220)
-        tk.Label(self.menuecu, text="Delay", bg="#A6C3FF").place(x=30, y=140)
+        tk.Label(self.menuecu, text="Tiempo entre Mediciones(s)", bg="#A6C3FF").place(x=30, y=140)
         tk.Entry(self.menuecu, textvariable=self._delay).place(x=30, y=160, width=220)
 
         #Botones
@@ -165,50 +165,57 @@ class Ventana2:
     def obtener_ecuacion(self):
             array_prom_gauss_volts = []
             def obtener_ecuacion():
-                try:
-                    # Configuración inicial de la fuente
-                    self.rm = pyvisa.ResourceManager()
-                    fuente = self.rm.open_resource('GPIB::6::INSTR')  
-                    self.configurar_fuente(fuente)      
-                    start_voltaje = int(self._start_voltaje.get())
-                    step_size = int(self._step_size.get()) # Número de pasos
-                    delay = float(self._delay.get())
-                    voltajes = np.linspace(start_voltaje, -start_voltaje, num=step_size)  # Genera voltajes 
-                    # Bucle para establecer voltajes
-                    for voltaje in voltajes:
-                        voltaje = round(voltaje, 1)  # Redondear el voltaje
-                        if -20 <= voltaje <= 20:  # Asegurar que el voltaje esté dentro del rango
-                            fuente.write(f'SOUR:VOLT {voltaje}')  # Establecer el voltaje
-                            # Esperar a que se procesen los comandos
-                            time.sleep(delay)  # Espera para permitir la estabilización Min 0.04 para permitir una estabilización pp estuvo aca
-                            array_prom_gauss_volts.append((voltaje,self.obtener_gauss()))#se agrega  promedio de gauss y voltaje a array
+                    # Configuración inicial de la fuente     
+                    start_voltaje_str = self._start_voltaje.get()
+                    step_size_str = self._step_size.get() # Número de pasos
+                    delay_str = self._delay.get()
+                    if verificar_inputs_ecuacion(start_voltaje_str, step_size_str, delay_str, self.menu):
+                        start_voltaje = int(self._start_voltaje.get())
+                        step_size = int(self._step_size.get()) # Número de pasos
+                        delay = float(self._delay.get())
+                        voltajes = np.linspace(start_voltaje, -start_voltaje, num=step_size)  # Genera voltajes 
+                        addresses= ["6"]
+                        if verificar_dispositivo(addresses, self.menu):
+                            self.rm = pyvisa.ResourceManager()
+                            fuente = self.rm.open_resource('GPIB::6::INSTR')  
+                            self.configurar_fuente(fuente) 
+                            # Bucle para establecer voltajes
+                            try:
+                                self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
+                                for voltaje in voltajes:
+                                    voltaje = round(voltaje, 1)  # Redondear el voltaje
+                                    self.detener_medicion = False  # Reiniciar la variable de control
+                                    if self.detener_medicion:
+                                        break
+                                    fuente.write(f'SOUR:VOLT {voltaje}')  # Establecer el voltaje
+                                    # Esperar a que se procesen los comandos
+                                    time.sleep(delay)  # Espera para permitir la estabilización Min 0.04 para permitir una estabilización pp estuvo aca
+                                    array_prom_gauss_volts.append((voltaje,self.obtener_gauss()))#se agrega  promedio de gauss y voltaje a array
 
-                        else:
-                            print(f"Voltage {voltaje} out of range")
 
-                except pyvisa.errors.VisaIOError as e:
-                    print("Error de VISA:", e)
+                            except pyvisa.errors.VisaIOError as e:
+                                messagebox.showerror("Error de VISA:", f"{e}", parent = self.menu)
 
-                finally:
-                    fuente.write("OUTP OFF")  # Apagar después del bucle
-                    fuente.write('*CLS')  # Limpiar el estado
-                    fuente.write('*RST')  # Reiniciar el sistema
-                    fuente.close()  # Cerrar la conexión
-                    voltaje, senal_ni = zip(*array_prom_gauss_volts)#Guarda voltaje y señal de gauss respectivamente
-                    # Calcular pendiente e intercepto
-                    m, b = np.polyfit(voltaje, senal_ni, 1)
-                    ecuacion_dia = {
-                        "fecha": datetime.now().strftime("%Y-%m-%d"),
-                        "pendiente": m,
-                        "intercepto": b
-                    }
-                    
-                    # Guardar ecuación del día
-                    ruta_archivo = 'utils/ecuaciones/ecuacion.json'
-                    os.makedirs(os.path.dirname(ruta_archivo), exist_ok=True)  # Crear carpeta si no existe
-                    with open(ruta_archivo, 'w') as archivo:
-                        json.dump(ecuacion_dia, archivo, indent=4)
-                        print("archivo guardado")
+                            finally:
+                                fuente.write("OUTP OFF")  # Apagar después del bucle
+                                fuente.write('*CLS')  # Limpiar el estado
+                                fuente.write('*RST')  # Reiniciar el sistema
+                                fuente.close()  # Cerrar la conexión
+                                voltaje, senal_ni = zip(*array_prom_gauss_volts)#Guarda voltaje y señal de gauss respectivamente
+                                # Calcular pendiente e intercepto
+                                m, b = np.polyfit(voltaje, senal_ni, 1)
+                                ecuacion_dia = {
+                                    "fecha": datetime.now().strftime("%Y-%m-%d"),
+                                    "pendiente": m,
+                                    "intercepto": b
+                                }
+                                
+                                # Guardar ecuación del día
+                                ruta_archivo = 'utils/ecuaciones/ecuacion.json'
+                                os.makedirs(os.path.dirname(ruta_archivo), exist_ok=True)  # Crear carpeta si no existe
+                                with open(ruta_archivo, 'w') as archivo:
+                                    json.dump(ecuacion_dia, archivo, indent=4)
+                                    messagebox.showinfo("'Información","Ecuación generada correctamente" , parent=self.menu)
 
                     # Ejecutar la medición en un hilo separado
             self.hilo_medicion = threading.Thread(target=obtener_ecuacion)
@@ -447,17 +454,18 @@ class Ventana2:
                 b = ecuacion['intercepto']  # Intercepto
                 return m, b
             else:
-                return f"No hay ecuación disponible para la fecha actual: {dia_actual}. Por favor, genera una nueva."
+                messagebox.showerror("Advertencia", f"No hay ecuación disponible para la fecha actual: {dia_actual}. Por favor, genera una nueva",parent=self.menu)
+                return False
+            
 
         except FileNotFoundError:
             # Manejar el caso donde el archivo no exista
-            messagebox.showwarning("Advertencia", "El archivo de la ecuación no se encontró. Por favor, genera una ecuación nueva.")
-            return None
+            messagebox.showwarning("Advertencia", "El archivo de la ecuación no se encontró. Por favor, genera una ecuación nueva.",parent=self.menu)
+            return False
 
     def confirmar_detener_medicion(self):
         # Cambiar la variable de control para detener el hilo
         self.detener_medicion = True
-        print("Medición detenida desde el popup.")
         self.popup.destroy()  # Cerrar la ventana emergente
 
     def medir_GV_curve(self):
@@ -482,6 +490,7 @@ class Ventana2:
                 # Abrir la conexión con el multímetro, fuente de poder y realizar la medición
                 addresses= ["9","6"]
                 if verificar_dispositivo(addresses, self.menu):
+                    
                     try:
 
                         self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
@@ -490,28 +499,32 @@ class Ventana2:
                         # Configurar el multímetro para ser una fuente de corriente y medir voltaje
                         self.configurar_multimetro(multimetro, start_current)
                         self.configurar_fuente(fuente)
-                        a, b = self.cargar_ecuacion_del_dia()
-                        for field in self.fields:
-                            self.detener_medicion = False  # Reiniciar la variable de control
-                            if self.detener_medicion:
-                                break
-                            deltaV = (field-b)/a
-                            deltaV = round(deltaV, 1)  # Redondear el voltaje
-                            fuente.write(f'SOUR:VOLT {deltaV}')  # Establecer el voltaje
-                            time.sleep(delay)
-                            # Medir el voltaje mientras se aplica la corriente
-                            V = self.medir_voltaje(multimetro)
-                            self.array_prom_gauss_volts.append((start_current, V, deltaV, self.obtener_gauss(),field))#se agrega  promedio de gauss y voltaje a array                            
-                        self.menu.after(0, self.boton_cerrar.config, {'state': tk.NORMAL})
-                        self.actualizar_interfaz_despues_de_medir()
-                        # Apagar la salida después de las mediciones
-                        multimetro.write("OUTPUT OFF")
-                        fuente.write("OUTP OFF")  # Apagar después del bucle
-                        fuente.write('*CLS')  # Limpiar el estado
-                        fuente.write('*RST')  # Reiniciar el sistema
-                        fuente.close()  # Cerrar la conexión
-                        multimetro.write("OUTPUT OFF")
-                        multimetro.close()
+                        
+                        if self.cargar_ecuacion_del_dia() is  not False:  
+                            a, b = self.cargar_ecuacion_del_dia()
+                            for field in self.fields:
+                                
+                                self.detener_medicion = False  # Reiniciar la variable de control
+                                if self.detener_medicion:
+                                    break
+                                deltaV = (field-b)/a
+                                deltaV = round(deltaV, 1)  # Redondear el voltaje
+                                fuente.write(f'SOUR:VOLT {deltaV}')  # Establecer el voltaje
+                                time.sleep(delay)
+                                # Medir el voltaje mientras se aplica la corriente
+                                V = self.medir_voltaje(multimetro)
+                                self.array_prom_gauss_volts.append((start_current, V, deltaV, self.obtener_gauss(),field))#se agrega  promedio de gauss y voltaje a array                            
+                            self.menu.after(0, self.boton_cerrar.config, {'state': tk.NORMAL})
+                            self.actualizar_interfaz_despues_de_medir()
+                            # Apagar la salida después de las mediciones
+                            multimetro.write("OUTPUT OFF")
+                            fuente.write("OUTP OFF")  # Apagar después del bucle
+                            fuente.write('*CLS')  # Limpiar el estado
+                            fuente.write('*RST')  # Reiniciar el sistema
+                            fuente.close()  # Cerrar la conexión
+                            multimetro.write("OUTPUT OFF")
+                            multimetro.close()
+                        
 
                     except pyvisa.errors.VisaIOError as e:
                         if 'VI_ERROR_LIBRARY_NFOUND' in str(e):
@@ -539,8 +552,6 @@ class Ventana2:
                     for start_current,V,deltaV, saturacion, field in self.array_prom_gauss_volts:
                         file.write(f"{start_current}\t\t{V:.6f}\t\t{(V/start_current):.6f}\t\t{deltaV:.6f}\t\t{saturacion:.6f}\t\t{field}\n")
                 messagebox.showinfo("\tInformación", f"Datos guardados en: {file_path}")
-            else:
-                print("Guardado cancelado.")
         else:
             messagebox.showwarning("Advertencia", "No hay datos para guardar. Realiza la medición primero.")
 
@@ -560,7 +571,7 @@ class Ventana2:
             start_current,V, deltaV, saturacion,field = zip(*self.array_prom_gauss_volts)
 
         except ValueError:
-            print("Error: self.resultados no tiene el formato esperado.")
+            messagebox.showerror("Error:", "self.resultados no tiene el formato esperado", parent = self.menu)
             return
 
         #G vs V
@@ -580,8 +591,6 @@ class Ventana2:
         handles = self.ax.get_legend_handles_labels()
         if handles:
             self.ax.legend()
-        else:
-            print("No se encontraron artistas con etiquetas para la leyenda.")
         plt.xlim(-20, 20)
         plt.ylim(saturacion[-1] - 100, saturacion[0]+100)
         self.ax.grid(True)

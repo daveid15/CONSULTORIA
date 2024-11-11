@@ -22,7 +22,6 @@ def validar_int(valor):
         return None
     
 
-
 #****VALIDACIONES DE COMUNICACIÓN*****
 def listar_recursos():
     rm = pyvisa.ResourceManager()
@@ -118,8 +117,6 @@ def verificar_inputs(start_current_str, step_size_str, delay_str, parent_window)
     
 def verificar_inputs_gauss(start_saturation, constant_current_str, step_size_str, delay_str, parent_window):
     errores = []
-
-
     # Validar cada input
     constant_current = validar_float(constant_current_str)
     if constant_current is None or constant_current <= 0:
@@ -132,9 +129,37 @@ def verificar_inputs_gauss(start_saturation, constant_current_str, step_size_str
         errores.append("El valor de 'Saturación de Campo' debe ser un número entero mayor a cero.")
     elif validar_saturacion_campo(start_saturation):
         errores.append("El valor de 'Saturación de Campo' debe estar entre -5000G y 5000G.")
+        
+    delay = validar_float(delay_str)
+    if delay is None or delay <= 0:
+        errores.append("El valor de 'Tiempo entre Mediciones' debe ser un número flotante mayor a cero.")
+    elif validar_delay(delay):
+        errores.append("El valor de 'Tiempo entre Mediciones' debe entre 1ms y 999.999s .")
     if step_size is None or step_size <= 0:
-        errores.append("El valor de 'Intervalos de Corriente' debe ser un número entero mayor a cero.")
+        errores.append("El valor de 'Intervalos de Campos' debe ser un número entero mayor a cero.")
     
+
+
+    if errores:
+        # Mostrar errores
+        mensaje_error = "\n".join(errores)
+        messagebox.showerror("Errores de Validación", mensaje_error, parent=parent_window)
+        return False
+    else:
+        return True
+        
+
+def verificar_inputs_ecuacion(start_voltaje_str, step_size_str, delay_str, parent_window):
+    errores = []
+    # Validar cada input
+    start_voltaje = validar_float(start_voltaje_str)
+    if start_voltaje is None or start_voltaje <= 0:
+        errores.append("El valor de 'intervalo simétrico ' debe ser un número mayor a cero.")
+    elif validar_intervalo_simetrico_voltaje(start_voltaje):
+        errores.append("El valor del intervalo simétrico debe estar entre 20 V y 1 V")
+    step_size = validar_int(step_size_str)
+    if step_size is None or step_size <= 0:
+        errores.append("El valor de 'Intervalos de Voltajes' debe ser un número entero mayor a cero.")
     delay = validar_float(delay_str)
     if delay is None or delay <= 0:
         errores.append("El valor de 'Tiempo entre Mediciones' debe ser un número flotante mayor a cero.")
@@ -148,7 +173,9 @@ def verificar_inputs_gauss(start_saturation, constant_current_str, step_size_str
         return False
     else:
         return True
-        
+  
+
+
 
 def validar_saturacion_campo(start_field):
     min_field = -5000
@@ -169,6 +196,15 @@ def validar_intervalo_simetrico(start_current):
     else:
         return True
     
+def validar_intervalo_simetrico_voltaje(start_voltaje):
+    min_voltaje = 1
+    max_voltaje = 20
+    if ( start_voltaje >=min_voltaje and start_voltaje <= max_voltaje):
+        return False
+    else:
+        return True
+
+
 def validar_delay(delay):
     min_delay = 0.001
     max_delay = 999.999
