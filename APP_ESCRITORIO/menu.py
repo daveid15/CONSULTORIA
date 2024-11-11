@@ -79,7 +79,6 @@ class Menu:
     
 if __name__ == "__main__":
     main= tk.Tk()
-    imagen = tk.PhotoImage("APP_ESCRITORIO\fotos\complaint-exist.png")
     main.protocol("WM_DELETE_WINDOW")
     app = Menu(main)
     main.mainloop()

@@ -80,8 +80,8 @@ def verificar_dispositivo(addresses, parent_window):
     # Cierra la conexión con el recurso si se abrió correctamente
     if 'instrumento' in locals():
         instrumento.close()
+    errores = validar_conexion_gauss(errores)
     if errores:
-        errores = validar_conexion_gauss(errores)
         # Mostrar errores
         mensaje_error = "\n".join(errores)
         messagebox.showerror("Errores de Validación", mensaje_error, parent=parent_window)

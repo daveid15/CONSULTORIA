@@ -415,7 +415,11 @@ class Ventana1:
                     
                     file.write(f"Corriente (A),\tVoltaje (V), Resistencia (R)\t\n\n")
                     #
+                    mediciones=[]
                     for corriente, voltaje in self.resultados:
+                        mediciones.append( {"corriente":corriente, "voltaje":voltaje})
+
+                        
                         file.write(f"{corriente:.3f}\t\t{voltaje}\t\t{(voltaje/corriente):.6f}\n")
                 messagebox.showinfo("Información", f"Datos guardados en: {file_path}")
             else:
