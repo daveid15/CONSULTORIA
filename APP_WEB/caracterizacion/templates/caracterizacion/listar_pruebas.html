@@ -50,7 +50,6 @@
                 <th scope="col">Nombre de la Prueba</th>
                 <th scope="col">Tipo</th>
                 <th scope="col">Fecha</th>
-                <th scope="col">Estado</th>
                 <th scope="col">Acciones</th>
             </tr>
         </thead>
@@ -60,7 +59,6 @@
                 <td data-label="Nombre de la Prueba">{{ prueba.prueba_name }}</td>
                 <td data-label="Tipo">{{ prueba.tipo }}</td>
                 <td data-label="Fecha">{{ prueba.fecha|date:"d/m/Y" }}</td>
-                <td data-label="Estado">{{ prueba.estado }}</td>
                 <td data-label="Acciones">
                     <a href="{% url 'detalle_prueba' prueba.id %}" title="Ver Mediciones" class="user-action">
                         <i class="fa-solid fa-eye"></i> 
@@ -74,7 +72,7 @@
                         <i class="fa-solid fa-download"></i> <!-- Icono de Descargar -->
                     </a>
                     &nbsp;
-                    <a href="{% url 'bloquear_prueba' prueba.id %}" onclick="confirmarCambio('{% url 'bloquear_prueba' prueba.id %}')" title="Bloquear prueba" class="btn btn-icon">
+                    <a href="#" onclick="confirmarCambio('{% url 'bloquear_prueba' prueba.id %}')" title="Bloquear prueba" class="btn btn-icon">
                         <i class="fas fa-lock" style="color: white;"></i> <!-- Icono de Bloquear -->
                     </a>
                 </td>
