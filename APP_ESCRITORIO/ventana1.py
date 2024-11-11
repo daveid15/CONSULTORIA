@@ -289,7 +289,7 @@ class Ventana1:
 
                 # Abrir la conexión con el multímetro y realizar la medición
                 addresses= ["9"]
-                if verificar_dispositivo(addresses, self.menu):
+                if verificar_dispositivo(addresses, self.menu, False):
                     try:
                         with self.rm.open_resource('GPIB0::9::INSTR') as multimetro:
                             self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")

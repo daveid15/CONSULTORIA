@@ -56,7 +56,7 @@ def validar_conexion_gauss(errores, parent_window = None):
 
 
 
-def verificar_dispositivo(addresses, parent_window):
+def verificar_dispositivo(addresses, parent_window, gauss = None):
     errores = []
     rm = pyvisa.ResourceManager()
     for address in addresses:
@@ -79,7 +79,8 @@ def verificar_dispositivo(addresses, parent_window):
     # Cierra la conexión con el recurso si se abrió correctamente
     if 'instrumento' in locals():
         instrumento.close()
-    errores = validar_conexion_gauss(errores)
+    if gauss:
+        errores = validar_conexion_gauss(errores)
     if errores:
         # Mostrar errores
         mensaje_error = "\n".join(errores)

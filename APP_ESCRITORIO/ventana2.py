@@ -175,7 +175,7 @@ class Ventana2:
                         delay = float(self._delay.get())
                         voltajes = np.linspace(start_voltaje, -start_voltaje, num=step_size)  # Genera voltajes 
                         addresses= ["6"]
-                        if verificar_dispositivo(addresses, self.menu):
+                        if verificar_dispositivo(addresses, self.menu, False):
                             self.rm = pyvisa.ResourceManager()
                             fuente = self.rm.open_resource('GPIB::6::INSTR')  
                             self.configurar_fuente(fuente) 
