@@ -218,19 +218,19 @@ def comparar_perfiles(perfil1, perfil2):
     #compara dos perfiles ingresados en la ventana 1
     return (
         perfil1['intervalo_simetrico'] == perfil2['intervalo_simetrico'] and
-        perfil1['intervalos_corriente'] ==perfil2['intervalos_corriente'] and
+        perfil1['intervalos_corriente'] == perfil2['intervalos_corriente'] and
         perfil1['tiempo_entre_mediciones'] == perfil2['tiempo_entre_mediciones']
     )
 
 def validar_perfil_v1(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones):
-    json_path = os.path.join('APP_ESCRITORIO\perfiles_parametros.json')
+    json_path = os.path.join('perfiles_parametros.json')
     try:
         with open(json_path, 'r') as file:
             datos_perfiles = json.load(file)
 
         perfil_nuevo = {
             'intervalo_simetrico': str(intervalo_simetrico),
-            'intervalos_corrient)': str(intervalos_corriente),
+            'intervalos_corriente': str(intervalos_corriente),
             'tiempo_entre_mediciones': str(tiempo_entre_mediciones)
         }
 
@@ -240,14 +240,14 @@ def validar_perfil_v1(nombre, intervalo_simetrico, intervalos_corriente, tiempo_
                 for perfil in datos_perfiles.values():
                     #compara el perfil ingresado don el que esta iterando
                     if (comparar_perfiles(perfil, perfil_nuevo)):
-                        print(comparar_perfiles(perfil, perfil_nuevo))
                         messagebox.showwarning('Advertencia','Ya existe un perfil con esos datos')
                         return False
-                    return False
+                    
             else:
                 messagebox.showwarning('Advertencia', 'Ya existe un perfil con ese nombre')
+                
                 return False
-        guardar_txt(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones)
+        #guardar_txt(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones)
         return True
     
     except (FileNotFoundError, json.JSONDecodeError) as e:
@@ -255,7 +255,7 @@ def validar_perfil_v1(nombre, intervalo_simetrico, intervalos_corriente, tiempo_
         return False
     
 def guardar_txt(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones):
-    f = open("APP_ESCRITORIO\v1_perfiles_parametros.txt", "a")
+    f = open("v1_perfiles_parametros.txt", "a")
     f.write(f"{nombre} | {intervalo_simetrico} | {intervalos_corriente} | {tiempo_entre_mediciones} | \n")
     f.close()
 
@@ -269,7 +269,7 @@ def comparar_perfiles_v2(perfil1, perfil2):
     )
 
 def validar_perfil_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2):
-    json_path = os.path.join('APP_ESCRITORIO\perfiles_ventana2.json')
+    json_path = os.path.join('perfiles_ventana2.json')
     try:
         with open(json_path, 'r') as file:
             datos_perfiles = json.load(file)
@@ -301,7 +301,7 @@ def validar_perfil_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_med
         return False
     
 def guardar_txt(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2):
-    f = open("APP_ESCRITORIO\v2_perfiles_parametros.txt", "a")
+    f = open("v2_perfiles_parametros.txt", "a")
     f.write(f"{nombre} | {corriente_fija} | {saturacion_campo} | {tiempo_entre_mediciones_v2} | \n")
     f.close()
 
@@ -315,7 +315,7 @@ def comparar_perfiles_v3(perfil1, perfil2):
     )
 
 def validar_perfil_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3):
-    json_path = os.path.join('APP_ESCRITORIO\perfiles_ventana3.json')
+    json_path = os.path.join('perfiles_ventana3.json')
     try:
         with open(json_path, 'r') as file:
             datos_perfiles = json.load(file)
@@ -347,7 +347,7 @@ def validar_perfil_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_ent
         return False
     
 def guardar_txt(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3):
-    f = open("APP_ESCRITORIO\v3_perfiles_parametros.txt", "a")
+    f = open("v3_perfiles_parametros.txt", "a")
     f.write(f"{nombre} | {corriente_fija_v3} | {saturacion_campo_v3} | {tiempo_entre_mediciones_v3} | \n")
     f.close()
 

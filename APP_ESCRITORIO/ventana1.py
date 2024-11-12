@@ -127,14 +127,9 @@ class Ventana1:
 
     #Guardar perfil de parámetros
     def guardar_perfil(self):
+        bandera = True
         nombre = self._nombre.get().strip()
-        if not nombre:
-            messagebox.showerror("Error", "El nombre del perfil no puede estar vacío.")
-            return
 
-        if nombre in self.perfiles_parametros:
-            messagebox.showerror("Error", "El nombre del perfil ya existe. Por favor elige otro nombre.")
-            return
 
         #Validar que los valores sean correctos
         intervalo_simetrico = self._intervalo_simetrico.get().strip()
@@ -143,7 +138,7 @@ class Ventana1:
 
         if not intervalo_simetrico or not intervalos_corriente or not tiempo_entre_mediciones:
             messagebox.showerror("Error", "Todos los campos deben ser completados.")
-            return
+            bandera = False
 
         #Guardar parámetros en el diccionario
         self.perfiles_parametros[nombre] = {
@@ -152,10 +147,10 @@ class Ventana1:
             "tiempo_entre_mediciones": tiempo_entre_mediciones
         }
         guardar = validar_perfil_v1(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones)
-        if guardar == True:
+        if guardar and bandera:
             self.guardar_perfiles_a_archivo()
             self.actualizar_combo_perfiles()
-            messagebox.showinfo("Información", f"Perfil '{nombre}' guardado exitosamente.")
+            messagebox.showinfo("Información", f"Perfil '{nombre}' guardado exitosamente.",parent = self.menu)
 
         #Actualizar el ComboBox con los perfiles guardados
 
@@ -225,7 +220,6 @@ class Ventana1:
 
     # Volver al menú
     def volver(self):
-        self.guardar_perfiles_a_archivo()
         self.menu.withdraw()
         self.ventana_principal.deiconify()
 
