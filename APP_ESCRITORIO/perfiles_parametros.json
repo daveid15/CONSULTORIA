@@ -1,1 +1,17 @@
-{}
+{
+    "CARAC": {
+        "intervalo_simetrico": "0.001",
+        "intervalos_corriente": "10",
+        "tiempo_entre_mediciones": "1"
+    },
+    "CARAC1": {
+        "intervalo_simetrico": "0.001",
+        "intervalos_corriente": "10",
+        "tiempo_entre_mediciones": "11"
+    },
+    "CARAC12": {
+        "intervalo_simetrico": "0.001",
+        "intervalos_corriente": "101",
+        "tiempo_entre_mediciones": "111"
+    }
+}

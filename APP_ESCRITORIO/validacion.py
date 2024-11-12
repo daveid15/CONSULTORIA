@@ -22,7 +22,6 @@ def validar_int(valor):
         return None
     
 
-
 #****VALIDACIONES DE COMUNICACIÓN*****
 def listar_recursos():
     rm = pyvisa.ResourceManager()
@@ -57,7 +56,7 @@ def validar_conexion_gauss(errores, parent_window = None):
 
 
 
-def verificar_dispositivo(addresses, parent_window):
+def verificar_dispositivo(addresses, parent_window, gauss = None):
     errores = []
     rm = pyvisa.ResourceManager()
     for address in addresses:
@@ -80,8 +79,9 @@ def verificar_dispositivo(addresses, parent_window):
     # Cierra la conexión con el recurso si se abrió correctamente
     if 'instrumento' in locals():
         instrumento.close()
-    if errores:
+    if gauss:
         errores = validar_conexion_gauss(errores)
+    if errores:
         # Mostrar errores
         mensaje_error = "\n".join(errores)
         messagebox.showerror("Errores de Validación", mensaje_error, parent=parent_window)
@@ -118,8 +118,6 @@ def verificar_inputs(start_current_str, step_size_str, delay_str, parent_window)
     
 def verificar_inputs_gauss(start_saturation, constant_current_str, step_size_str, delay_str, parent_window):
     errores = []
-
-
     # Validar cada input
     constant_current = validar_float(constant_current_str)
     if constant_current is None or constant_current <= 0:
@@ -132,9 +130,37 @@ def verificar_inputs_gauss(start_saturation, constant_current_str, step_size_str
         errores.append("El valor de 'Saturación de Campo' debe ser un número entero mayor a cero.")
     elif validar_saturacion_campo(start_saturation):
         errores.append("El valor de 'Saturación de Campo' debe estar entre -5000G y 5000G.")
+        
+    delay = validar_float(delay_str)
+    if delay is None or delay <= 0:
+        errores.append("El valor de 'Tiempo entre Mediciones' debe ser un número flotante mayor a cero.")
+    elif validar_delay(delay):
+        errores.append("El valor de 'Tiempo entre Mediciones' debe entre 1ms y 999.999s .")
     if step_size is None or step_size <= 0:
-        errores.append("El valor de 'Intervalos de Corriente' debe ser un número entero mayor a cero.")
+        errores.append("El valor de 'Intervalos de Campos' debe ser un número entero mayor a cero.")
     
+
+
+    if errores:
+        # Mostrar errores
+        mensaje_error = "\n".join(errores)
+        messagebox.showerror("Errores de Validación", mensaje_error, parent=parent_window)
+        return False
+    else:
+        return True
+        
+
+def verificar_inputs_ecuacion(start_voltaje_str, step_size_str, delay_str, parent_window):
+    errores = []
+    # Validar cada input
+    start_voltaje = validar_float(start_voltaje_str)
+    if start_voltaje is None or start_voltaje <= 0:
+        errores.append("El valor de 'intervalo simétrico ' debe ser un número mayor a cero.")
+    elif validar_intervalo_simetrico_voltaje(start_voltaje):
+        errores.append("El valor del intervalo simétrico debe estar entre 20 V y 1 V")
+    step_size = validar_int(step_size_str)
+    if step_size is None or step_size <= 0:
+        errores.append("El valor de 'Intervalos de Voltajes' debe ser un número entero mayor a cero.")
     delay = validar_float(delay_str)
     if delay is None or delay <= 0:
         errores.append("El valor de 'Tiempo entre Mediciones' debe ser un número flotante mayor a cero.")
@@ -148,7 +174,9 @@ def verificar_inputs_gauss(start_saturation, constant_current_str, step_size_str
         return False
     else:
         return True
-        
+  
+
+
 
 def validar_saturacion_campo(start_field):
     min_field = -5000
@@ -169,6 +197,15 @@ def validar_intervalo_simetrico(start_current):
     else:
         return True
     
+def validar_intervalo_simetrico_voltaje(start_voltaje):
+    min_voltaje = 1
+    max_voltaje = 20
+    if ( start_voltaje >=min_voltaje and start_voltaje <= max_voltaje):
+        return False
+    else:
+        return True
+
+
 def validar_delay(delay):
     min_delay = 0.001
     max_delay = 999.999
@@ -181,19 +218,19 @@ def comparar_perfiles(perfil1, perfil2):
     #compara dos perfiles ingresados en la ventana 1
     return (
         perfil1['intervalo_simetrico'] == perfil2['intervalo_simetrico'] and
-        perfil1['intervalos_corriente'] ==perfil2['intervalos_corriente'] and
+        perfil1['intervalos_corriente'] == perfil2['intervalos_corriente'] and
         perfil1['tiempo_entre_mediciones'] == perfil2['tiempo_entre_mediciones']
     )
 
 def validar_perfil_v1(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones):
-    json_path = os.path.join('APP_ESCRITORIO\perfiles_parametros.json')
+    json_path = os.path.join('perfiles_parametros.json')
     try:
         with open(json_path, 'r') as file:
             datos_perfiles = json.load(file)
 
         perfil_nuevo = {
             'intervalo_simetrico': str(intervalo_simetrico),
-            'intervalos_corrient)': str(intervalos_corriente),
+            'intervalos_corriente': str(intervalos_corriente),
             'tiempo_entre_mediciones': str(tiempo_entre_mediciones)
         }
 
@@ -203,14 +240,14 @@ def validar_perfil_v1(nombre, intervalo_simetrico, intervalos_corriente, tiempo_
                 for perfil in datos_perfiles.values():
                     #compara el perfil ingresado don el que esta iterando
                     if (comparar_perfiles(perfil, perfil_nuevo)):
-                        print(comparar_perfiles(perfil, perfil_nuevo))
                         messagebox.showwarning('Advertencia','Ya existe un perfil con esos datos')
                         return False
-                    return False
+                    
             else:
                 messagebox.showwarning('Advertencia', 'Ya existe un perfil con ese nombre')
+                
                 return False
-        guardar_txt(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones)
+        #guardar_txt(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones)
         return True
     
     except (FileNotFoundError, json.JSONDecodeError) as e:
@@ -218,7 +255,7 @@ def validar_perfil_v1(nombre, intervalo_simetrico, intervalos_corriente, tiempo_
         return False
     
 def guardar_txt(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones):
-    f = open("APP_ESCRITORIO\v1_perfiles_parametros.txt", "a")
+    f = open("v1_perfiles_parametros.txt", "a")
     f.write(f"{nombre} | {intervalo_simetrico} | {intervalos_corriente} | {tiempo_entre_mediciones} | \n")
     f.close()
 
@@ -232,7 +269,7 @@ def comparar_perfiles_v2(perfil1, perfil2):
     )
 
 def validar_perfil_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2):
-    json_path = os.path.join('APP_ESCRITORIO\perfiles_ventana2.json')
+    json_path = os.path.join('perfiles_ventana2.json')
     try:
         with open(json_path, 'r') as file:
             datos_perfiles = json.load(file)
@@ -264,7 +301,7 @@ def validar_perfil_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_med
         return False
     
 def guardar_txt(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2):
-    f = open("APP_ESCRITORIO\v2_perfiles_parametros.txt", "a")
+    f = open("v2_perfiles_parametros.txt", "a")
     f.write(f"{nombre} | {corriente_fija} | {saturacion_campo} | {tiempo_entre_mediciones_v2} | \n")
     f.close()
 
@@ -278,7 +315,7 @@ def comparar_perfiles_v3(perfil1, perfil2):
     )
 
 def validar_perfil_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3):
-    json_path = os.path.join('APP_ESCRITORIO\perfiles_ventana3.json')
+    json_path = os.path.join('perfiles_ventana3.json')
     try:
         with open(json_path, 'r') as file:
             datos_perfiles = json.load(file)
@@ -310,7 +347,29 @@ def validar_perfil_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_ent
         return False
     
 def guardar_txt(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3):
-    f = open("APP_ESCRITORIO\v3_perfiles_parametros.txt", "a")
+    f = open("v3_perfiles_parametros.txt", "a")
     f.write(f"{nombre} | {corriente_fija_v3} | {saturacion_campo_v3} | {tiempo_entre_mediciones_v3} | \n")
     f.close()
 
+
+
+
+def centrar_ventana(ventana, ancho_ventana, alto_ventana):
+    """
+    Centra una ventana en la pantalla.
+    
+    Args:
+    - ventana: la ventana de Tkinter que se quiere centrar.
+    - ancho_ventana: el ancho deseado para la ventana.
+    - alto_ventana: la altura deseada para la ventana.
+    """
+    # Obtener el tamaño de la pantalla
+    ancho_pantalla = ventana.winfo_screenwidth()
+    alto_pantalla = ventana.winfo_screenheight()
+    
+    # Calcular la posición centrada
+    x_centrado = (ancho_pantalla - ancho_ventana) // 2
+    y_centrado = (alto_pantalla - alto_ventana) // 2
+    
+    # Configurar las dimensiones y posición de la ventana
+    ventana.geometry(f"{ancho_ventana}x{alto_ventana}+{x_centrado}+{y_centrado}")

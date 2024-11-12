@@ -32,9 +32,10 @@ class Ventana1:
         #Diseño Ventana
         self.menu = menu
         self.ventana_principal = ventana_principal
-        self.menu = menu
         self.menu.title('Caracterización Eléctrica')
-        self.menu.geometry('1000x600')
+        widht_menu =1000
+        height_menu = 600
+        centrar_ventana(self.menu,widht_menu,height_menu )
 
         #Pantalla con sus colores y titulo respectivo
         tk.Label(self.menu, text='Caracterización Eléctrica', font=labelFont, bg='#D9D9D9').pack(side=TOP, fill=X)
@@ -42,7 +43,7 @@ class Ventana1:
         right_frame.place(x=0.275, y=30, relheight=1, relwidth=1)
         left_frame = tk.Frame(self.menu, bg="#A6C3FF")
         left_frame.place(x=10, y=45, relheight=0.90, relwidth=0.275)
-
+        
         #Botones
         btn_volver = tk.Button(self.menu, text="volver", bg="#99A8EF", command=self.volver)
         btn_volver.place(x=50, y=1.5)
@@ -76,13 +77,13 @@ class Ventana1:
         tk.Label(self.menu, text="Nombre", bg="#A6C3FF").place(x=25, y=60)
         tk.Entry(self.menu, textvariable=self._nombre).place(x=25, y=80, width=210)
 
-        tk.Label(self.menu, text="Intervalo Simétrico", bg="#A6C3FF").place(x=25, y=110)
+        tk.Label(self.menu, text="Intervalo Simétrico(A)", bg="#A6C3FF").place(x=25, y=110)
         tk.Entry(self.menu, textvariable=self._intervalo_simetrico).place(x=25, y=130, width=210)
 
         tk.Label(self.menu, text="Intervalos de Corriente", bg="#A6C3FF").place(x=25, y=160)
         tk.Entry(self.menu, textvariable=self._intervalos_corriente).place(x=25, y=180, width=210)
 
-        tk.Label(self.menu, text="Tiempo entre Mediciones", bg="#A6C3FF").place(x=25, y=210)
+        tk.Label(self.menu, text="Tiempo entre Mediciones(s)", bg="#A6C3FF").place(x=25, y=210)
         tk.Entry(self.menu, textvariable=self._tiempo_entre_mediciones).place(x=25, y=230, width=210)
 
         # Fecha
@@ -126,14 +127,9 @@ class Ventana1:
 
     #Guardar perfil de parámetros
     def guardar_perfil(self):
+        bandera = True
         nombre = self._nombre.get().strip()
-        if not nombre:
-            messagebox.showerror("Error", "El nombre del perfil no puede estar vacío.")
-            return
 
-        if nombre in self.perfiles_parametros:
-            messagebox.showerror("Error", "El nombre del perfil ya existe. Por favor elige otro nombre.")
-            return
 
         #Validar que los valores sean correctos
         intervalo_simetrico = self._intervalo_simetrico.get().strip()
@@ -142,7 +138,7 @@ class Ventana1:
 
         if not intervalo_simetrico or not intervalos_corriente or not tiempo_entre_mediciones:
             messagebox.showerror("Error", "Todos los campos deben ser completados.")
-            return
+            bandera = False
 
         #Guardar parámetros en el diccionario
         self.perfiles_parametros[nombre] = {
@@ -151,10 +147,10 @@ class Ventana1:
             "tiempo_entre_mediciones": tiempo_entre_mediciones
         }
         guardar = validar_perfil_v1(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_mediciones)
-        if guardar == True:
+        if guardar and bandera:
             self.guardar_perfiles_a_archivo()
             self.actualizar_combo_perfiles()
-            messagebox.showinfo("Información", f"Perfil '{nombre}' guardado exitosamente.")
+            messagebox.showinfo("Información", f"Perfil '{nombre}' guardado exitosamente.",parent = self.menu)
 
         #Actualizar el ComboBox con los perfiles guardados
 
@@ -211,7 +207,7 @@ class Ventana1:
     @property
     def tiempo_entre_mediciones(self):
         return self._tiempo_entre_mediciones.get()
-    
+    @property
     def R(self):
         return self._R.get()
     
@@ -224,7 +220,6 @@ class Ventana1:
 
     # Volver al menú
     def volver(self):
-        self.guardar_perfiles_a_archivo()
         self.menu.withdraw()
         self.ventana_principal.deiconify()
 
@@ -288,7 +283,7 @@ class Ventana1:
 
                 # Abrir la conexión con el multímetro y realizar la medición
                 addresses= ["9"]
-                if verificar_dispositivo(addresses, self.menu):
+                if verificar_dispositivo(addresses, self.menu, False):
                     try:
                         with self.rm.open_resource('GPIB0::9::INSTR') as multimetro:
                             self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
@@ -409,12 +404,16 @@ class Ventana1:
 
             if file_path:  # Si el usuario no cancela la selección del archivo
                 with open(file_path, 'w') as file: 
-                    file.write(f"fecha: {datetime.now().strftime('%d-%m-%Y')}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
+                    file.write(f"fecha: {datetime.now().strftime('%d-%m-%Y')}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: \n")
 #                    file.write(f"fecha: {datetime.now().strftime("%d-%m-%Y")}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
                     
-                    file.write(f"Corriente (A),\tVoltaje (V), Resistencia (R)\t\n\n")
+                    file.write(f"Corriente (A),\tVoltaje (V), Resistencia (Ohm)\t\n\n")
                     #
+                    mediciones=[]
                     for corriente, voltaje in self.resultados:
+                        mediciones.append( {"corriente":corriente, "voltaje":voltaje})
+
+                        
                         file.write(f"{corriente:.3f}\t\t{voltaje}\t\t{(voltaje/corriente):.6f}\n")
                 messagebox.showinfo("Información", f"Datos guardados en: {file_path}")
             else:

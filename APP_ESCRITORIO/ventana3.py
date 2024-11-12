@@ -51,7 +51,9 @@ class Ventana3:
         left_frame = tk.Frame(self.menu, bg="#A6C3FF")
         left_frame.place(x=10, y=45, relheight=0.90, relwidth=0.275)
         self.menu.title("Caracterización Magnetoeléctrica invertida")
-        self.menu.geometry("1000x600")
+        widht_menu =1000
+        height_menu = 600
+        centrar_ventana(self.menu,widht_menu,height_menu )
 
         #Pantalla con sus colores y titulo respectivo
         tk.Label(self.menu, text='Caracterización Magnetoeléctrica invertida', font=labelFont, bg='#D9D9D9').pack(side=TOP, fill=X)
