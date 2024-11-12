@@ -21,7 +21,6 @@
         });
     }
 </script>
-
 <header class='flex__action'>
 
     <div class="flex__action flex__action__title">
@@ -39,37 +38,53 @@
 
             <form>
     </div>
+    <div class="flex__action flex__action__btn">
+        <a href="{% url 'pruebas_bloqueadas' %}"
+            class="button button--gray form-control custom-button" title="Agregar Usuarios">
+            Bloqueados</a>
+    </div>
+
 </header>
 
-<!-- Tabla de perfiles de parámetros -->
+<!-- Tabla de pruebas -->
 <div class="flex__action cont-form-carac-responsive">
     <table class="table-responsive table-user-responsive">
         <thead>
             <tr>
-                <th data-label="Nombre">Nombre Prueba</th>
+                <th data-label="Nombre Prueba">Nombre Prueba</th>
                 <th data-label="Fecha y Hora">Fecha y Hora</th>
-                <th data-label="Tipos">Tipos</th>
-                <th data-label="Estado">Estado</th>
+                <th data-label="Tipo">Tipo</th>
                 <th data-label="Funciones">Funciones</th>
             </tr>
         </thead>
         <tbody>
-            {% for prueba in pruebas %}
-            <tr>
-                <td data-label="Nombre Prueba">{{ prueba.prueba_name }}</td>
-                <td data-label="Fecha y Hora">{{ prueba.fecha }}</td>
-                <td data-label="Tipos">{{ prueba.tipo }}</td>
-                <td data-label="Estado">{{ prueba.prueba_state }}</td>
-                <td data-label="Funciones">
-                    <a href="#" onclick="confirmarCambio('{% url 'eliminar_prueba' prueba.pk %}')" class="btn btn-icon">
-                        <i class="fas fa-lock" style="color: white;"></i> <!-- Icono de Bloquear -->
-                    </a>
-                </td>
-            </tr>
+            {% for prueba in pruebas_list %}
+                <tr>
+                    <td data-label="Nombre Prueba">{{ prueba.prueba_name }}</td>
+                    <td data-label="Fecha y Hora">{{ prueba.fecha }}</td>
+                    <td data-label="Tipo">{{ prueba.tipo }}</td>
+                    <td data-label="Funciones">
+                        <a href="{% url 'detalle_prueba' prueba.id %}" class="btn btn-icon">
+                            <i class="fas fa-eye" style="color: white;"></i> <!-- Icono de Ver Detalles -->
+                        </a>
+                        &nbsp;
+                        <a href="{% url 'mostrar_grafico' prueba.id %}" title="Mostrar Gráfico" class="user-action">
+                            <i class="fa-solid fa-chart-line">  </i>
+                        </a>
+                        &nbsp;
+                        <a href="{% url 'descargar_datos' prueba.id %}" title="Descargar Datos" class="user-action">
+                            <i class="fa-solid fa-download"></i> <!--Icono de Descarga-->
+                        </a>
+                        &nbsp;
+                        <a href="#" onclick="confirmarCambio('{% url 'bloquear_prueba' prueba.id %}')" class="btn btn-icon">
+                            <i class="fas fa-lock" style="color: white;"></i> <!-- Icono de Bloquear -->
+                        </a>
+                    </td>
+                </tr>
             {% empty %}
-            <tr>
-                <td colspan="6">No hay pruebas disponibles.</td>
-            </tr>
+                <tr>
+                    <td colspan="7" class="text-center">No hay pruebas disponibles.</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
