@@ -27,9 +27,11 @@
         <input type="text" name="estado" id="id_estado" value="{% if prueba.prueba_state == 't' %}Activo{% else %}Bloqueado{% endif %}" class="form-control border custom-input"
             readonly />
     </div>
+    
     <div class="flex__form__input flex__form__button form--parameter">
         <a class="button--white custom-button" href="{% url 'listar_pruebas' %}">Volver</a>
     </div>
+    <div></div>
 </div>
 
 

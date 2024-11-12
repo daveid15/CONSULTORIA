@@ -55,7 +55,7 @@ body {
         text-align: right;
         }
     }
-    @media only screen and (min-width: 1601px){
+    @media only screen and (min-width: 1600px){
         .cont-form-carac-responsive {
           background-color: #001f3f;
         }

@@ -358,7 +358,7 @@ def mostrar_grafico(request, prueba_id):
     array_voltaje = [medicion.voltaje for medicion in mediciones]
 
     # Preparar los datos para el template
-    template_name = 'caracterizacion/grafico_mediciones.html'
+    template_name = 'caracterizacion/mostrar_grafico.html'
     return render(request, template_name, {
         'prueba': prueba,
         'perfil_parametro': perfil_parametro,
