@@ -21,6 +21,7 @@
     }
 </script> 
 {% endblock %}
+
 <header class='flex__action'>
     <div class="flex__action flex__action__title">
         <h2 class='flex__action h2 medium text-blue'>Pruebas Bloqueados</h2>
@@ -63,10 +64,10 @@
                     <td>{{ prueba.tipo }}</td>
                     <td>{{ prueba.prueba_state }}</td>
                     <td>
-                        <a href="#" class="user-action" onclick="confirmarCambio('{% url 'desbloquear_prueba' perfil.id %}')">
+                        <a href="#" class="user-action" onclick="confirmarCambio('{% url 'desbloquear_prueba' prueba.id %}')">
                             <i class="fa-solid fa-check"></i>
                         </a>
-                        <a href="#" class="user-action" onclick="confirmarCambio('{% url 'eliminar_perfil_bloqueado' perfil.id %}')" title="Eliminar Perfil">
+                        <a href="#" class="user-action" onclick="confirmarCambio('{% url 'eliminar_prueba_bloqueada' prueba.id %}')" title="Eliminar Prueba">
                             <i class="fa-solid fa-trash"></i>
                         </a>
                     </td>

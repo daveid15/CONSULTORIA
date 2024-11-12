@@ -25,7 +25,7 @@ from core.views import *
 #validaciones .py!!!!! <---------------------------------
 from extensiones import validacion
 #from django.shortcuts import render, get_object_or_404, redirect
-from .models import Perfil_Parametro, Prueba, Medicion
+from .models import Perfil_Parametro,Prueba, Medicion
 from .forms import PerfilParametroForm ##, PruebaForm, MedicionForm
 import pyvisa
 import numpy as np
@@ -199,6 +199,7 @@ def listar_perfiles_bloqueados(request):
 def desbloquear_perfil(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
     perfil.perfil_parametro_state = 't'
+    perfil.perfil_parametro_state = 't'  
     perfil.save()
     try:
         messages.success(request, 'Perfil '+perfil.perfil_parametro_name + 'desbloqueado con éxito')
@@ -207,80 +208,162 @@ def desbloquear_perfil(request, perfil_id):
         messages.error(request, 'El perfil '+perfil.perfil_parametro_name + ' no se ha podido desbloquear')
         return redirect('listar_perfiles_bloqueados')
 
+    
+
 @login_required
 def eliminar_perfil_bloqueado(request, perfil_id):
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
     perfil.delete()
     return redirect('listar_perfiles_bloqueados')
 
-
 # Apartado prueba
-@login_required
-def listar_pruebas(request):
-    pruebas = Prueba.objects.all()
-    return render(request, 'caracterizacion/listar_pruebas.html', {'pruebas': pruebas})
 
-@login_required
-def eliminar_prueba(request, pk):
-    prueba = get_object_or_404(Prueba, pk=pk)
+def listar_pruebas(request, page=None, search=None):
+    # Obtenemos el perfil del usuario actual (en caso de necesitarlo para validación)
+    profiles = Perfil_Parametro.objects.filter(perfil_parametro_state='t')  # Filtramos los perfiles activos
+    # Comprobación para obtener el parámetro `page` de la URL o de la petición GET
+    if page is None:
+        page = request.GET.get('page')
+    else:
+        page = page
+    if request.GET.get('page') is None:
+        page = page
+    else:
+        page = request.GET.get('page')
+
+    # Lógica para manejar la cadena de búsqueda y propagarla a través del paginador
+    if search is None:
+        search = request.GET.get('search')
+    else:
+        search = search
+    if request.GET.get('search') is None:  
+        search = search
+    else:
+        search = request.GET.get('search')
     if request.method == 'POST':
-        prueba.delete()
-        return redirect('listar_pruebas')
-    return render(request, 'caracterizacion/eliminar_prueba.html', {'prueba': prueba})
+        search = request.POST.get('search')
+        page = None
 
-@login_required
+    # Lista vacía para agregar las pruebas que se listarán
+    pruebas_all = []
+    # Si la búsqueda está vacía o no se encuentra
+    if search is None or search.strip() == "" or search == 'NoNe':
+        pruebas_array = Prueba.objects.filter(prueba_state='t').order_by('prueba_name')
+
+        for prueba in pruebas_array:
+            perfil_parametro = prueba.id_perfil_parametro.perfil_parametro_name
+            usuario = prueba.id_user.username
+            # Agregamos la información de la prueba
+            pruebas_all.append({
+                'id': prueba.id,
+                'prueba_name': prueba.prueba_name,
+                'tipo': prueba.tipo,
+                'perfil_parametro': perfil_parametro,
+                'usuario': usuario,
+                'fecha': prueba.fecha
+            })
+
+        paginator = Paginator(pruebas_all, 10)  # Definir `num_elemento` para paginar, aquí asumimos 10 por página
+        pruebas_list = paginator.get_page(page)
+        template_name = 'caracterizacion/listar_pruebas.html'
+        return render(request, template_name, {
+            'profiles': profiles,
+            'pruebas_list': pruebas_list,
+            'paginator': paginator,
+            'page': page
+        })
+    else:
+        # Lógica de búsqueda por nombre de prueba o tipo
+        pruebas_array = Prueba.objects.filter(
+            Q(prueba_name__icontains=search) | Q(tipo__icontains=search)
+        ).filter(prueba_state='t').order_by('prueba_name')
+
+        for prueba in pruebas_array:
+            perfil_parametro = prueba.id_perfil_parametro.perfil_parametro_name
+            usuario = prueba.id_user.username
+            # Agregamos la información de la prueba
+            pruebas_all.append({
+                'id': prueba.id,
+                'prueba_name': prueba.prueba_name,
+                'tipo': prueba.tipo,
+                'perfil_parametro': perfil_parametro,
+                'usuario': usuario,
+                'fecha': prueba.fecha
+            })
+
+    paginator = Paginator(pruebas_all, 10)  # Definir `num_elemento` para paginar, aquí asumimos 10 por página
+    pruebas_list = paginator.get_page(page)
+    template_name = 'caracterizacion/listar_pruebas.html'
+    return render(request, template_name, {
+        'profiles': profiles,
+        'pruebas_list': pruebas_list,
+        'paginator': paginator,
+        'page': page,
+        'search': search
+    })
+
 def detalle_prueba(request, prueba_id):
     prueba = get_object_or_404(Prueba, id=prueba_id)
-    return render(request, 'caracterizacion/detalle_prueba.html', {'prueba': prueba})
+    perfil_parametro = prueba.id_perfil_parametro  # Suponiendo que la prueba tiene un perfil de parámetro relacionado
+    mediciones = Medicion.objects.filter(id_prueba=prueba)  # Obtén todas las mediciones relacionadas con la prueba
+
+    context = {
+        'prueba': prueba,
+        'perfil_parametro': perfil_parametro,
+        'mediciones': mediciones,
+    }
+    return render(request, 'caracterizacion/detalle_prueba.html', context)
+
 
 @login_required
 def bloquear_prueba(request, prueba_id):
     prueba = get_object_or_404(Prueba, id=prueba_id)
-    prueba.prueba_state = 'f'
+    prueba.prueba_state = 'f'  
     prueba.save()
-    try:
-        messages.success(request, 'Prueba '+prueba.prueba_name + 'bloqueado con éxito')
-        return redirect('listar_pruebas')
-    except:
-        messages.error(request, 'La prueba '+prueba.prueba_name + ' no se ha podido bloquear')
-        return redirect('listar_pruebas')
+    return redirect('listar_pruebas')  
+
+def listar_pruebas_bloqueadas(request):
+    pruebas_bloqueadas = Prueba.objects.filter(prueba_state='f')  # Mostrar solo pruebas bloqueados
+    return render(request, 'caracterizacion/pruebas_bloqueadas.html', {'pruebas_bloqueadas': pruebas_bloqueadas})
+
 
 @login_required
-def pruebas_bloqueadas(request):
-    pruebas = Prueba.objects.filter(prueba_state='f')
-    return render(request, 'caracterizacion/pruebas_bloqueadas.html', {'pruebas': pruebas})
-    
+def desbloquear_prueba(request, prueba_id):
+    prueba = get_object_or_404(Prueba, id=prueba_id)
+    prueba.prueba_state = 't'  
+    prueba.save()
+    return redirect('pruebas_bloqueadas')
+
 @login_required
-def eliminar_prueba_bloqueado(request, prueba_id):
+def eliminar_prueba_bloqueada(request, prueba_id):
     prueba = get_object_or_404(Prueba, id=prueba_id)
     prueba.delete()
     return redirect('pruebas_bloqueadas')
 
 @login_required
-def desbloquear_prueba(request, prueba_id):
-    prueba = get_object_or_404(Prueba, id=prueba_id)
-    prueba.prueba_state = 't'
-    prueba.save()
-    try:
-        messages.success(request, 'Prueba '+prueba.prueba_name + 'desbloqueado con éxito')
-        return redirect('pruebas_bloqueadas')
-    except:
-        messages.error(request, 'La prueba '+prueba.prueba_name + ' no se ha podido desbloquear')
-        return redirect('pruebas_bloqueadas')
-
-@login_required
 def mostrar_grafico(request, prueba_id):
-    prueba = Prueba.objects.get(id=prueba_id)
+    # Obtener la prueba, o mostrar un error 404 si no existe
+    prueba = get_object_or_404(Prueba, id=prueba_id)
+    perfil_parametro = prueba.id_perfil_parametro
+    # Filtrar mediciones asociadas a la prueba
     mediciones = Medicion.objects.filter(id_prueba=prueba_id)
 
+    # Si no hay mediciones, lanzar una excepción o mostrar un mensaje en el template
+    if not mediciones:
+        raise Http404("No se encontraron mediciones para esta prueba.")
+
+    # Generar listas de corriente y voltaje
     array_current = [medicion.corriente for medicion in mediciones]
     array_voltaje = [medicion.voltaje for medicion in mediciones]
 
+    # Preparar los datos para el template
     template_name = 'caracterizacion/grafico_mediciones.html'
     return render(request, template_name, {
         'prueba': prueba,
+        'perfil_parametro': perfil_parametro,
         'currents': array_current,
-        'volts': array_voltaje
+        'volts': array_voltaje,
+        'num_mediciones': len(array_current)  # Opcional: para mostrar la cantidad de puntos
     })
 
 @login_required
@@ -299,5 +382,5 @@ def descargar_datos(request, prueba_id):
 
     # Crear y devolver el archivo .txt como respuesta
     response = HttpResponse(contenido, content_type='text/plain')
-    response['Content-Disposition'] = f'attachment; filename="listar_pruebas_{prueba.prueba_name}.txt"'
+    response['Content-Disposition'] = f'attachment; filename="detalle_prueba_{prueba.prueba_name}.txt"'
     return response
