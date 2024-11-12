@@ -321,35 +321,36 @@ def validar_perfil_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_ent
             datos_perfiles = json.load(file)
 
         perfil_nuevo = {
-            'corriente_fija_fija_v3': str(corriente_fija_v3),
-            'saturacion_campo_campo_v3': str(saturacion_campo_v3),
+            'corriente_fija_v3': str(corriente_fija_v3),
+            'saturacion_campo_v3': str(saturacion_campo_v3),
             'tiempo_entre_mediciones_v3': str(tiempo_entre_mediciones_v3)
         }
 
-        for nombres in datos_perfiles:
-            #compara los nombres existentes con el ingresado
+        for nombres, perfil_existente in datos_perfiles.items():
             if nombres != nombre:
-                for perfil in datos_perfiles.values():
-                    #compara el perfil ingresado don el que esta iterando
-                    if (comparar_perfiles_v3(perfil, perfil_nuevo)):
-                        print(comparar_perfiles_v3(perfil, perfil_nuevo))
-                        messagebox.showwarning('Advertencia','Ya existe un perfil con esos datos')
-                        return False
+                if comparar_perfiles_v3(perfil_existente, perfil_nuevo):
+                    messagebox.showwarning('Advertencia', 'Ya existe un perfil con esos datos')
                     return False
             else:
                 messagebox.showwarning('Advertencia', 'Ya existe un perfil con ese nombre')
                 return False
-        guardar_txt(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3)
+
+        # Guarda el nuevo perfil
+        datos_perfiles[nombre] = perfil_nuevo
+        with open(json_path, 'w') as file:
+            json.dump(datos_perfiles, file, indent=4)
+
+        guardar_txt_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3)
         return True
-    
+
     except (FileNotFoundError, json.JSONDecodeError) as e:
         messagebox.showerror('Error', f'Error al cargar los perfiles: {str(e)}')
         return False
     
-def guardar_txt(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3):
-    f = open("v3_perfiles_parametros.txt", "a")
-    f.write(f"{nombre} | {corriente_fija_v3} | {saturacion_campo_v3} | {tiempo_entre_mediciones_v3} | \n")
-    f.close()
+def guardar_txt_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3):
+    ruta_txt = "v3_perfiles_parametros.txt"
+    with open(ruta_txt, "a") as f:
+        f.write(f"{nombre} | {corriente_fija_v3} | {saturacion_campo_v3} | {tiempo_entre_mediciones_v3} |\n")
 
 
 
