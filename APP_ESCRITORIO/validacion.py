@@ -5,6 +5,7 @@ import json
 import os
 import nidaqmx
 from nidaqmx.errors import DaqError
+import numpy as np
 #****VALIDACIONES DE INPUTS*****
 
 def validar_float(valor):
@@ -34,12 +35,20 @@ def listar_recursos():
         print("No se encontraron recursos.")
 
 
-def validar_conexion_gauss(errores, parent_window = None):
+def validar_conexion_gauss(errores, parent_window):
     #Valida si el Gauss meter está conectado correctamente.
     try:
         with nidaqmx.Task() as task:
             # Intenta agregar el canal de voltaje del Gauss meter
+            num_samples = 10
+            sample_rate = 1000  # en Hz 
             task.ai_channels.add_ai_voltage_chan("Dev2/ai0")
+            task.timing.cfg_samp_clk_timing(rate=sample_rate, samps_per_chan=num_samples)#se configura la obtención de datos de gauss
+            # Leer los datos
+            data = task.read(num_samples)
+            # Convertir los datos a un array de numpy
+            data_array_0 = np.array(data[0])  # Datos del canal 0
+            promedio_data_0 = np.mean(data_array_0)#Se promedian dato
             # Si no se produce ningún error, está conectado
             if parent_window:
                 return True
@@ -51,24 +60,26 @@ def validar_conexion_gauss(errores, parent_window = None):
                         f"No se pudo conectar con el GaussMeter en el canal Dev2/ai0",
                         parent=parent_window)
             return False
+        print("Error")
         errores.append(f"No se pudo conectar con el GaussMeter en el canal Dev2/ai0")
         return errores
 
 
 
-def verificar_dispositivo(addresses, parent_window, gauss = None):
+def verificar_dispositivo(addresses, parent_window, gauss):
     errores = []
     rm = pyvisa.ResourceManager()
     for address in addresses:
         try:
             # Intenta abrir el recurso
             instrumento = rm.open_resource(f"GPIB0::{address}::INSTR")
+            respuesta = instrumento.query("*IDN?")
             """messagebox.showinfo("Conexión exitosa", 
                                 f"El dispositivo GPIB0::{resource_address}::INSTR está conectado.",
                                 parent=parent_window)
             
             # Puedes enviar un comando simple para verificar la respuesta
-            respuesta = instrumento.query("*IDN?")
+            
             messagebox.showinfo("Respuesta del dispositivo", 
                                 f"Respuesta del dispositivo: {respuesta}",
                                 parent=parent_window)"""
@@ -79,8 +90,9 @@ def verificar_dispositivo(addresses, parent_window, gauss = None):
     # Cierra la conexión con el recurso si se abrió correctamente
     if 'instrumento' in locals():
         instrumento.close()
+    print(gauss)
     if gauss:
-        errores = validar_conexion_gauss(errores)
+        errores = validar_conexion_gauss(errores, parent_window)
     if errores:
         # Mostrar errores
         mensaje_error = "\n".join(errores)

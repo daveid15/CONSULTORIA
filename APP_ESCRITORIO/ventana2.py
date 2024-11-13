@@ -142,7 +142,6 @@ class Ventana2:
         height_menuecu = 300
         centrar_ventana(self.menuecu,widht_menuecu,height_menuecu )
         self.menuecu.configure(bg="#A6C3FF")
-        self.menuecu.grab_set()
         #Variables
         self._start_voltaje = tk.StringVar()
         self._step_size = tk.StringVar()
@@ -175,16 +174,17 @@ class Ventana2:
                         delay = float(self._delay.get())
                         voltajes = np.linspace(start_voltaje, -start_voltaje, num=step_size)  # Genera voltajes 
                         addresses= ["6"]
-                        if verificar_dispositivo(addresses, self.menu, False):
+                        if verificar_dispositivo(addresses, self.menu, True):
                             self.rm = pyvisa.ResourceManager()
                             fuente = self.rm.open_resource('GPIB::6::INSTR')  
                             self.configurar_fuente(fuente) 
+                            self.mostrar_mensaje_inicio()
                             # Bucle para establecer voltajes
                             try:
-                                self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
+                                self.detener_medicion = False  # Reiniciar la variable de control
                                 for voltaje in voltajes:
                                     voltaje = round(voltaje, 1)  # Redondear el voltaje
-                                    self.detener_medicion = False  # Reiniciar la variable de control
+                                    
                                     if self.detener_medicion:
                                         break
                                     fuente.write(f'SOUR:VOLT {voltaje}')  # Establecer el voltaje
@@ -411,7 +411,7 @@ class Ventana2:
         else:
             raise ValueError("Tipo de sonda no reconocido")
         return gauss
-
+        """
     def obtener_gauss(self):
         num_samples = 10
         sample_rate = 1000  # en Hz 
@@ -435,8 +435,8 @@ class Ventana2:
                 return promedio_data_0
         except DaqError as e:
             messagebox.showwarning("Advertencia",f"Ha ocurrido un error con el GaussMeter,{e}")
-            
-
+            "
+        """
     def cargar_ecuacion_del_dia(self):
         ruta_archivo = 'utils/ecuaciones/ecuacion.json'
 
@@ -493,7 +493,7 @@ class Ventana2:
                     
                     try:
 
-                        self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
+                        self.mostrar_mensaje_inicio()
                         multimetro = self.rm.open_resource('GPIB0::9::INSTR')
                         fuente = self.rm.open_resource('GPIB0::6::INSTR')# Conectar a la fuente de alimentación
                         # Configurar el multímetro para ser una fuente de corriente y medir voltaje

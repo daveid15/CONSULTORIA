@@ -286,7 +286,7 @@ class Ventana1:
                 if verificar_dispositivo(addresses, self.menu, False):
                     try:
                         with self.rm.open_resource('GPIB0::9::INSTR') as multimetro:
-                            self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
+                            self.mostrar_mensaje_inicio()
                             # Configurar el multímetro para ser una fuente de corriente y medir voltaje
                             multimetro.write("*RST")  # Resetear el equipo
                             multimetro.write(":SOUR:FUNC CURR")  # Configurar como fuente de corriente
@@ -329,11 +329,9 @@ class Ventana1:
 
                     except pyvisa.errors.VisaIOError as e:
                         if 'VI_ERROR_LIBRARY_NFOUND' in str(e):
-                            print("Error: No se pudo localizar o cargar la biblioteca requerida por VISA. Verifique que los controladores VISA estén instalados correctamente.")
-                            print("Solución recomendada: Asegúrese de que el software NI-VISA (o su equivalente) esté instalado y correctamente configurado.")
+                            messagebox.showerror("'VI_ERROR_LIBRARY_NFOUND","Error: No se pudo localizar o cargar la biblioteca requerida por VISA. Verifique que los controladores VISA estén instalados correctamente y el software NI-VISA esté instalado." , parent=self.menu)
                         else:
-                            print(f"Error inesperado de VISA: {e}")
-
+                            messagebox.showerror("'Error inesperado de VISA",f"{e}" , parent=self.menu)
         # Ejecutar la medición en un hilo separado
         self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
         self.hilo_medicion.start()
