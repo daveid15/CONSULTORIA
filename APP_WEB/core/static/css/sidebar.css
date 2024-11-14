@@ -1209,3 +1209,47 @@ body {
 .btn-confirm:hover {
   background-color: #88e688;
 }
+  <style>
+    /* Estilo para el contenedor de la paginación */
+    .pagination-table {
+      display: flex;
+      justify-content: center;
+      padding: 10px 0;
+      list-style: none;
+  }
+
+  /* Estilo para cada elemento de la paginación */
+  .pagination-table .page-item {
+      margin: 0 5px;
+  }
+
+  /* Estilo para los enlaces de paginación */
+  .pagination-table .page-link {
+      color: #001F3F;
+      text-decoration: none;
+      padding: 8px 12px;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      transition: background-color 0.2s, color 0.2s;
+  }
+
+  /* Estado activo */
+  .pagination-table .page-item.active .page-link {
+      background-color: #001F3F;
+      color: white;
+      border-color: #001F3F;
+  }
+
+  /* Estado deshabilitado */
+  .pagination-table .page-item.disabled .page-link {
+      color: #6c757d;
+      pointer-events: none;
+      background-color: #f8f9fa;
+      border-color: #dee2e6;
+  }
+
+  /* Hover */
+  .pagination-table .page-link:hover {
+      background-color: #0056b3;
+      color: white;
+  }

@@ -122,11 +122,22 @@ def grafico (request):
 
 
 # Listar perfiles de parámetros
-@login_required
 def listar_perfiles(request):
-    #perfiles = Perfil_Parametro.objects.all()
-    perfiles = Perfil_Parametro.objects.filter(perfil_parametro_state='t')  # Mostrar solo perfiles activos
-    return render(request, 'caracterizacion/listar_perfiles.html', {'perfiles': perfiles})
+    # Filtrar solo perfiles activos
+    perfiles = Perfil_Parametro.objects.filter(perfil_parametro_state='t').order_by('perfil_parametro_name')
+
+    # Configuración de paginación: 10 perfiles por página
+    page = request.GET.get('page', 1)  # Obtiene el número de página desde los parámetros GET
+    paginator = Paginator(perfiles, 5)  # Limitar a 10 perfiles por página
+    perfiles_list = paginator.get_page(page)
+
+    # Contexto para el template
+    context = {
+        'perfiles_list': perfiles_list,
+        'paginator': paginator,
+    }
+
+    return render(request, 'caracterizacion/listar_perfiles.html', context)
 
 # Crear un perfil de parámetros 
 @login_required
@@ -264,7 +275,7 @@ def listar_pruebas(request, page=None, search=None):
                 'fecha': prueba.fecha
             })
 
-        paginator = Paginator(pruebas_all, 10)  # Definir `num_elemento` para paginar, aquí asumimos 10 por página
+        paginator = Paginator(pruebas_all, 5)  # Definir `num_elemento` para paginar, aquí asumimos 10 por página
         pruebas_list = paginator.get_page(page)
         template_name = 'caracterizacion/listar_pruebas.html'
         return render(request, template_name, {
@@ -292,7 +303,7 @@ def listar_pruebas(request, page=None, search=None):
                 'fecha': prueba.fecha
             })
 
-    paginator = Paginator(pruebas_all, 10)  # Definir `num_elemento` para paginar, aquí asumimos 10 por página
+    paginator = Paginator(pruebas_all, 5)  # Definir `num_elemento` para paginar, aquí asumimos 10 por página
     pruebas_list = paginator.get_page(page)
     template_name = 'caracterizacion/listar_pruebas.html'
     return render(request, template_name, {
@@ -303,16 +314,30 @@ def listar_pruebas(request, page=None, search=None):
         'search': search
     })
 
-def detalle_prueba(request, prueba_id):
+def detalle_prueba(request, prueba_id, page=None):
+    # Obtener la prueba y el perfil de parámetro asociado
     prueba = get_object_or_404(Prueba, id=prueba_id)
     perfil_parametro = prueba.id_perfil_parametro  # Suponiendo que la prueba tiene un perfil de parámetro relacionado
-    mediciones = Medicion.objects.filter(id_prueba=prueba)  # Obtén todas las mediciones relacionadas con la prueba
 
+    # Obtener todas las mediciones relacionadas con la prueba
+    mediciones = Medicion.objects.filter(id_prueba=prueba).order_by('fecha')  # Ordenar por fecha o como prefieras
+
+    # Configurar la paginación
+    if page is None:
+        page = request.GET.get('page')  # Obtener la página de la URL si no se pasa como argumento
+
+    paginator = Paginator(mediciones, 1)  # Limitar a 10 mediciones por página
+    mediciones_list = paginator.get_page(page)
+
+    # Contexto para el template
     context = {
         'prueba': prueba,
         'perfil_parametro': perfil_parametro,
-        'mediciones': mediciones,
+        'mediciones_list': mediciones_list,
+        'paginator': paginator,
+        'page': page,
     }
+    
     return render(request, 'caracterizacion/detalle_prueba.html', context)
 
 
