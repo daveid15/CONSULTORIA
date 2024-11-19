@@ -174,7 +174,7 @@ class Ventana2:
                         delay = float(self._delay.get())
                         voltajes = np.linspace(start_voltaje, -start_voltaje, num=step_size)  # Genera voltajes 
                         addresses= ["6"]
-                        if verificar_dispositivo(addresses, self.menu, True):
+                        if verificar_dispositivo(addresses, self.menu, False):
                             self.rm = pyvisa.ResourceManager()
                             fuente = self.rm.open_resource('GPIB::6::INSTR')  
                             self.configurar_fuente(fuente) 
@@ -489,7 +489,7 @@ class Ventana2:
 
                 # Abrir la conexión con el multímetro, fuente de poder y realizar la medición
                 addresses= ["9","6"]
-                if verificar_dispositivo(addresses, self.menu):
+                if verificar_dispositivo(addresses, self.menu, True):
                     
                     try:
 
@@ -539,7 +539,8 @@ class Ventana2:
 
 
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
-        if self.array_prom_gauss_volts is not None and self.array_prom_gauss_volts is not None:
+        if self.array_prom_gauss_volts:
+       
             # Obtener el título actual de la ventana como sugerencia de nombre_v2
             proyecto_titulo = "test_gauss_"
             file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")],initialfile=proyecto_titulo)
