@@ -24,8 +24,8 @@ class Ventana1:
         self._tiempo_entre_mediciones = tk.StringVar()
         self.LineaTendencia = tk.BooleanVar()
         # Variable de control para el hilo
-        self. detener_medicion = False
-
+        self.detener_medicion = False
+        self.resultados = []
         # Lista para perfiles de parámetros
         self.perfiles_parametros = self.cargar_perfiles_desde_archivo()
 
@@ -332,7 +332,10 @@ class Ventana1:
                             messagebox.showerror("'VI_ERROR_LIBRARY_NFOUND","Error: No se pudo localizar o cargar la biblioteca requerida por VISA. Verifique que los controladores VISA estén instalados correctamente y el software NI-VISA esté instalado." , parent=self.menu)
                         else:
                             messagebox.showerror("'Error inesperado de VISA",f"{e}" , parent=self.menu)
-        # Ejecutar la medición en un hilo separado
+                            
+                else:
+                    return
+        # Ejecutar la medición en un hilo separado                  
         self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
         self.hilo_medicion.start()
 
@@ -393,8 +396,9 @@ class Ventana1:
         self.entry_start.insert(0, file_path)
 
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
-        
-        if self.corrientes is not None and self.resultados is not None:
+        if not (isinstance(self.corrientes, np.ndarray) and self.corrientes.size > 0 and not np.all(self.corrientes == 0)) and  self.resultados:
+
+
             # Obtener el título actual de la ventana como sugerencia de nombre
             proyecto_titulo = "test_"
 
