@@ -89,9 +89,9 @@ DATABASES = {
     'default': {
         'HOST': 'localhost',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'baseconsultoria',
+        'NAME': 'laboratorio',
         'USER': 'postgres',
-        'PASSWORD': 'maxi2002'
+        'PASSWORD': 'laboratorio'
     }
 }
 
@@ -165,6 +165,6 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated'
+        'rest_framework.permissions.AllowAny'
     ]
 }
