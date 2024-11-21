@@ -31,6 +31,98 @@ import pyvisa
 import numpy as np
 from django.http import JsonResponse
 import time
+from rest_framework import generics,status
+from .serializers import PerfilParametroSerializer, PruebaSerializer, MedicionSerializer
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+
+class PerfilParametroListAPIView(generics.ListAPIView):
+    queryset = Perfil_Parametro.objects.all()
+    serializer_class = PerfilParametroSerializer
+
+# Para manejar Prueba
+class PruebaCreateAPIView(generics.CreateAPIView):
+    queryset = Prueba.objects.all()
+    serializer_class = PruebaSerializer
+
+class PruebaListAPIView(generics.ListAPIView):
+    queryset = Prueba.objects.all()
+    serializer_class = PruebaSerializer
+
+# Para manejar Medicion
+class MedicionCreateAPIView(generics.CreateAPIView):
+    queryset = Medicion.objects.all()
+    serializer_class = MedicionSerializer
+
+class MedicionListAPIView(generics.ListAPIView):
+    queryset = Medicion.objects.all()
+    serializer_class = MedicionSerializer
+
+class PerfilParametroCreateAPIView(generics.CreateAPIView):
+    queryset = Perfil_Parametro.objects.all()
+    serializer_class = PerfilParametroSerializer
+
+    def create(self, request, *args, **kwargs):
+        # Obtener el nombre del perfil de parámetro desde el request
+        perfil_parametro_name = request.data.get('perfil_parametro_name', None)
+        
+        # Verificar si el perfil de parámetro ya existe
+        perfil_parametro = Perfil_Parametro.objects.filter(perfil_parametro_name=perfil_parametro_name).first()
+        
+        if perfil_parametro:
+            # Si el perfil ya existe, no lo creamos, solo usamos el existente
+            # Puedes devolver un mensaje indicando que se usará el perfil existente si lo deseas
+            serializer = self.get_serializer(perfil_parametro)
+            pass
+        else:
+            # Si no existe, crear el nuevo perfil de parámetro
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            fija_corriente = request.data.get('fija_corriente', None)  # Valor predeterminado None si no se pasa
+            perfil_parametro = serializer.save(fija_corriente=fija_corriente)
+
+        # Obtener datos para pruebas y mediciones del request
+        pruebas_data = request.data.get('pruebas', [])  # Lista de pruebas
+
+        for prueba_data in pruebas_data:
+            # Crear cada prueba relacionada al perfil existente
+            user = User.objects.first()  # Cambia según tu lógica
+
+            # Obtener los valores de pendiente, intercepto, y configuración_rele desde la solicitud
+            pendiente = prueba_data.get('pendiente', 0.0)
+            intercepto = prueba_data.get('intercepto', 0.0)
+            configuracion_rele = prueba_data.get('configuracion_rele', '')
+
+            prueba = Prueba.objects.create(
+                id_perfil_parametro=perfil_parametro,
+                id_user=user,
+                prueba_name=prueba_data.get('prueba_name', f"Prueba de {perfil_parametro.perfil_parametro_name}"),
+                tipo=prueba_data.get('tipo', 'Automática'),
+                pendiente=pendiente,  # Almacenar pendiente
+                intercepto=intercepto,  # Almacenar intercepto
+                configuracion_rele=configuracion_rele  # Almacenar configuracion_rele
+            )
+
+            # Crear las mediciones asociadas a cada prueba
+            mediciones_data = prueba_data.get('mediciones', [])  # Lista de mediciones
+            for medicion_data in mediciones_data:
+                # Obtener los valores de campo, delta_v, y saturacion_campo desde la medición
+                campo = medicion_data.get('campo', 0.0)
+                delta_v = medicion_data.get('delta_v', 0.0)
+                saturacion_campo = medicion_data.get('saturacion_campo', 0.0)
+
+                Medicion.objects.create(
+                    id_prueba=prueba,
+                    voltaje=medicion_data.get('voltaje', 0.0),
+                    corriente=medicion_data.get('corriente', 0.0),
+                    resistencia=0.0,  # Se calculará automáticamente en `save()`
+                    campo=campo,  # Almacenar campo
+                    delta_v=delta_v,  # Almacenar delta_v
+                    saturacion_campo=saturacion_campo  # Almacenar saturacion_campo
+                )
+
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 num_elemento = num_pag()#desde core se importa el numero de elementos por página
