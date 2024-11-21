@@ -242,6 +242,7 @@ class Ventana2:
                     return promedio_data_0
             except nidaqmx.DaqError as e:
                 messagebox.showwarning("Advertencia",f"Ha ocurrido un error con el GaussMeter,{e}")
+                return False
 
     def volts_a_gauss(self, volts, probe_type):
             voltajes_mV = volts * 1000  # Convertir a milivoltios
@@ -513,6 +514,10 @@ class Ventana2:
                                 time.sleep(delay)
                                 # Medir el voltaje mientras se aplica la corriente
                                 V = self.medir_voltaje(multimetro)
+                                campo = self.obtener_gauss()
+                                if campo == False:
+                                    messagebox.showwarning("Advertencia",f"Ha ocurrido un error con el GaussMeter, Compruebe el puerto dev 1")
+                                    break
                                 self.array_prom_gauss_volts.append((start_current, V, deltaV, self.obtener_gauss(),field))#se agrega  promedio de gauss y voltaje a array                            
                             self.menu.after(0, self.boton_cerrar.config, {'state': tk.NORMAL})
                             self.actualizar_interfaz_despues_de_medir()
@@ -551,7 +556,7 @@ class Ventana2:
                     file.write("\tCorriente Fija\t\tMedida Voltaje\t\tR\t\tDelta V\t\tGauss Teórico\t\tGauss Real\n\n")
                     
                     for start_current,V,deltaV, saturacion, field in self.array_prom_gauss_volts:
-                        file.write(f"{start_current}\t\t{V:.6f}\t\t{(V/start_current):.6f}\t\t{deltaV:.6f}\t\t{saturacion:.6f}\t\t{field}\n")
+                        file.write(f"{start_current}\t\t{V:.6f}\t\t{(V/start_current):.6f}\t\t{deltaV:.6f}\t\t{field}\t\t{saturacion:.6f}\n")
                 messagebox.showinfo("\tInformación", f"Datos guardados en: {file_path}")
         else:
             messagebox.showwarning("Advertencia", "No hay datos para guardar. Realiza la medición primero.")
