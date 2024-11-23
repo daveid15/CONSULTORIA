@@ -8,6 +8,7 @@ from ventana4 import Ventana4
 import os            
 from ventana4 import Ventana4
 import os            
+from validacion import centrar_ventana
 
 class Menu:
     def __init__(self, main):
@@ -19,8 +20,9 @@ class Menu:
 
         self.main = main
         self.main.title('MENÚ PRINCIPAL')
-        self.main.geometry('1000x600')
-
+        widht_main =1000
+        height_main = 600
+        centrar_ventana(self.main,widht_main,height_main )
         #Pantalla con sus colores y titulo respectivo
         tk.Label(self.main, text="MENÚ PRINCIPAL", font=labelFont, bg='#D9D9D9').pack(side=TOP, fill=X)
         right_frame = tk.Frame(self.main, bg="#1F6095")
@@ -28,42 +30,14 @@ class Menu:
         left_frame = tk.Frame(self.main, bg="#A6C3FF")
         left_frame.place(x=10, y=45, relheight=0.90, relwidth=0.275)
 
-
-        ruta_relativa = os.path.join("fotos", "FuentePoder.png")
-        imagen_fuente = Image.open(ruta_relativa)
-
-
-        ruta_relativa = os.path.join("fotos", "FuentePoder.png")
-        imagen_fuente = Image.open(ruta_relativa)
-
         #Imagenes
         #imagen_fuente = Image.open(self.imagen_fuente)
-        self.imagen_fuente = "fotos\FuentePoder.png"
-        imagen_fuente = Image.open(self.imagen_fuente)
         #imagen_fuente = Image.open(self.imagen_fuente)
-        imagen_tk_fuente = ImageTk.PhotoImage(imagen_fuente)
-        label_fuente = tk.Label(right_frame, image=imagen_tk_fuente, width=175, height=120)
-        label_fuente.place(relx=0.315, rely=0.3)
 
-        self.imagen_gaussmeter = "fotos\Gaussmeter.png"
-        imagen_gaussmeter = Image.open(self.imagen_gaussmeter)
-        imagen_tk_gaussmeter = ImageTk.PhotoImage(imagen_gaussmeter)
-        label_gaussmeter = tk.Label(right_frame, image=imagen_tk_gaussmeter, width=175, height=120)
-        label_gaussmeter.place(relx=0.5575, rely=0.3)
 
-        self.imagen_multimetro = "fotos\Multimetro.png"
-        imagen_multimetro = Image.open(self.imagen_multimetro)
-        imagen_tk_multimetro = ImageTk.PhotoImage(imagen_multimetro)
-        label_multimetro = tk.Label(right_frame, image=imagen_tk_multimetro, width=175, height=120)
-        label_multimetro.place(relx=0.80, rely=0.3)
 
-        #Nombres Instrumentos
-        label_poder = tk.Label(right_frame, text='Fuente de Poder', font=someFont, bg="#D9D9D9")
-        label_poder.place(relx=0.325, rely=0.23)
-        label_gauss = tk.Label(right_frame, text='Gaussmeter', font=someFont, bg="#D9D9D9")
-        label_gauss.place(relx=0.585, rely=0.23)
-        label_multi = tk.Label(right_frame, text='Multimetro', font=someFont, bg="#D9D9D9")
-        label_multi.place(relx=0.835, rely=0.23)
+
+
 
         #Botones
         boton1=tk.Button(left_frame, text='Caracterización Eléctrica',bg="#FDFDFD", font=bottonFont, width=24, height=4, command=self.abrir_ventana1)
@@ -105,6 +79,6 @@ class Menu:
     
 if __name__ == "__main__":
     main= tk.Tk()
-    imagen = tk.PhotoImage("APP_ESCRITORIO\fotos\complaint-exist.png")
+    main.protocol("WM_DELETE_WINDOW")
     app = Menu(main)
     main.mainloop()

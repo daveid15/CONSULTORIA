@@ -35,9 +35,9 @@ def pre_check_profile(request):
         
         if profile.first_session == 'Si':  # Si es la primera sesión
             print('hola2')
-            #profile.first_session = 'No'
-            #profile.token_app_session = 'No'
-            #profile.save(update_fields=['first_session', 'token_app_session'])  # Guardar cambios en una sola consulta
+            profile.first_session = 'Si'
+            profile.token_app_session = 'Si'
+            profile.save(update_fields=['first_session', 'token_app_session'])  # Guardar cambios en una sola consulta
             return render(request,'registration/password_change_form.html')
 
     else:

@@ -3,7 +3,7 @@
 {% load mathfilters %}
 {% block content %}
 {% block extrahead %}
-
+<link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function confirmarCambio(url) {
@@ -105,9 +105,10 @@
 <div class="d-flex">
     <nav aria-label="Page navigation example" class="ms-auto">
         <ul class="pagination pagination-table">
+            <!-- Botón para la página anterior -->
             {% if user_list.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ user_list.previous_page_number}}&search={{search}}"
+                <a class="page-link" href="?page={{ user_list.previous_page_number }}&search={{ search }}"
                     aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
@@ -117,27 +118,32 @@
                 <a class="page-link" href="#" tabindex="-1">&laquo;</a>
             </li>
             {% endif %}
+            
+            <!-- Números de página -->
             {% for i in paginator.page_range %}
-            {% if i >= page|sub:2 and i < page|add:3 %} <li
-                class="page-item {% if user_list.number == i %}active{% endif %}">
-                <a class="page-link" href="?page={{ i }}&search={{search}}">{{ i }}</a>
-                </li>
-                {% endif %}
-                {% endfor %}
-                {% if user_list.has_next %}
-                <li class="page-item ">
-                    <a class="page-link" href="?page={{ user_list.next_page_number }}&search={{search}}">&raquo;</a>
-                </li>
-                {% else %}
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1">&raquo;</a>
-                </li>
-                {% endif %}
+            <li class="page-item {% if user_list.number == i %}active{% endif %}">
+                <a class="page-link" href="?page={{ i }}&search={{ search }}">{{ i }}</a>
+            </li>
+            {% endfor %}
+            
+            <!-- Botón para la página siguiente -->
+            {% if user_list.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ user_list.next_page_number }}&search={{ search }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">&raquo;</a>
+            </li>
+            {% endif %}
         </ul>
     </nav>
 </div>
 {% endif %}
-<!-- Paginación -->
+<!-- Fin de la paginación -->
+
 
 {% block scripts %}
 {% if messages %}

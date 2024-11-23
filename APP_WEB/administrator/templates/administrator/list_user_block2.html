@@ -4,6 +4,7 @@
 {% block content %}
 {% block extrahead %}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
 <script>
     function confirmarCambio(url) {
         Swal.fire({
@@ -101,11 +102,10 @@
                             </li>                        
                         {% endif %}
                         {% for i in paginator.page_range %}
-                            {% if i >= page|sub:2  and i < page|add:3  %}
                                 <li class="page-item {% if user_list.number == i %}active{% endif %}">
                                     <a class="page-link" href="?page={{ i }}&search={{search}}">{{ i }}</a>
                                 </li>                        
-                            {% endif %}
+                            
                         {% endfor %}
                         {% if user_list.has_next %}
                             <li class="page-item ">
