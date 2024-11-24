@@ -1,5 +1,6 @@
 {% extends 'core/base_admin.html' %}
 {% load static %}
+{% load mathfilters %}
 {% block content %}
 {% block extrahead %}
 {% endblock %}
@@ -74,7 +75,9 @@
                     </a>
                     <a href="#" onclick="confirmarCambio('{% url 'bloquear_perfil' perfil.pk %}')" class="btn btn-icon">
                         <i class="fas fa-lock" style="color: white;"></i> <!-- Icono de Bloquear -->
-
+                    </a>
+                    <a href="{% url 'listar_pruebas_perfil' perfil.pk %}" class="btn btn-icon">
+                        <i class="fas fa-tasks" style="color: white;"></i> <!-- Icono de Ver Pruebas -->
                     </a>
                 </td>
             </tr>

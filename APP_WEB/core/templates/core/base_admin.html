@@ -54,6 +54,7 @@
         <div class="menu">
           <ul>
             <!--Admin -->
+            {% if request.user.profile.group_id == 1 %}
             <li>
               <a href="#">
                 <span class="material-icons">admin_panel_settings</span>
@@ -76,7 +77,9 @@
             </li>
             <li>
             </li>
-
+            {% endif %}
+            
+            <!-- Caracterización -->
             <li>
               <a href="#">
                 <span class="material-icons">admin_panel_settings</span>
