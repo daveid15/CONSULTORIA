@@ -5,6 +5,7 @@ import json
 import os
 import nidaqmx
 from nidaqmx.errors import DaqError
+import numpy as np
 #****VALIDACIONES DE INPUTS*****
 
 def validar_float(valor):
@@ -34,41 +35,83 @@ def listar_recursos():
         print("No se encontraron recursos.")
 
 
-def validar_conexion_gauss(errores, parent_window = None):
-    #Valida si el Gauss meter está conectado correctamente.
+def validar_conexion_gauss(errores, parent_window):
+    """
+    Valida si el Gaussímetro está conectado correctamente a través de la tarjeta DAQ.
+    Se calcula la diferencia entre el valor promedio de las mediciones y los valores de referencia de apagado y encendido.
+
+    :param errores: Lista para agregar mensajes de error.
+    :param parent_window: Interfaz gráfica o ventana principal (no utilizada en este fragmento, pero podría ser útil para actualizaciones en GUI).
+    :return: Lista de errores (vacía si no hay errores).
+    """
     try:
+        # Configuración de la tarea de adquisición de datos
         with nidaqmx.Task() as task:
-            # Intenta agregar el canal de voltaje del Gauss meter
-            task.ai_channels.add_ai_voltage_chan("Dev2/ai0")
-            # Si no se produce ningún error, está conectado
-            if parent_window:
-                return True
+            num_samples = 10  # Número de muestras a tomar
+            sample_rate = 1000  # Frecuencia de muestreo en Hz
+            task.ai_channels.add_ai_voltage_chan("Dev2/ai0")  # Canal de entrada (cambiar según tu configuración)
+
+            # Configuración del temporizador de adquisición de datos
+            task.timing.cfg_samp_clk_timing(rate=sample_rate, samps_per_chan=num_samples)
+
+            # Leer las muestras de datos
+            data = task.read(num_samples)
+            # Convertir los datos a un array de numpy
+            data_array_0 = np.array(data)
+
+
+            # Promediar los datos para obtener una medida representativa
+            promedio_data_0 = np.mean(data_array_0)
+
+
+            # Definir los valores de referencia de apagado y encendido
+            valor_apagado = -0.004829086130484939
+            valor_encendido = -0.008696450851857662
+
+            # Comparar el valor promedio con los valores de referencia
+            diferencia_apagado = abs(promedio_data_0 - valor_apagado)
+            diferencia_encendido = abs(promedio_data_0 - valor_encendido)
+
+
+
+            # Umbral de diferencia, que se ajusta según el comportamiento esperado de los datos
+            umbral_diferencia = 0.0038673647213727236
+
+            # Validar si la diferencia es suficientemente grande
+            if diferencia_apagado > umbral_diferencia and diferencia_encendido > umbral_diferencia:
+                errores.append(f"No se pudo conectar correctamente al GaussMeter en el canal Dev2/ai0. La diferencia es demasiado grande.")
+                return errores
+
+            # Si la diferencia es válida, la conexión está funcionando correctamente
+
             return errores
+
     except DaqError as e:
-        # Mostrar advertencia si no se puede conectar al dispositivo
-        if parent_window:
-            messagebox.showerror("Error de conexión", 
-                        f"No se pudo conectar con el GaussMeter en el canal Dev2/ai0",
-                        parent=parent_window)
-            return False
-        errores.append(f"No se pudo conectar con el GaussMeter en el canal Dev2/ai0")
+        # Manejo de errores específicos de DAQmx
+        errores.append(f"Error de DAQmx: {str(e)}. No se pudo conectar al GaussMeter en el canal Dev2/ai0.")
+        return errores
+
+    except Exception as e:
+        # Manejo de cualquier otro tipo de error
+        errores.append(f"Error inesperado: {str(e)}")
         return errores
 
 
 
-def verificar_dispositivo(addresses, parent_window, gauss = None):
+def verificar_dispositivo(addresses, parent_window, gauss):
     errores = []
     rm = pyvisa.ResourceManager()
     for address in addresses:
         try:
             # Intenta abrir el recurso
             instrumento = rm.open_resource(f"GPIB0::{address}::INSTR")
+            respuesta = instrumento.query("*IDN?")
             """messagebox.showinfo("Conexión exitosa", 
                                 f"El dispositivo GPIB0::{resource_address}::INSTR está conectado.",
                                 parent=parent_window)
             
             # Puedes enviar un comando simple para verificar la respuesta
-            respuesta = instrumento.query("*IDN?")
+            
             messagebox.showinfo("Respuesta del dispositivo", 
                                 f"Respuesta del dispositivo: {respuesta}",
                                 parent=parent_window)"""
@@ -80,10 +123,13 @@ def verificar_dispositivo(addresses, parent_window, gauss = None):
     if 'instrumento' in locals():
         instrumento.close()
     if gauss:
-        errores = validar_conexion_gauss(errores)
+        errores = validar_conexion_gauss(errores, parent_window)
+
     if errores:
         # Mostrar errores
         mensaje_error = "\n".join(errores)
+        
+
         messagebox.showerror("Errores de Validación", mensaje_error, parent=parent_window)
         return False
 
@@ -307,14 +353,18 @@ def guardar_txt(nombre, corriente_fija, saturacion_campo, tiempo_entre_medicione
 
 
 def comparar_perfiles_v3(perfil1, perfil2):
-    #compara dos perfiles ingresados en la ventana 3
-    return (
-        perfil1['corriente_fija_v3'] == perfil2['corriente_fija_v3'] and
-        perfil1['saturacion_campo_v3'] ==perfil2['saturacion_campo_v3'] and
-        perfil1['tiempo_entre_mediciones_v3'] == perfil2['tiempo_entre_mediciones_v3']
-    )
+    # Asegurarse de que ambos perfiles tienen las claves necesarias
+    keys = ['corriente_fija_v3', 'saturacion_campo_v3', 'tiempo_entre_mediciones_v3']
+    if all(key in perfil1 for key in keys) and all(key in perfil2 for key in keys):
+        return (
+            perfil1['corriente_fija_v3'] == perfil2['corriente_fija_v3'] and
+            perfil1['saturacion_campo_v3'] == perfil2['saturacion_campo_v3'] and
+            perfil1['tiempo_entre_mediciones_v3'] == perfil2['tiempo_entre_mediciones_v3']
+        )
+    else:
+        raise KeyError("Uno de los perfiles no tiene todas las claves necesarias.")
 
-def validar_perfil_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3):
+def validar_perfil_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3, intervalos_campos_v3):
     json_path = os.path.join('perfiles_ventana3.json')
     try:
         with open(json_path, 'r') as file:
@@ -323,7 +373,8 @@ def validar_perfil_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_ent
         perfil_nuevo = {
             'corriente_fija_v3': str(corriente_fija_v3),
             'saturacion_campo_v3': str(saturacion_campo_v3),
-            'tiempo_entre_mediciones_v3': str(tiempo_entre_mediciones_v3)
+            'tiempo_entre_mediciones_v3': str(tiempo_entre_mediciones_v3),
+            'intervalos_campos_v3': str(intervalos_campos_v3)
         }
 
         for nombres, perfil_existente in datos_perfiles.items():
@@ -340,17 +391,17 @@ def validar_perfil_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_ent
         with open(json_path, 'w') as file:
             json.dump(datos_perfiles, file, indent=4)
 
-        guardar_txt_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3)
+        guardar_txt_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3, intervalos_campos_v3)
         return True
 
     except (FileNotFoundError, json.JSONDecodeError) as e:
         messagebox.showerror('Error', f'Error al cargar los perfiles: {str(e)}')
         return False
     
-def guardar_txt_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3):
+def guardar_txt_v3(nombre, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3, intervalos_campos_v3):
     ruta_txt = "v3_perfiles_parametros.txt"
     with open(ruta_txt, "a") as f:
-        f.write(f"{nombre} | {corriente_fija_v3} | {saturacion_campo_v3} | {tiempo_entre_mediciones_v3} |\n")
+        f.write(f"{nombre} | {corriente_fija_v3} | {saturacion_campo_v3} | {tiempo_entre_mediciones_v3} | {intervalos_campos_v3} |\n")
 
 
 

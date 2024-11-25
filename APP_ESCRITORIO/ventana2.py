@@ -104,8 +104,8 @@ class Ventana2:
         # Configurar la figura de Matplotlib y el eje
         self.fig, self.ax = plt.subplots(figsize=(10, 6))
         self.ax.set_title('Gráfico')
-        self.ax.set_xlabel('Delta V')
-        self.ax.set_ylabel('G')
+        self.ax.set_xlabel('G')
+        self.ax.set_ylabel('R')
         plt.xlim(-20, 20)
         plt.ylim(-6000, 6000)
         self.ax.grid(True)
@@ -489,11 +489,11 @@ class Ventana2:
 
                 # Abrir la conexión con el multímetro, fuente de poder y realizar la medición
                 addresses= ["9","6"]
-                if verificar_dispositivo(addresses, self.menu):
+                if verificar_dispositivo(addresses, self.menu, True):
                     
                     try:
 
-                        self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
+                        self.mostrar_mensaje_inicio()
                         multimetro = self.rm.open_resource('GPIB0::9::INSTR')
                         fuente = self.rm.open_resource('GPIB0::6::INSTR')# Conectar a la fuente de alimentación
                         # Configurar el multímetro para ser una fuente de corriente y medir voltaje
@@ -504,7 +504,7 @@ class Ventana2:
                             a, b = self.cargar_ecuacion_del_dia()
                             for field in self.fields:
                                 
-                                self.detener_medicion = False  # Reiniciar la variable de control
+                                self.detener_medicion = False  # Reiniciar la variable de control 
                                 if self.detener_medicion:
                                     break
                                 deltaV = (field-b)/a
@@ -524,6 +524,7 @@ class Ventana2:
                             fuente.close()  # Cerrar la conexión
                             multimetro.write("OUTPUT OFF")
                             multimetro.close()
+
                         
 
                     except pyvisa.errors.VisaIOError as e:
@@ -547,7 +548,7 @@ class Ventana2:
             if file_path:  # Si el usuario no cancela la selección del archivo
                 with open(file_path, 'w') as file:
                     file.write(f"Ecuación:{m:.6f}x {b:.6f}, Saturación de campo:{self._saturacion_campo.get()}, tiempo entre mediciones:{self._tiempo_entre_mediciones_v2.get()}, Pasos:{self._pasos.get()}\n\n")
-                    file.write("\tCorriente Fija\t\tMedida Voltaje\t\tR\t\tDelta V\t\tGauss Teórico\t\tGauss Real\n\n")
+                    file.write("Corriente Fija\t\tMedida Voltaje\t\tR\t\tDelta V\t\tGauss Teórico\t\tGauss Real\n\n")
                     
                     for start_current,V,deltaV, saturacion, field in self.array_prom_gauss_volts:
                         file.write(f"{start_current}\t\t{V:.6f}\t\t{(V/start_current):.6f}\t\t{deltaV:.6f}\t\t{saturacion:.6f}\t\t{field}\n")
@@ -558,6 +559,7 @@ class Ventana2:
 
 
     def actualizar_interfaz_despues_de_medir(self):
+        self.confirmar_detener_medicion()
         self.menu.after(0, self.mostrar_grafico(), "Información", "Medición completada")
     
     def mostrar_mensaje(self, titulo, mensaje):
@@ -565,6 +567,22 @@ class Ventana2:
         messagebox.showinfo(titulo, mensaje)
         # Muestra el gráfico en el hilo principal
         self.mostrar_grafico()
+
+
+    def calcular_resistencia(self):
+                # Escribir los datos en filas
+        resistencia_promedio_array =[]
+        saturacion_array = []
+        for i in range(0, len(self.array_prom_gauss_volts)):  # Avanzar de dos en dos (pares: desactivado, activado)   
+            desactivado = self.array_prom_gauss_volts[i]
+            current1 = desactivado[0]
+            voltaje1 = desactivado[1]
+
+            r1 = voltaje1/current1
+           
+            resistencia_promedio_array.append(r1)
+            saturacion_array.append( desactivado[3])
+        return resistencia_promedio_array, saturacion_array
 
     def mostrar_grafico(self):
         try:
@@ -575,24 +593,24 @@ class Ventana2:
             return
 
         #G vs V
-    
+        resistencia_calculada, saturacion = self.calcular_resistencia()
         # Graficar los datos experimentales con una etiqueta
-        self.ax.plot(deltaV, saturacion, marker='o', linestyle='-', label='Datos Experimentales')
+        self.ax.plot(saturacion, resistencia_calculada, marker='o', linestyle='-', label='Datos Experimentales')
         # Ajustar una línea de tendencia
         grado = 1
-        coeficientes = np.polyfit(deltaV, saturacion, grado)
+        coeficientes = np.polyfit(saturacion, resistencia_calculada, grado)
         resistencia = 1 / coeficientes[0]
         self._R=resistencia
         if self.LineaTendencia.get():
             # Calcular la línea de tendencia usando corrientes para el eje x
-            tendencia = np.polyval(coeficientes, deltaV)
-            self.ax.plot(deltaV, tendencia, '--', label=f'Tendencia Lineal (R = {resistencia:.4f} ohms)')
+            tendencia = np.polyval(coeficientes, resistencia_calculada)
+            self.ax.plot(saturacion, tendencia, '--', label=f'Tendencia Lineal (R = {resistencia:.4f} ohms)')
         # Mostrar la leyenda solo si hay etiquetas definidas
         handles = self.ax.get_legend_handles_labels()
         if handles:
             self.ax.legend()
-        plt.xlim(-20, 20)
-        plt.ylim(saturacion[-1] - 100, saturacion[0]+100)
+        self.ax.set_xlim(min(saturacion) - 20, max(saturacion) + 20)
+        plt.ylim(resistencia_calculada[-1] - 100, resistencia_calculada[0]+100)
         self.ax.grid(True)
         self.canvas.draw()
 
@@ -602,8 +620,8 @@ class Ventana2:
 
         self.ax.clear()  # Limpiar el eje actual
         self.ax.set_title('Gráfico')
-        self.ax.set_ylabel('G')
-        self.ax.set_xlabel('Delta V')
+        self.ax.set_ylabel('R')
+        self.ax.set_xlabel('G')
         plt.xlim(-20,20)
         plt.ylim(-6000,6000)
                 # Mostrar la leyenda solo si hay etiquetas

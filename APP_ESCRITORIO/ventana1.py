@@ -259,7 +259,6 @@ class Ventana1:
     def confirmar_detener_medicion(self):
         # Cambiar la variable de control para detener el hilo
         self.detener_medicion = True
-        print("Medición detenida desde el popup.")
         self.popup.destroy()  # Cerrar la ventana emergente
 
         
@@ -286,7 +285,7 @@ class Ventana1:
                 if verificar_dispositivo(addresses, self.menu, False):
                     try:
                         with self.rm.open_resource('GPIB0::9::INSTR') as multimetro:
-                            self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
+                            self.mostrar_mensaje_inicio()
                             # Configurar el multímetro para ser una fuente de corriente y medir voltaje
                             multimetro.write("*RST")  # Resetear el equipo
                             multimetro.write(":SOUR:FUNC CURR")  # Configurar como fuente de corriente
@@ -311,7 +310,7 @@ class Ventana1:
                                     
                                     V = float(valores[0])
                                     self.resultados.append((corriente, V))
-                                    #print(f"{corriente}, {V}")
+                                    #print(f"{corriente}, {V}") calmao la bateria, igual en la ventana 1 no se usa el gauss ahyaa
                             
 
                                 except pyvisa.errors.VisaIOError as e:
@@ -329,11 +328,11 @@ class Ventana1:
 
                     except pyvisa.errors.VisaIOError as e:
                         if 'VI_ERROR_LIBRARY_NFOUND' in str(e):
-                            print("Error: No se pudo localizar o cargar la biblioteca requerida por VISA. Verifique que los controladores VISA estén instalados correctamente.")
-                            print("Solución recomendada: Asegúrese de que el software NI-VISA (o su equivalente) esté instalado y correctamente configurado.")
+                            messagebox.showerror("'VI_ERROR_LIBRARY_NFOUND","Error: No se pudo localizar o cargar la biblioteca requerida por VISA. Verifique que los controladores VISA estén instalados correctamente y el software NI-VISA esté instalado." , parent=self.menu)
                         else:
-                            print(f"Error inesperado de VISA: {e}")
-
+                            messagebox.showerror("'Error inesperado de VISA",f"{e}" , parent=self.menu)
+                else:
+                    return
         # Ejecutar la medición en un hilo separado
         self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
         self.hilo_medicion.start()
@@ -343,6 +342,7 @@ class Ventana1:
 
 
     def actualizar_interfaz_despues_de_medir(self):
+        self.confirmar_detener_medicion()
         self.menu.after(0, self.mostrar_grafico(), "Información", "Medición completada")
     
     def mostrar_mensaje(self, titulo, mensaje):
@@ -395,7 +395,7 @@ class Ventana1:
         self.entry_start.insert(0, file_path)
 
     def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
-        
+
         if self.corrientes is not None and self.resultados is not None:
             # Obtener el título actual de la ventana como sugerencia de nombre
             proyecto_titulo = "test_"

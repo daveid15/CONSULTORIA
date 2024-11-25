@@ -12,7 +12,16 @@ from validacion import *
 import json
 import nidaqmx
 from nidaqmx.errors import DaqError
+from nidaqmx.constants import LineGrouping
+relay_pins = ['Dev2/port0/line0', 'Dev2/port0/line1', 'Dev2/port0/line2', 'Dev2/port0/line3']
 
+
+configuraciones = [
+    ((True, False, False, True), "Aplicar Configuración 1", "1 Aplicada"),
+    ((True, False, True, False), "Aplicar Configuración 2", "2 Aplicada"),
+    ((False, True, False, True), "Aplicar Configuración 3", "3 Aplicada"),
+    ((False, True, True, False), "Aplicar Configuración 4", "4 Aplicada")
+]
 
 class Ventana3:
     def __init__(self, menu, ventana_principal):
@@ -30,6 +39,12 @@ class Ventana3:
         # Lista para perfiles de parámetros (Ventana 3)
         self.perfiles_ventana3 = self.cargar_perfiles_desde_archivo()
         self.detener_medicion = False
+
+        # Variable para almacenar la instancia de la ventana de relés (Validación)
+        self.ventana_reles = None  
+
+        #Descripción configuracion reles
+        self.descripcion_configuracion = "Ninguna configuración aplicada"
 
         #Diseño ventana
         self.menu = menu
@@ -81,7 +96,9 @@ class Ventana3:
         btn_obtener_ecuacion = tk.Button(self.menu, text="Obtener ecuacion", command=self.abrir_datosecu)
         btn_obtener_ecuacion.place(x=100, y=420)
         btn_guardar_prueba = tk.Button(self.menu, text="Guardar Prueba", command=self.guardar_prueba)
-        btn_guardar_prueba.place(x=75, y=465)
+        btn_guardar_prueba.place(x=50, y=465)
+        btn_reles = tk.Button(self.menu, text="Control de Relés", command=self.abrir_ventana_reles)
+        btn_reles.place(x=150, y=465)
 
         self.btn_clear_plot = tk.Button(self.menu, text="Borrar Gráfico", command=self.borrar_grafico)
         self.btn_clear_plot.place(x=80, y=510)
@@ -105,10 +122,10 @@ class Ventana3:
         # Configurar la figura de Matplotlib y el eje
         self.fig, self.ax = plt.subplots(figsize=(10, 6))
         self.ax.set_title('Gráfico')
-        self.ax.set_xlabel('Delta V')
-        self.ax.set_ylabel('G')
-        plt.xlim(-20, 20)
-        plt.ylim(-6000, 6000)
+        self.ax.set_xlabel('G')
+        self.ax.set_ylabel('R')
+        plt.xlim(-6000, 6000)
+        plt.ylim(-20, 20)
         self.ax.grid(True)
 
         # Crear un lienzo de Tkinter para la figura
@@ -135,6 +152,11 @@ class Ventana3:
         self.cargar_perfiles_desde_archivo()
         self.actualizar_combo_perfiles()
 
+        # Configuración reles en Default al iniciar
+        self.relay_states = [tk.BooleanVar(value=False) for _ in relay_pins]
+        self.encender_todos_reles()
+        
+
             
     def abrir_datosecu(self):
         self.menuecu = Toplevel()
@@ -143,7 +165,6 @@ class Ventana3:
         height_menuecu = 300
         centrar_ventana(self.menuecu,widht_menuecu,height_menuecu )
         self.menuecu.configure(bg="#A6C3FF")
-        self.menuecu.grab_set()
         #Variables
         self._start_voltaje = tk.StringVar()
         self._step_size = tk.StringVar()
@@ -180,12 +201,13 @@ class Ventana3:
                             self.rm = pyvisa.ResourceManager()
                             fuente = self.rm.open_resource('GPIB::6::INSTR')  
                             self.configurar_fuente(fuente) 
+                            self.mostrar_mensaje_inicio()
                             # Bucle para establecer voltajes
                             try:
-                                self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
+                                self.detener_medicion = False  # Reiniciar la variable de control
                                 for voltaje in voltajes:
                                     voltaje = round(voltaje, 1)  # Redondear el voltaje
-                                    self.detener_medicion = False  # Reiniciar la variable de control
+                                    
                                     if self.detener_medicion:
                                         break
                                     fuente.write(f'SOUR:VOLT {voltaje}')  # Establecer el voltaje
@@ -257,7 +279,73 @@ class Ventana3:
             return self.menuecu.destroy()
         
 
+    def abrir_ventana_reles(self):
+        if self.ventana_reles is None or not tk.Toplevel.winfo_exists(self.ventana_reles):
+            self.ventana_reles = tk.Toplevel(self.menu)
+            self.ventana_reles.title("Control de Relés")
+            self.ventana_reles.geometry("400x400")
+            self.ventana_reles.configure(bg="#A6C3FF")
 
+            self.relay_states = [tk.BooleanVar(value=estado) for estado in self.obtener_estado_actual_reles()]
+
+            # Crear los controles de relés
+            for i in range(4):
+                tk.Checkbutton(
+                    self.ventana_reles,
+                    text=f"Relé {i+1}",
+                    variable=self.relay_states[i],
+                    bg="#A6C3FF",
+                    command=lambda i=i: self.actualizar_estado_rele(i)
+                ).grid(row=i, column=0, pady=5)
+
+            # Botones para configuraciones
+            for i, (estados, label, descripcion) in enumerate(configuraciones, start=0):
+                tk.Button(self.ventana_reles, text=label, command=lambda e=estados, d=descripcion: self.aplicar_configuracion(e, d)).grid(row=i, column=1, padx=10)
+
+            # Botones adicionales
+            tk.Button(self.ventana_reles, text="Encender Todos", command=self.apagar_todos_reles).grid(row=4, column=0, pady=10)
+            tk.Button(self.ventana_reles, text="Apagar Todos", command=self.encender_todos_reles).grid(row=4, column=1, pady=10)
+
+            # Mensaje de estado
+            self.texto_estado = tk.Label(self.ventana_reles, text="", bg="#A6C3FF", fg="black")
+            self.texto_estado.grid(row=6, columnspan=2, pady=10)
+
+            # Botón para cerrar
+            tk.Button(self.ventana_reles, text="Cerrar", command=self.cerrar_ventana_reles).grid(row=7, columnspan=2, pady=10)
+
+            # Control del cierre
+            self.ventana_reles.protocol("WM_DELETE_WINDOW", self.cerrar_ventana_reles)
+
+    def obtener_estado_actual_reles(self):
+        """
+        Obtiene el estado actual de los relés.
+        """
+        return [var.get() for var in self.relay_states] if hasattr(self, 'relay_states') else [False] * 4
+    
+    def actualizar_checkboxes(self, estados):
+        """
+        Sincroniza los checkboxs con el estado actual de los relés.
+        """
+        for i, estado in enumerate(estados):
+            self.relay_states[i].set(estado)
+
+
+    def cerrar_ventana_reles(self):
+        self.ventana_reles.destroy()
+        self.ventana_reles = None
+
+    def actualizar_estado_rele(self, index):
+        """
+        Actualiza el estado de un relé específico.
+        """
+        estado = self.relay_states[index].get()
+        estados = [var.get() for var in self.relay_states]
+        self.cambiar_estado_reles(estados)
+
+        # Generar la descripción manual
+        self.descripcion_configuracion = ", ".join(["T" if estado else "F" for estado in estados])
+
+        self.mostrar_estado(f"Relé {index+1} {'encendido' if estado else 'apagado'}", "blue" if estado else "red")
 
 
     #Guardar perfil de parámetros
@@ -271,8 +359,9 @@ class Ventana3:
         corriente_fija_v3 = self._corriente_fija_v3.get().strip()
         saturacion_campo_v3 = self._saturacion_campo_v3.get().strip()
         tiempo_entre_mediciones_v3 = self._tiempo_entre_mediciones_v3.get().strip()
+        intervalos_campos_v3 = self._pasos_v3.get().strip()
 
-        if not all([corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3]):
+        if not all([corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3, intervalos_campos_v3]):
             messagebox.showerror("Error", "Todos los campos deben ser completados.")
             return
 
@@ -280,15 +369,15 @@ class Ventana3:
         self.perfiles_ventana3[nombre_v3] = {
             "corriente_fija_v3": corriente_fija_v3,
             "saturacion_campo_v3": saturacion_campo_v3,
-            "tiempo_entre_mediciones_v3": tiempo_entre_mediciones_v3
+            "tiempo_entre_mediciones_v3": tiempo_entre_mediciones_v3,
+            "intervalos_campos_v3": intervalos_campos_v3
         }
 
-        guardar = validar_perfil_v3(nombre_v3, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3)
+        guardar = validar_perfil_v3(nombre_v3, corriente_fija_v3, saturacion_campo_v3, tiempo_entre_mediciones_v3, intervalos_campos_v3)
         if guardar:
             self.guardar_perfiles_a_archivo()
             self.actualizar_combo_perfiles()
             messagebox.showinfo("Información", f"Perfil '{nombre_v3}' guardado exitosamente.")
-
         
     #Cargar perfil de parámetros
     def cargar_perfil(self):
@@ -299,6 +388,7 @@ class Ventana3:
             self._corriente_fija_v3.set(perfil["corriente_fija_v3"])
             self._saturacion_campo_v3.set(perfil["saturacion_campo_v3"])
             self._tiempo_entre_mediciones_v3.set(perfil["tiempo_entre_mediciones_v3"])
+            self._pasos_v3.set(perfil["intervalos_campos_v3"])
             messagebox.showinfo("Información", f"Perfil '{nombre_v3}' cargado correctamente.")
         else:
             messagebox.showwarning("Advertencia", "Seleccione un perfil válido para cargar.")
@@ -309,14 +399,22 @@ class Ventana3:
 
     #Actualizar Combobox
     def actualizar_combo_perfiles(self):
-        self.combo_perfiles['values'] = list(self.perfiles_ventana2.keys())
+        self.combo_perfiles['values'] = list(self.perfiles_ventana3.keys())
     
     #Cargar Perfil en archivo
     def cargar_perfiles_desde_archivo(self):
         try:
             with open("perfiles_ventana3.json", "r") as archivo:
-                return json.load(archivo)
-        except (FileNotFoundError, json.JSONDecodeError):
+                datos = json.load(archivo)
+                # Validar que todos los perfiles tengan las claves necesarias
+                for nombre, perfil in datos.items():
+                    if not all(key in perfil for key in ['corriente_fija_v3', 'saturacion_campo_v3', 'tiempo_entre_mediciones_v3']):
+                        raise KeyError(f"El perfil '{nombre}' no tiene la estructura correcta.")
+                return datos
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            return {}
+        except KeyError as e:
+            messagebox.showerror('Error', f'Error al cargar los perfiles: {str(e)}')
             return {}
 
     #Guardar Perfil en archivo    
@@ -402,8 +500,12 @@ class Ventana3:
         return float(valores[0])
         
     def volver(self):
+        # Aplicar Configuración default de relés antes de cerrar la ventana
+        self.encender_todos_reles()
         self.menu.withdraw()
         self.ventana_principal.deiconify()
+
+
 
     def volts_a_gauss(self, volts, probe_type):
         voltajes_mV = volts * 1000  # Convertir a milivoltios
@@ -413,7 +515,7 @@ class Ventana3:
         else:
             raise ValueError("Tipo de sonda no reconocido")
         return gauss
-
+        """
     def obtener_gauss(self):
         num_samples = 10
         sample_rate = 1000  # en Hz 
@@ -437,8 +539,9 @@ class Ventana3:
                 return promedio_data_0
         except DaqError as e:
             messagebox.showwarning("Advertencia",f"Ha ocurrido un error con el GaussMeter,{e}")
-            
-
+            "
+        """
+    
     def cargar_ecuacion_del_dia(self):
         ruta_archivo = 'utils/ecuaciones/ecuacion.json'
 
@@ -472,96 +575,269 @@ class Ventana3:
 
     def medir_GV_curve(self):
         def ejecutar_medicion():
-
-            constant_current_str =self._corriente_fija.get()
-            step_size_str = self._pasos.get()
-            delay_str =  self._tiempo_entre_mediciones_v2.get()
-            start_saturation_str =  self._saturacion_campo.get() 
-            # Validar que todos los valores sean válidos
-            if verificar_inputs_gauss(start_saturation_str, constant_current_str, step_size_str, delay_str, self.menu):
-                # Continúa con el proceso si no hay errores
-                start_current = float(constant_current_str)
-                start_saturation = int(start_saturation_str)
-                step_size = int(step_size_str)
-                delay = float(delay_str)
+            # Validación e inicialización
+            if verificar_inputs_gauss(
+                self._saturacion_campo_v3.get(),
+                self._corriente_fija_v3.get(),
+                self._pasos_v3.get(),
+                self._tiempo_entre_mediciones_v3.get(),
+                self.menu,
+            ):
+                start_current = float(self._corriente_fija_v3.get())
+                start_saturation = int(self._saturacion_campo_v3.get())
+                step_size = int(self._pasos_v3.get())
+                delay = float(self._tiempo_entre_mediciones_v3.get())
                 self.fields = np.linspace(start_saturation, -start_saturation, num=step_size)
                 self.array_prom_gauss_volts = []
-                # Inicializar el gestor de recursos VISA
-                self.rm = pyvisa.ResourceManager()
 
-                # Abrir la conexión con el multímetro, fuente de poder y realizar la medición
-                addresses= ["9","6"]
-                if verificar_dispositivo(addresses, self.menu):
-                    
+                # Obtener configuración actual de los relés
+                estado_configuracion_actual = [var.get() for var in self.relay_states]
+
+                # Inicializar relés a "todos apagados"
+                self.cambiar_estado_reles([False] * len(relay_pins))
+
+                # Conexión y medición
+                addresses = ["9", "6"]
+                if verificar_dispositivo(addresses, self.menu, True):
                     try:
-
-                        self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
+                        self.rm = pyvisa.ResourceManager()
                         multimetro = self.rm.open_resource('GPIB0::9::INSTR')
-                        fuente = self.rm.open_resource('GPIB0::6::INSTR')# Conectar a la fuente de alimentación
-                        # Configurar el multímetro para ser una fuente de corriente y medir voltaje
+                        fuente = self.rm.open_resource('GPIB0::6::INSTR')
                         self.configurar_multimetro(multimetro, start_current)
                         self.configurar_fuente(fuente)
-                        
-                        if self.cargar_ecuacion_del_dia() is  not False:  
-                            a, b = self.cargar_ecuacion_del_dia()
-                            for field in self.fields:
-                                
-                                self.detener_medicion = False  # Reiniciar la variable de control
+
+                        # Apagar la salida del multímetro al iniciar
+                        multimetro.write("OUTPUT OFF")
+                        self.mostrar_mensaje_inicio()
+
+                        # Bucle principal de medición
+                        for field in self.fields:
+                            if self.detener_medicion:
+                                break
+                            for estados_reles in [[True, True, True, True], estado_configuracion_actual]:
+ 
                                 if self.detener_medicion:
                                     break
-                                deltaV = (field-b)/a
-                                deltaV = round(deltaV, 1)  # Redondear el voltaje
-                                fuente.write(f'SOUR:VOLT {deltaV}')  # Establecer el voltaje
+                                
+                                # Cambiar el estado de los relés
+                                self.cambiar_estado_reles(estados_reles)
+                                deltaV = self.calcular_deltaV(field)
+                                fuente.write(f'SOUR:VOLT {deltaV}')
                                 time.sleep(delay)
-                                # Medir el voltaje mientras se aplica la corriente
+
+                                # Realizar medición
                                 V = self.medir_voltaje(multimetro)
-                                self.array_prom_gauss_volts.append((start_current, V, deltaV, self.obtener_gauss(),field))#se agrega  promedio de gauss y voltaje a array                            
-                            self.menu.after(0, self.boton_cerrar.config, {'state': tk.NORMAL})
+
+                                gauss = self.obtener_gauss()
+
+                                # Almacenar los resultados
+                                self.array_prom_gauss_volts.append((start_current, V, deltaV, gauss, field))
+                                print(f"Field: {field}, Relés: {estados_reles}, V: {V}, Gauss: {gauss}")
+
+                        # Actualizar la interfaz después de completar la medición
+                        self.menu.after(0, self.boton_cerrar.config, {'state': tk.NORMAL})
+
+                        if not(self.detener_medicion):
                             self.actualizar_interfaz_despues_de_medir()
-                            # Apagar la salida después de las mediciones
-                            multimetro.write("OUTPUT OFF")
-                            fuente.write("OUTP OFF")  # Apagar después del bucle
-                            fuente.write('*CLS')  # Limpiar el estado
-                            fuente.write('*RST')  # Reiniciar el sistema
-                            fuente.close()  # Cerrar la conexión
-                            multimetro.write("OUTPUT OFF")
-                            multimetro.close()
-                        
+
+                        # Apagar la fuente al finalizar
+                        fuente.write("OUTP OFF")
+                        self.detener_medicion = False
 
                     except pyvisa.errors.VisaIOError as e:
-                        if 'VI_ERROR_LIBRARY_NFOUND' in str(e):
-                            messagebox.showerror("'VI_ERROR_LIBRARY_NFOUND","Error: No se pudo localizar o cargar la biblioteca requerida por VISA. Verifique que los controladores VISA estén instalados correctamente y el software NI-VISA esté instalado." , parent=self.menu)
-                        else:
-                            messagebox.showerror("'Error inesperado de VISA",f"{e}" , parent=self.menu)
+                        messagebox.showerror("Error de VISA", str(e), parent=self.menu)
+                    finally:
+                        if 'fuente' in locals():
+                            fuente.close()
+                        if 'multimetro' in locals():
+                            multimetro.close()
+                        self.detener_medicion = False
+                else:
+                    return
 
         # Ejecutar la medición en un hilo separado
         self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
         self.hilo_medicion.start()
 
 
+    """  def cambiar_estado_reles(self, estado):
+            for pin in relay_pins:
+                with nidaqmx.Task() as task:
+                    task.do_channels.add_do_chan(pin, line_grouping=LineGrouping.CHAN_PER_LINE)
+                    task.write(estado)
+                    time.sleep(0.5)"""
 
-    def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
-        if self.array_prom_gauss_volts is not None and self.array_prom_gauss_volts is not None:
-            # Obtener el título actual de la ventana como sugerencia de nombre_v2
+    def cambiar_estado_reles(self, estados):
+        """
+        Cambia el estado de múltiples relevadores.
+        """
+        try:
+            # Convertir a lista si `estados` es un solo booleano
+            if isinstance(estados, bool):
+                estados = [estados] * len(relay_pins)
+
+            # Verificar longitud de la lista
+            if len(estados) != len(relay_pins):
+                raise ValueError(f"Se esperaba una lista con {len(relay_pins)} valores, pero se recibió: {estados}")
+
+            with nidaqmx.Task() as task:
+                task.do_channels.add_do_chan(",".join(relay_pins), line_grouping=LineGrouping.CHAN_PER_LINE)
+                task.write(estados, auto_start=True)  # Escribe un valor para cada canal
+            time.sleep(0.5)
+
+            estado_reles_str = ", ".join([f"Relé {i+1}: {'True' if estado else 'False'}" for i, estado in enumerate(estados)])
+            print(f"Estado actual de los relés: {estado_reles_str}")
+
+        except Exception as e:
+            self.mostrar_estado(f"Error al cambiar el estado de los relés: {e}", "red")
+
+
+
+
+    def encender_todos_reles(self):
+        """
+        Apagar todos los relés.
+        """
+        try:
+            self.cambiar_estado_reles([True] * len(relay_pins))
+            self.actualizar_checkboxes([True] * len(relay_pins))  # Sincronizar checkboxes
+            self.mostrar_estado("Todos los relés Apagados.", "green")  # Añadir color
+        except Exception as e:
+            self.mostrar_estado(f"Error al Apagar los relés: {e}", "red")
+
+    def apagar_todos_reles(self):
+        """
+        Encender todos los relés.
+        """
+        try:
+            self.cambiar_estado_reles([False] * len(relay_pins))
+            self.actualizar_checkboxes([False] * len(relay_pins))  # Sincronizar checkboxes
+            self.mostrar_estado("Todos los relés Encendidos.", "blue")  # Añadir color
+        except Exception as e:
+            self.mostrar_estado(f"Error al Encender los relés: {e}", "red")
+
+    def aplicar_configuracion(self, nuevos_estados, descripcion):
+        """
+        Aplica una configuración predefinida de relés.
+        """
+        try:
+            if not isinstance(nuevos_estados, list):
+                nuevos_estados = list(nuevos_estados)
+
+            if len(nuevos_estados) != len(relay_pins):
+                raise ValueError(f"La configuración debe contener {len(relay_pins)} estados.")
+
+            self.cambiar_estado_reles(nuevos_estados)
+            self.actualizar_checkboxes(nuevos_estados)
+
+            # Guardar la descripción de la configuración aplicada
+            self.descripcion_configuracion = descripcion
+
+            self.mostrar_estado(f"Configuración {descripcion}", "green")
+        except Exception as e:
+            self.mostrar_estado(f"Error aplicando la configuración: {e}", "red")
+
+
+
+
+    def calcular_deltaV(self, field):
+        a,b = self.cargar_ecuacion_del_dia()
+        deltaV = (field-b)/a
+        deltaV = round(deltaV, 1) 
+        return deltaV
+
+    def guardar_prueba(self, event=None):
+        if self.array_prom_gauss_volts is not None:
+            # Obtener el título actual de la ventana como sugerencia de nombre
             proyecto_titulo = "test_gauss_"
-            file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")],initialfile=proyecto_titulo)
+            file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")], initialfile=proyecto_titulo)
             m, b = self.cargar_ecuacion_del_dia()
+            
+            # Determinar la configuración aplicada
+            configuracion_rele = ""
+            if hasattr(self, 'descripcion_configuracion') and self.descripcion_configuracion:  # Configuración predefinida
+                configuracion_rele = f"Configuración Relé: {self.descripcion_configuracion}"
+            else:  # Configuración manual
+                estados_reles = [f"{'T' if estado else 'F'}" for estado in self.obtener_estado_actual_reles()]
+                configuracion_rele = f"Configuración Relé: {', '.join(estados_reles)}"
+            
             if file_path:  # Si el usuario no cancela la selección del archivo
                 with open(file_path, 'w') as file:
-                    file.write(f"Ecuación:{m:.6f}x {b:.6f}, Saturación de campo:{self._saturacion_campo.get()}, tiempo entre mediciones:{self._tiempo_entre_mediciones_v2.get()}, Pasos:{self._pasos.get()}\n\n")
-                    file.write("\tCorriente Fija\t\tMedida Voltaje\t\tR\t\tDelta V\t\tGauss Teórico\t\tGauss Real\n\n")
+                    # Escribir encabezado con los datos de configuración y ecuación
+                    file.write(f"Ecuación: {m:.6f}x {b:.6f}, Saturación de campo: {self._saturacion_campo_v3.get()}, ")
+                    file.write(f"Tiempo entre mediciones: {self._tiempo_entre_mediciones_v3.get()}, Pasos: {self._pasos_v3.get()}\n")
+                    file.write(f"{configuracion_rele}\n\n")
                     
-                    for start_current,V,deltaV, saturacion, field in self.array_prom_gauss_volts:
-                        file.write(f"{start_current}\t\t{V:.6f}\t\t{(V/start_current):.6f}\t\t{deltaV:.6f}\t\t{saturacion:.6f}\t\t{field}\n")
-                messagebox.showinfo("\tInformación", f"Datos guardados en: {file_path}")
+                    # Escribir encabezados de columnas
+                    file.write("Corriente Fija\t\tMedida Voltaje (Desactivado)\t\tR (Desactivado)\t\tDelta V (Desactivado)\t\tGauss Teórico (Desactivado)\t\tGauss Real (Desactivado)\t\t")
+                    file.write("Medida Voltaje (Activado)\t\tR (Activado)\t\tDelta V (Activado)\t\tGauss Teórico (Activado)\t\tGauss Real (Activado)\n")
+                    
+                    # Escribir los datos en filas
+                    for i in range(0, len(self.array_prom_gauss_volts), 2):  # Avanzar de dos en dos (pares: desactivado, activado)
+                        desactivado = self.array_prom_gauss_volts[i]
+                        activado = self.array_prom_gauss_volts[i + 1]
+                        # Escribir una sola vez la corriente fija
+                        file.write(f"{desactivado[0]:.6f}\t\t{desactivado[1]:.6f}\t\t{(desactivado[1]/desactivado[0]):.6f}\t\t"
+                                f"{desactivado[2]:.6f}\t\t{desactivado[4]:.6f}\t\t{desactivado[3]:.6f}\t\t")
+                        file.write(f"{activado[1]:.6f}\t\t{(activado[1]/activado[0]):.6f}\t\t{activado[2]:.6f}\t\t"
+                                f"{activado[4]:.6f}\t\t{activado[3]:.6f}\n")
+                    
+                    # Mensaje de confirmación
+                    messagebox.showinfo("Información", f"Datos guardados en: {file_path}")
         else:
             messagebox.showwarning("Advertencia", "No hay datos para guardar. Realiza la medición primero.")
 
-
+ 
 
     def actualizar_interfaz_despues_de_medir(self):
         self.menu.after(0, self.mostrar_grafico(), "Información", "Medición completada")
     
+    def mostrar_estado(self, mensaje, color="green"):
+        """
+        Muestra un mensaje de estado en la ventana de control de relés, si existe.
+        """
+        try:
+            if self.ventana_reles is not None and self.texto_estado.winfo_exists():
+                self.texto_estado.config(text=mensaje, fg=color)
+            else:
+                print(f"Estado: {mensaje}")  # Fallback a consola si la ventana no existe
+        except AttributeError:
+            print(f"Error mostrando estado: No se ha inicializado la ventana de relés.")
+        except Exception as e:
+            print(f"Error mostrando estado: {e}")  # Manejar otros errores
+
+    def calcular_resistencia(self):
+        # Inicializar las listas para los resultados
+        resistencia_promedio_array = []
+        saturacion_array = []
+        try:
+            # Iterar de dos en dos sobre los datos (pares: desactivado, activado)
+            for i in range(0, len(self.array_prom_gauss_volts), 2):
+                desactivado = self.array_prom_gauss_volts[i]
+                activado = self.array_prom_gauss_volts[i + 1]
+                
+                # Desactivar y activar los datos de corriente y voltaje
+                current1 = desactivado[0]
+                voltaje1 = desactivado[1]
+                current2 = activado[0]
+                voltaje2 = activado[1]
+                
+                # Calcular las resistencias de cada estado
+                r1 = voltaje1 / current1
+                r2 = voltaje2 / current2
+                
+                # Calcular la resistencia promedio
+                resistencia_promedio = (r1 + r2) / 2
+                
+                # Agregar los resultados a las listas correspondientes
+                resistencia_promedio_array.append(resistencia_promedio)
+                saturacion_array.append(desactivado[3])
+        except Exception as e:
+            print(e)
+            return 1,1
+            # Retornar las listas con los resultados calculados
+        return resistencia_promedio_array, saturacion_array
+
     def mostrar_mensaje(self, titulo, mensaje):
         # Muestra un mensaje en el hilo principal
         messagebox.showinfo(titulo, mensaje)
@@ -570,33 +846,48 @@ class Ventana3:
 
     def mostrar_grafico(self):
         try:
-            start_current,V, deltaV, saturacion,field = zip(*self.array_prom_gauss_volts)
+            # Intentar obtener los datos para graficar
+            resistencia_promedio, saturacion = self.calcular_resistencia()
+            
+            # Verificar que ambas listas tengan la misma longitud
+            if len(resistencia_promedio) != len(saturacion):
+                raise ValueError("La longitud de resistencia_promedio y saturacion no coincide")
+            
+            # Imprimir los datos para depuración
+            
+            # Graficar los datos experimentales
+            self.ax.plot(saturacion, resistencia_promedio, marker='o', linestyle='-', label='Datos Experimentales')
 
-        except ValueError:
-            messagebox.showerror("Error:", "self.resultados no tiene el formato esperado", parent = self.menu)
+            # Ajuste de una línea de tendencia si es necesario
+            grado = 1  # Ajuste lineal
+            
+
+            coeficientes = np.polyfit(saturacion, resistencia_promedio, grado)
+            tendencia = np.polyval(coeficientes, saturacion)
+            self._R = 1 / coeficientes[0]  # Si deseas calcular la resistencia a partir del coeficiente
+
+            if self.LineaTendencia_v3.get():  # Si la opción para la línea de tendencia está activada
+                self.ax.plot(saturacion, tendencia, '--', label=f'Tendencia Lineal (R = {self._R:.4f} ohms)')
+            
+            # Mostrar la leyenda si es necesario
+            handles, labels = self.ax.get_legend_handles_labels()
+            if handles:
+                self.ax.legend()
+            
+            # Ajustar límites del gráfico según los datos
+            self.ax.set_xlim(min(saturacion) - 20, max(saturacion) + 20)
+            self.ax.set_ylim(min(resistencia_promedio) - 100, max(resistencia_promedio) + 100)
+
+            # Mostrar la grilla
+            self.ax.grid(True)
+
+            # Dibujar el gráfico en el canvas
+            self.canvas.draw()
+
+        except ValueError as e:
+            # Mostrar un mensaje de error si los datos no son válidos
+            messagebox.showerror("Error:", f"self.array_prom_gauss_volts no tiene el formato esperado\n{e}", parent=self.menu)
             return
-
-        #G vs V
-    
-        # Graficar los datos experimentales con una etiqueta
-        self.ax.plot(deltaV, saturacion, marker='o', linestyle='-', label='Datos Experimentales')
-        # Ajustar una línea de tendencia
-        grado = 1
-        coeficientes = np.polyfit(deltaV, saturacion, grado)
-        resistencia = 1 / coeficientes[0]
-        self._R=resistencia
-        if self.LineaTendencia.get():
-            # Calcular la línea de tendencia usando corrientes para el eje x
-            tendencia = np.polyval(coeficientes, deltaV)
-            self.ax.plot(deltaV, tendencia, '--', label=f'Tendencia Lineal (R = {resistencia:.4f} ohms)')
-        # Mostrar la leyenda solo si hay etiquetas definidas
-        handles = self.ax.get_legend_handles_labels()
-        if handles:
-            self.ax.legend()
-        plt.xlim(-20, 20)
-        plt.ylim(saturacion[-1] - 100, saturacion[0]+100)
-        self.ax.grid(True)
-        self.canvas.draw()
 
     def borrar_grafico(self):
                 # Agregar un marco para contener el gráfico y la barra de herramientas
@@ -604,10 +895,10 @@ class Ventana3:
 
         self.ax.clear()  # Limpiar el eje actual
         self.ax.set_title('Gráfico')
-        self.ax.set_ylabel('G')
-        self.ax.set_xlabel('Delta V')
-        plt.xlim(-20,20)
-        plt.ylim(-6000,6000)
+        self.ax.set_ylabel('R')
+        self.ax.set_xlabel('G')
+        plt.xlim(-6000, 6000)
+        plt.ylim(-20, 20)
                 # Mostrar la leyenda solo si hay etiquetas
         handles, labels = self.ax.get_legend_handles_labels()
         if labels:  # Solo mostrar la leyenda si hay etiquetas
@@ -615,3 +906,4 @@ class Ventana3:
         self.ax.grid(True)
         
         self.canvas.draw()
+    

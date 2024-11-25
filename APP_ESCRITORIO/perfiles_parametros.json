@@ -13,5 +13,10 @@
         "intervalo_simetrico": "0.001",
         "intervalos_corriente": "101",
         "tiempo_entre_mediciones": "111"
+    },
+    "CARACp": {
+        "intervalo_simetrico": "0.001",
+        "intervalos_corriente": "100",
+        "tiempo_entre_mediciones": "0.001"
     }
 }
