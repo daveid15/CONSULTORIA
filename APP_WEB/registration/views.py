@@ -207,3 +207,6 @@ def send_mail_ejemplo2(request,mail_to,data_1):
 
 
     msg.send()
+
+
+    

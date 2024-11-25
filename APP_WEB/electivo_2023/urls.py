@@ -29,7 +29,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('registration.urls')),
     path("caracterizacion/", include(caracterizacion_patterns))
-
+    
 ]
 admin.site.site_header = 'Administrador Bussiness_Solutions'
 admin.site.site_title = 'bussinessSolutions' 

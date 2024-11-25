@@ -1,0 +1,48 @@
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+
+<header class='flex__action'>
+    <div class="flex__action flex__action__title">
+        <h2 class='flex__action h2 medium text-blue'>Pruebas Asociadas al Perfil: {{ perfil.perfil_parametro_name }}</h2>
+    </div>
+</header>
+
+<!-- Tabla de pruebas -->
+<div class="flex__action cont-form-carac-responsive">
+    <table class="table-responsive table-user-responsive">
+        <thead>
+            <tr>
+                <th data-label="Nombre Prueba">Nombre Prueba</th>
+                <th data-label="Tipo">Tipo</th>
+                <th data-label="Fecha">Fecha</th>
+                <th data-label="Estado">Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prueba in pruebas %}
+                <tr>
+                    <td data-label="Nombre Prueba">{{ prueba.prueba_name }}</td>
+                    <td data-label="Tipo">{{ prueba.tipo }}</td>
+                    <td data-label="Fecha">{{ prueba.fecha }}</td>
+                    <td data-label="Estado">
+                        {% if prueba.prueba_state == 't' %}
+                            Activa
+                        {% else %}
+                            Inactiva
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No hay pruebas asociadas a este perfil.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="flex__form__input flex__form__button form--parameter">
+        <a class="button--white custom-button" href="{% url 'listar_perfiles' %}">Volver</a>
+    </div>
+</div>
+
+{% endblock %}

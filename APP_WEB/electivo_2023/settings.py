@@ -89,9 +89,9 @@ DATABASES = {
     'default': {
         'HOST': 'localhost',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'proyecto',
+        'NAME': 'baseconsultoria',
         'USER': 'postgres',
-        'PASSWORD': '12345'
+        'PASSWORD': 'maxi2002'
     }
 }
 
@@ -140,7 +140,7 @@ STATIC_ROOT = '/core/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'core','static','core')
 
-LOGIN_REDIRECT_URL = 'check_profile'
+LOGIN_REDIRECT_URL = 'pre_check_profile'
 LOGOUT_REDIRECT_URL = 'login'
 
 

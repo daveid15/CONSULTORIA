@@ -550,3 +550,14 @@ def descargar_datos(request, prueba_id):
     response = HttpResponse(contenido, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename="detalle_prueba_{prueba.prueba_name}.txt"'
     return response
+
+
+def listar_pruebas_perfil(request, perfil_id):
+    perfil = get_object_or_404(Perfil_Parametro, pk=perfil_id)
+    pruebas = Prueba.objects.filter(id_perfil_parametro=perfil)
+    
+    context = {
+        'perfil': perfil,
+        'pruebas': pruebas,
+    }
+    return render(request, 'caracterizacion/listar_pruebas_perfil.html', context)

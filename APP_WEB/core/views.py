@@ -1,4 +1,4 @@
-from django.shortcuts import render
+#from django.shortcuts import render
 from django.conf import settings #importa el archivo settings
 from django.contrib import messages #habilita la mesajería entre vistas
 from django.contrib.auth.decorators import login_required #habilita el decorador que se niega el acceso a una función si no se esta logeado
@@ -11,6 +11,7 @@ from django.shortcuts import redirect, render #permite renderizar vistas basadas
 from django.template import RequestContext # contexto del sistema
 from django.views.decorators.csrf import csrf_exempt #decorador que nos permitira realizar conexiones csrf
 from registration.models import Profile #importa el modelo profile, el que usaremos para los perfiles de usuarios
+from caracterizacion.models import Perfil_Parametro,Prueba, Medicion
 
 # Create your views here.
 def home(request):
@@ -19,7 +20,14 @@ def home(request):
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
+from django.urls import reverse
+from django.contrib.auth import update_session_auth_hash, logout
+#from django.contrib.auth.forms import PasswordChangeForm
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth.views import PasswordChangeView
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 
 
 def num_pag():
@@ -35,16 +43,27 @@ def pre_check_profile(request):
         
         if profile.first_session == 'Si':  # Si es la primera sesión
             print('hola2')
-            profile.first_session = 'Si'
+            profile.first_session = 'No'
             profile.token_app_session = 'Si'
             profile.save(update_fields=['first_session', 'token_app_session'])  # Guardar cambios en una sola consulta
             return render(request,'registration/password_change_form.html')
-
+        else:
+            # Si no es la primera sesión, redirigir al dashboard principal
+            # Verificar el atributo group_id para redirigir al usuario según su rol
+            if profile.group_id == 1:  # Administrador
+                return redirect('admin_main')
+            elif profile.group_id == 2:  # Usuario común
+                return redirect('listar_perfiles')
+            else:
+                # Redirigir a una página por defecto si el group_id no coincide
+                messages.add_message(request, messages.WARNING, 'Grupo no reconocido.')
+                return redirect('login')
     else:
         messages.add_message(request, messages.INFO, 'Perfil no encontrado. Por favor, contacte al administrador.')
         return redirect('login')
     
     return redirect('login')  # Redirigir a una vista predeterminada si no se cumple ninguna condición
+
 
 def check_profile(request):
     try:
@@ -53,7 +72,7 @@ def check_profile(request):
         messages.add_message(request, messages.INFO, 'Hubo un error con su usuario, por favor contactese con los administradores')              
         return redirect('login')
     
-    if profile.group_id in [0,1, 2, 3, 4]:        
+    if profile.group_id in [1]:        
         return redirect('admin_main')
     else:
         messages.add_message(request, messages.WARNING, 'No tiene permisos suficientes para acceder a esta área.')
@@ -64,4 +83,12 @@ def check_profile_admin(request,profiles):
     if profiles.group_id != 1:
         messages.add_message(request, messages.INFO, 'Intenta ingresar a un área para la que no tiene permisos')
         return redirect('check_group_main')
+        
+
+
+
+
+
+
+
 

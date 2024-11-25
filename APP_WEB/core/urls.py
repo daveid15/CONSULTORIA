@@ -2,6 +2,8 @@
 from django.urls import path #importa el metodo path
 from core import views #improta los metodos de que se implementan en el views,py de este directorio
 from django.conf.urls import url
+# from .views import custom_password_change
+# from .views import custom_redirect
 '''
 En esta sección configuramos las urls que nuestra aplicación usará, si necesitamos renderizar 
 una vista o debemos incluirla en el urlpatternes de la app la función path requiere de tres 
@@ -12,5 +14,7 @@ usaremos para la url consultada, esta debe existir, el tercer parametro el nombr
 core_urlpatterns= [
     path('', views.home, name='home'),    
     path('check_profile', views.check_profile, name='check_profile'),         
-    path('pre_check_profile', views.pre_check_profile, name='pre_check_profile'),           
+    path('pre_check_profile', views.pre_check_profile, name='pre_check_profile'),    
+    #path('custom_redirect/', custom_redirect, name='custom_redirect'),   
+    #path('custom_password_change/', custom_password_change, name='custom_password_change')  
     ]
