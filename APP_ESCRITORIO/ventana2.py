@@ -29,7 +29,7 @@ class Ventana2:
         self.LineaTendencia = tk.BooleanVar()
 
         # Lista para perfiles de parámetros
-        self.perfiles_ventana2 = self.cargar_perfiles_desde_archivo()
+        self.perfiles_parametros2 = self.cargar_perfiles_desde_archivo()
         self. detener_medicion = False
 
 
@@ -273,7 +273,7 @@ class Ventana2:
             messagebox.showerror("Error", "El nombre del perfil no puede estar vacío.")
             return
 
-        #Validar que los valores sean correctos
+        # Validar y guardar los campos
         corriente_fija = self._corriente_fija.get().strip()
         saturacion_campo = self._saturacion_campo.get().strip()
         tiempo_entre_mediciones_v2 = self._tiempo_entre_mediciones_v2.get().strip()
@@ -282,8 +282,7 @@ class Ventana2:
         if not corriente_fija or not saturacion_campo or not tiempo_entre_mediciones_v2 or not pasos:
             messagebox.showerror("Error", "Todos los campos deben ser completados.")
             return
-        
-        #Guardar parámetros en el diccionario
+
         self.perfiles_parametros2[nombre_v2] = {
             "Corriente_fija": corriente_fija,
             "Saturacion_de_campo": saturacion_campo,
@@ -291,11 +290,10 @@ class Ventana2:
             "Pasos": pasos
         }
 
-        guardar = validar_perfil_v2(nombre_v2, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2, pasos)
-        if guardar == True:
-            self.guardar_perfiles_a_archivo()
-            self.actualizar_combo_perfiles()
-            messagebox.showinfo("Información", f"Perfil '{nombre_v2}' guardado exitosamente.")
+        self.guardar_perfiles_a_archivo()
+        self.actualizar_combo_perfiles()
+        messagebox.showinfo("Información", f"Perfil '{nombre_v2}' guardado exitosamente.")
+
         
     #Cargar perfil de parámetros
     def cargar_perfil(self):
@@ -303,13 +301,14 @@ class Ventana2:
         if nombre_v2 in self.perfiles_parametros2:
             perfil = self.perfiles_parametros2[nombre_v2]
             self._nombre_v2.set(nombre_v2)
-            self._corriente_fija.set(perfil["Corriente_fija"])
-            self._saturacion_campo.set(perfil["Saturacion_de_campo"])
-            self._tiempo_entre_mediciones_v2.set(perfil["tiempo_entre_mediciones_v2"])
-            self._pasos.set(perfil["Pasos"])
+            self._corriente_fija.set(perfil.get("Corriente_fija", ""))
+            self._saturacion_campo.set(perfil.get("Saturacion_de_campo", ""))
+            self._tiempo_entre_mediciones_v2.set(perfil.get("tiempo_entre_mediciones_v2", ""))
+            self._pasos.set(perfil.get("Pasos", ""))
             messagebox.showinfo("Información", f"Perfil '{nombre_v2}' cargado correctamente.")
         else:
             messagebox.showwarning("Advertencia", "Seleccione un perfil válido para cargar.")
+
 
     #Actualizar los parámetros en el ComboBox
     def actualizar_parametros(self, event):
