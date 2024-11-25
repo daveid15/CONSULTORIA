@@ -121,7 +121,7 @@ def ejemplos_correo1(request,mail_to,data_1):
                             <p>otro párrafo</p>
                             <br/>
                             <p>Le saluda</p>
-                            <p>Equipo de soluciones pyme.</p>
+                            <p>Equipo de GPIB.ASSIC.</p>
                             <br/>
                             <p><small>Correo generado automáticamente, por favor no responder.<small></p>
                         </body>
