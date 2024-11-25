@@ -129,7 +129,7 @@ class Ventana2:
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         self.rm = None
         self.voltajes = None
-        self.array_prom_gauss_volts = None
+        self.array_prom_gauss_volts = []
 
         #Actualizar Perfiles
         self.cargar_perfiles_desde_archivo()
@@ -157,6 +157,10 @@ class Ventana2:
         tk.Label(self.menuecu, text="Tiempo entre Mediciones(s)", bg="#A6C3FF").place(x=30, y=140)
         tk.Entry(self.menuecu, textvariable=self._delay).place(x=30, y=160, width=220)
 
+        self.menuecu.transient(self.menu)
+        self.menuecu.grab_set()
+        
+        
         #Botones
         self.boton_cerrar = tk.Button(self.menuecu, text="Cancelar", command=self.destroy)
         self.boton_cerrar.place(x=50, y=220)
@@ -361,6 +365,10 @@ class Ventana2:
 
         # Establecer la geometría de la ventana emergente
         self.popup.geometry(f"{popup_width}x{popup_height}+{x}+{y}")
+        
+        # Deshabilitar la interacción con la ventana principal
+        self.popup.transient(self.menu)
+        self.popup.grab_set()
 
         # Etiqueta con el mensaje
         mensaje_label = tk.Label(self.popup, text="¿Deseas detener la medición?", padx=10, pady=10)
@@ -375,6 +383,7 @@ class Ventana2:
 
         # Ejecutar la medición en un hilo separado     
     def cerrar_popup(self):
+        self.popup.grab_release()
         self.popup.destroy()
         
     def configurar_fuente(self, fuente):
@@ -545,7 +554,8 @@ class Ventana2:
             nombre_v2=self.nombre_v2
             tiempo_entre_mediciones_v2=self.tiempo_entre_mediciones_v2
             corriente_fija=self.corriente_fija
-            if self.array_prom_gauss_volts is not None and self.array_prom_gauss_volts is not None:
+            if not (isinstance(self.array_prom_gauss_volts, np.ndarray) and self.array_prom_gauss_volts.size > 0 and not np.all(self.array_prom_gauss_volts == 0)) and self.array_prom_gauss_volts:
+            
                 # Obtener el título actual de la ventana como sugerencia de nombre_v2
                 proyecto_titulo = "test_gauss_"
                 file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")], initialfile=proyecto_titulo)
