@@ -31,6 +31,8 @@ class Ventana2:
         # Lista para perfiles de parámetros
         self.perfiles_ventana2 = self.cargar_perfiles_desde_archivo()
         self. detener_medicion = False
+
+
         #Diseño ventana
         self.menu = menu
         self.ventana_principal = ventana_principal
@@ -275,33 +277,36 @@ class Ventana2:
         corriente_fija = self._corriente_fija.get().strip()
         saturacion_campo = self._saturacion_campo.get().strip()
         tiempo_entre_mediciones_v2 = self._tiempo_entre_mediciones_v2.get().strip()
+        pasos = self._pasos.get().strip()
 
-        if not corriente_fija or not saturacion_campo or not tiempo_entre_mediciones_v2:
+        if not corriente_fija or not saturacion_campo or not tiempo_entre_mediciones_v2 or not pasos:
             messagebox.showerror("Error", "Todos los campos deben ser completados.")
             return
         
         #Guardar parámetros en el diccionario
-        self.perfiles_ventana2[nombre_v2] = {
+        self.perfiles_parametros2[nombre_v2] = {
             "Corriente_fija": corriente_fija,
             "Saturacion_de_campo": saturacion_campo,
-            "tiempo_entre_mediciones_v2": tiempo_entre_mediciones_v2
+            "tiempo_entre_mediciones_v2": tiempo_entre_mediciones_v2,
+            "Pasos": pasos
         }
-        guardar = validar_perfil_v2(nombre_v2, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2)
+
+        guardar = validar_perfil_v2(nombre_v2, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2, pasos)
         if guardar == True:
             self.guardar_perfiles_a_archivo()
             self.actualizar_combo_perfiles()
             messagebox.showinfo("Información", f"Perfil '{nombre_v2}' guardado exitosamente.")
-
         
     #Cargar perfil de parámetros
     def cargar_perfil(self):
         nombre_v2 = self.combo_perfiles.get()
-        if nombre_v2 in self.perfiles_ventana2:
-            perfil = self.perfiles_ventana2[nombre_v2]
+        if nombre_v2 in self.perfiles_parametros2:
+            perfil = self.perfiles_parametros2[nombre_v2]
             self._nombre_v2.set(nombre_v2)
-            self._corriente_fija.set(perfil["corriente_fija"])
-            self._saturacion_campo.set(perfil["saturación_campo"])
+            self._corriente_fija.set(perfil["Corriente_fija"])
+            self._saturacion_campo.set(perfil["Saturacion_de_campo"])
             self._tiempo_entre_mediciones_v2.set(perfil["tiempo_entre_mediciones_v2"])
+            self._pasos.set(perfil["Pasos"])
             messagebox.showinfo("Información", f"Perfil '{nombre_v2}' cargado correctamente.")
         else:
             messagebox.showwarning("Advertencia", "Seleccione un perfil válido para cargar.")
@@ -312,20 +317,57 @@ class Ventana2:
 
     #Actualizar Combobox
     def actualizar_combo_perfiles(self):
-        self.combo_perfiles['values'] = list(self.perfiles_ventana2.keys())
+        self.combo_perfiles['values'] = list(self.perfiles_parametros2.keys())
     
     #Cargar Perfil en archivo
     def cargar_perfiles_desde_archivo(self):
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        json_path = os.path.join(base_dir, 'APP_ESCRITORIO', 'perfiles_parametros2.json')
+        
+        os.makedirs(os.path.dirname(json_path), exist_ok=True)
+        
         try:
-            with open("perfiles_ventana2.json", "r") as archivo:
-                return json.load(archivo)
-        except (FileNotFoundError, json.JSONDecodeError):
+            # Intentar abrir el archivo si existe
+            if os.path.exists(json_path):
+                with open(json_path, 'r') as file:
+                    return json.load(file)
+            else:
+                # Si no existe, crearlo y devolver un diccionario vacío
+                with open(json_path, 'w') as file:
+                    json.dump({}, file, indent=4)
+                return {}
+        except json.JSONDecodeError:
+            # Manejar archivo corrupto
+            messagebox.showerror("Error", "El archivo de perfiles está corrupto. Se creará uno nuevo.")
+            with open(json_path, 'w') as file:
+                json.dump({}, file, indent=4)
+            return {}
+        except Exception as e:
+            # Manejo de cualquier otro error
+            messagebox.showerror("Error", f"Error inesperado al cargar el archivo: {str(e)}")
+            return {}
+
+        # Verificar si el archivo existe
+        if not os.path.exists(json_path):
+            # Si el archivo no existe, crearlo vacío
+            with open(json_path, 'w') as file:
+                json.dump({}, file, indent=4)
+            return {}
+        
+        try:
+            with open(json_path, 'r') as file:
+                return json.load(file)
+        except json.JSONDecodeError:
+            messagebox.showerror("Error", "El archivo de perfiles está corrupto. Se creará uno nuevo.")
+            with open(json_path, 'w') as file:
+                json.dump({}, file, indent=4)
             return {}
 
     #Guardar Perfil en archivo    
     def guardar_perfiles_a_archivo(self):
-        with open("perfiles_ventana2.json", "w") as archivo:
-            json.dump(self.perfiles_ventana2, archivo, indent=4)
+        ruta_archivo = os.path.join(os.getcwd(), "perfiles_parametros2.json")
+        with open(ruta_archivo, "w") as archivo:
+            json.dump(self.perfiles_parametros2, archivo, indent=4)
 
     # Obtención de entradas
     @property
