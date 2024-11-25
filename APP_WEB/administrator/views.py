@@ -593,8 +593,8 @@ def admin_dashboard(request):
     suma_cargos = cargo_admin_count + cargo_inv_count + cargo_proveedores_count  + cargo_ventas_count#Cargos totales
     data_rate = round(float((suma_cargos/usuarios_total)*100),1)#porcentaje Cargos totales 
     data_set = [cargo_admin_count,cargo_inv_count,cargo_proveedores_count,cargo_ventas_count]#Valores Cargos totales 
-    data_label = ['Admin','Inventario','Proveedor','Venta']#Valores Cargos totales 
-    data_color = ['#338AFF','#FA1A3C','#28B463','#cfd138']#colores
+    data_label = ['Admin','Usuarios',]#Valores Cargos totales 
+    data_color = ['#338AFF','#FA1A3C']#colores
 
     #fin datos grafico 1    
 
