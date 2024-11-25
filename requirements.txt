@@ -25,13 +25,11 @@ pandas==1.1.5
 Pillow==9.5.0
 platformdirs==4.0.0
 psycopg2==2.8.5
-
 pylint==2.13.9
 pylint-django==2.5.5
 pylint-plugin-utils==0.8.2
 pyOpenSSL==24.2.1
 pyparsing==3.1.4
-
 python-dateutil==2.9.0.post0
 pytz==2024.2
 PyVISA==1.12.0
