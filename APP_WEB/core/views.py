@@ -42,17 +42,15 @@ def pre_check_profile(request):
     if profile:  # Si el perfil existe
         
         if profile.first_session == 'Si':  # Si es la primera sesión
-            print('hola2')
-            profile.first_session = 'No'
-            profile.token_app_session = 'Si'
-            profile.save(update_fields=['first_session', 'token_app_session'])  # Guardar cambios en una sola consulta
             return render(request,'registration/password_change_form.html')
         else:
             # Si no es la primera sesión, redirigir al dashboard principal
             # Verificar el atributo group_id para redirigir al usuario según su rol
             if profile.group_id == 1:  # Administrador
+                print("hola")
                 return redirect('admin_main')
             elif profile.group_id == 2:  # Usuario común
+                print("hola2")
                 return redirect('listar_perfiles')
             else:
                 # Redirigir a una página por defecto si el group_id no coincide
@@ -82,7 +80,7 @@ def check_profile(request):
 def check_profile_admin(request,profiles):
     if profiles.group_id != 1:
         messages.add_message(request, messages.INFO, 'Intenta ingresar a un área para la que no tiene permisos')
-        return redirect('check_group_main')
+        return redirect('listar_perfiles')
         
 
 

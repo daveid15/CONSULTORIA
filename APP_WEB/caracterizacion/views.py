@@ -213,7 +213,7 @@ def grafico (request):
 
 
 
-# Listar perfiles de parámetros
+@login_required
 def listar_perfiles(request):
     # Obtener el término de búsqueda desde POST (si existe)
     search = request.POST.get('search', None)

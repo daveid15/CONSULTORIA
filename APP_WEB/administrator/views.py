@@ -187,7 +187,7 @@ def user_ver(request, user_id):
 @login_required    
 def list_user_active2(request,page=None,search=None):
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    pre_check_profile(request)
     if page == None:
         page = request.GET.get('page')
     else:
@@ -234,7 +234,7 @@ def list_user_active2(request,page=None,search=None):
             name = us.first_name+' '+us.last_name
             #se guarda la información del usuario
             user_all.append({'id':us.id,'user_name':us.username,'name':name,'mail':us.email, 'profile':profile})            
-    paginator = Paginator(user_all, 5)  
+    paginator = Paginator(user_all, num_elemento)  
     user_list = paginator.get_page(page)
     template_name = 'administrator/list_user_active2.html'
     return render(request,template_name,{'profiles':profiles,'user_list':user_list,'paginator':paginator,'page':page ,'search':search })
@@ -289,7 +289,7 @@ def list_user_block2(request,page=None,search=None):
             #se guarda la información del usuario
             user_all.append({'id':us.id,'user_name':us.username,'name':name,'mail':us.email, 'profile':profile})            
     
-    paginator = Paginator(user_all, 5)  
+    paginator = Paginator(user_all, num_elemento)  
     user_list = paginator.get_page(page)
     template_name = 'administrator/list_user_block2.html'
     return render(request,template_name,{'profiles':profiles,'user_list':user_list,'paginator':paginator,'page':page ,'search':search})
@@ -500,7 +500,10 @@ def carga_masiva_save(request):
     
 @login_required
 def admin_dashboard(request):
+    profiles = Profile.objects.get(user_id = request.user.id)
     pre_check_profile(request)
+
+    
     usuarios_count = User.objects.all().count()
     if usuarios_count == 0:
         usuarios_count = 1
@@ -550,7 +553,7 @@ def admin_dashboard(request):
         data_label_todos_los_cargos.append('Empleado'+str(i.group_id))
         data_set_todos_los_cargos.append(i.group_id) 
     #fin datos grafico 2  
-    paginador = Paginator(usuarios, 5)  # Mostrar X usuarios por página ! cambiar segun se necesite
+    paginador = Paginator(usuarios, num_elemento)  # Mostrar X usuarios por página ! cambiar segun se necesite
     numero_pagina = request.GET.get('page')
     pagina  = paginador.get_page(numero_pagina)
     template_name = 'administrator/admin_dashboard.html'

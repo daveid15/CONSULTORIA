@@ -11,7 +11,7 @@ from django import forms
 from .models import Profile
 from django.core.mail import send_mail
 from django.http import HttpResponse
-
+from django.contrib.auth.views import PasswordChangeDoneView
 from django.conf import settings #importamos el archivo settings, para usar constantes declaradas en él
 from django.core.mail import EmailMultiAlternatives #libreria para el envio de correos
 
@@ -31,6 +31,22 @@ class SignUpView(CreateView):
         form.fields['password1'].widget = forms.PasswordInput(attrs={'class':'form-control mb-2','placeholder':'Ingrese su contraseña'})
         form.fields['password2'].widget = forms.PasswordInput(attrs={'class':'form-control mb-2','placeholder':'Re ingrese su contraseña'})    
         return form
+
+class CustomPasswordChangeDoneView(PasswordChangeDoneView):
+    template_name = 'registration/password_change_done.html'
+
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+
+        user = request.user
+        if user.profile.first_session == 'Si':  # Solo lo cambiamos si es la primera sesión
+
+            user.profile.first_session = 'No'
+            user.profile.save(update_fields=['first_session'])  # Guardamos solo el campo que cambió
+        
+        # Llamar al método get original de PasswordChangeDoneView
+        return super().get(request, *args, **kwargs)
+
 
 @method_decorator(login_required, name='dispatch')
 class ProfileUpdate(UpdateView):
@@ -87,12 +103,7 @@ def send_mail_ejemplo1(request):
     return render(request,template_name)
  
  
-"""@login_required
-def ejemplos_correo1(request):
-    #llamos al metodo que envia el correo
-    send_mail_ejemplo1(request,'rene@softiago.cl','dato por parametro ejemplo')
-    messages.add_message(request, messages.INFO, 'correo enviado')
-    return redirect('ejemplos_main')"""   
+
 
 @login_required
 def ejemplos_correo1(request,mail_to,data_1):
