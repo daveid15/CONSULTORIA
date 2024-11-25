@@ -31,6 +31,98 @@ import pyvisa
 import numpy as np
 from django.http import JsonResponse
 import time
+from rest_framework import generics,status
+from .serializers import PerfilParametroSerializer, PruebaSerializer, MedicionSerializer
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+
+class PerfilParametroListAPIView(generics.ListAPIView):
+    queryset = Perfil_Parametro.objects.all()
+    serializer_class = PerfilParametroSerializer
+
+# Para manejar Prueba
+class PruebaCreateAPIView(generics.CreateAPIView):
+    queryset = Prueba.objects.all()
+    serializer_class = PruebaSerializer
+
+class PruebaListAPIView(generics.ListAPIView):
+    queryset = Prueba.objects.all()
+    serializer_class = PruebaSerializer
+
+# Para manejar Medicion
+class MedicionCreateAPIView(generics.CreateAPIView):
+    queryset = Medicion.objects.all()
+    serializer_class = MedicionSerializer
+
+class MedicionListAPIView(generics.ListAPIView):
+    queryset = Medicion.objects.all()
+    serializer_class = MedicionSerializer
+
+class PerfilParametroCreateAPIView(generics.CreateAPIView):
+    queryset = Perfil_Parametro.objects.all()
+    serializer_class = PerfilParametroSerializer
+
+    def create(self, request, *args, **kwargs):
+        # Obtener el nombre del perfil de parámetro desde el request
+        perfil_parametro_name = request.data.get('perfil_parametro_name', None)
+        
+        # Verificar si el perfil de parámetro ya existe
+        perfil_parametro = Perfil_Parametro.objects.filter(perfil_parametro_name=perfil_parametro_name).first()
+        
+        if perfil_parametro:
+            # Si el perfil ya existe, no lo creamos, solo usamos el existente
+            # Puedes devolver un mensaje indicando que se usará el perfil existente si lo deseas
+            serializer = self.get_serializer(perfil_parametro)
+            pass
+        else:
+            # Si no existe, crear el nuevo perfil de parámetro
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            fija_corriente = request.data.get('fija_corriente', None)  # Valor predeterminado None si no se pasa
+            perfil_parametro = serializer.save(fija_corriente=fija_corriente)
+
+        # Obtener datos para pruebas y mediciones del request
+        pruebas_data = request.data.get('pruebas', [])  # Lista de pruebas
+
+        for prueba_data in pruebas_data:
+            # Crear cada prueba relacionada al perfil existente
+            user = User.objects.first()  # Cambia según tu lógica
+
+            # Obtener los valores de pendiente, intercepto, y configuración_rele desde la solicitud
+            pendiente = prueba_data.get('pendiente', 0.0)
+            intercepto = prueba_data.get('intercepto', 0.0)
+            configuracion_rele = prueba_data.get('configuracion_rele', '')
+
+            prueba = Prueba.objects.create(
+                id_perfil_parametro=perfil_parametro,
+                id_user=user,
+                prueba_name=prueba_data.get('prueba_name', f"Prueba de {perfil_parametro.perfil_parametro_name}"),
+                tipo=prueba_data.get('tipo', 'Automática'),
+                pendiente=pendiente,  # Almacenar pendiente
+                intercepto=intercepto,  # Almacenar intercepto
+                configuracion_rele=configuracion_rele  # Almacenar configuracion_rele
+            )
+
+            # Crear las mediciones asociadas a cada prueba
+            mediciones_data = prueba_data.get('mediciones', [])  # Lista de mediciones
+            for medicion_data in mediciones_data:
+                # Obtener los valores de campo, delta_v, y saturacion_campo desde la medición
+                campo = medicion_data.get('campo', 0.0)
+                delta_v = medicion_data.get('delta_v', 0.0)
+                saturacion_campo = medicion_data.get('saturacion_campo', 0.0)
+
+                Medicion.objects.create(
+                    id_prueba=prueba,
+                    voltaje=medicion_data.get('voltaje', 0.0),
+                    corriente=medicion_data.get('corriente', 0.0),
+                    resistencia=0.0,  # Se calculará automáticamente en `save()`
+                    campo=campo,  # Almacenar campo
+                    delta_v=delta_v,  # Almacenar delta_v
+                    saturacion_campo=saturacion_campo  # Almacenar saturacion_campo
+                )
+
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 num_elemento = num_pag()#desde core se importa el numero de elementos por página
@@ -122,11 +214,22 @@ def grafico (request):
 
 
 # Listar perfiles de parámetros
-@login_required
 def listar_perfiles(request):
-    #perfiles = Perfil_Parametro.objects.all()
-    perfiles = Perfil_Parametro.objects.filter(perfil_parametro_state='t')  # Mostrar solo perfiles activos
-    return render(request, 'caracterizacion/listar_perfiles.html', {'perfiles': perfiles})
+    # Filtrar solo perfiles activos
+    perfiles = Perfil_Parametro.objects.filter(perfil_parametro_state='t').order_by('perfil_parametro_name')
+
+    # Configuración de paginación: 10 perfiles por página
+    page = request.GET.get('page', 1)  # Obtiene el número de página desde los parámetros GET
+    paginator = Paginator(perfiles, 5)  # Limitar a 10 perfiles por página
+    perfiles_list = paginator.get_page(page)
+
+    # Contexto para el template
+    context = {
+        'perfiles_list': perfiles_list,
+        'paginator': paginator,
+    }
+
+    return render(request, 'caracterizacion/listar_perfiles.html', context)
 
 # Crear un perfil de parámetros 
 @login_required
@@ -264,7 +367,7 @@ def listar_pruebas(request, page=None, search=None):
                 'fecha': prueba.fecha
             })
 
-        paginator = Paginator(pruebas_all, 10)  # Definir `num_elemento` para paginar, aquí asumimos 10 por página
+        paginator = Paginator(pruebas_all, 5)  # Definir `num_elemento` para paginar, aquí asumimos 10 por página
         pruebas_list = paginator.get_page(page)
         template_name = 'caracterizacion/listar_pruebas.html'
         return render(request, template_name, {
@@ -292,7 +395,7 @@ def listar_pruebas(request, page=None, search=None):
                 'fecha': prueba.fecha
             })
 
-    paginator = Paginator(pruebas_all, 10)  # Definir `num_elemento` para paginar, aquí asumimos 10 por página
+    paginator = Paginator(pruebas_all, 5)  # Definir `num_elemento` para paginar, aquí asumimos 10 por página
     pruebas_list = paginator.get_page(page)
     template_name = 'caracterizacion/listar_pruebas.html'
     return render(request, template_name, {
@@ -303,16 +406,30 @@ def listar_pruebas(request, page=None, search=None):
         'search': search
     })
 
-def detalle_prueba(request, prueba_id):
+def detalle_prueba(request, prueba_id, page=None):
+    # Obtener la prueba y el perfil de parámetro asociado
     prueba = get_object_or_404(Prueba, id=prueba_id)
     perfil_parametro = prueba.id_perfil_parametro  # Suponiendo que la prueba tiene un perfil de parámetro relacionado
-    mediciones = Medicion.objects.filter(id_prueba=prueba)  # Obtén todas las mediciones relacionadas con la prueba
 
+    # Obtener todas las mediciones relacionadas con la prueba
+    mediciones = Medicion.objects.filter(id_prueba=prueba).order_by('fecha')  # Ordenar por fecha o como prefieras
+
+    # Configurar la paginación
+    if page is None:
+        page = request.GET.get('page')  # Obtener la página de la URL si no se pasa como argumento
+
+    paginator = Paginator(mediciones, 1)  # Limitar a 10 mediciones por página
+    mediciones_list = paginator.get_page(page)
+
+    # Contexto para el template
     context = {
         'prueba': prueba,
         'perfil_parametro': perfil_parametro,
-        'mediciones': mediciones,
+        'mediciones_list': mediciones_list,
+        'paginator': paginator,
+        'page': page,
     }
+    
     return render(request, 'caracterizacion/detalle_prueba.html', context)
 
 
@@ -358,7 +475,7 @@ def mostrar_grafico(request, prueba_id):
     array_voltaje = [medicion.voltaje for medicion in mediciones]
 
     # Preparar los datos para el template
-    template_name = 'caracterizacion/grafico_mediciones.html'
+    template_name = 'caracterizacion/mostrar_grafico.html'
     return render(request, template_name, {
         'prueba': prueba,
         'perfil_parametro': perfil_parametro,

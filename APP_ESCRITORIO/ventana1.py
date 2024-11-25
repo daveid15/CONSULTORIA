@@ -11,6 +11,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 import threading
 from validacion import *
 import json
+import requests
 
 class Ventana1:
     def __init__(self, menu, ventana_principal):
@@ -286,7 +287,7 @@ class Ventana1:
                 if verificar_dispositivo(addresses, self.menu, False):
                     try:
                         with self.rm.open_resource('GPIB0::9::INSTR') as multimetro:
-                            self.mostrar_mensaje_inicio("Proceso en Curso", "El proceso está en curso. Espere a que termine.")
+                            self.mostrar_mensaje_inicio()
                             # Configurar el multímetro para ser una fuente de corriente y medir voltaje
                             multimetro.write("*RST")  # Resetear el equipo
                             multimetro.write(":SOUR:FUNC CURR")  # Configurar como fuente de corriente
@@ -393,34 +394,49 @@ class Ventana1:
         self.entry_end.delete(0, tk.END)
         self.entry_step.delete(0, tk.END)
         self.entry_start.insert(0, file_path)
+    def verificar_servidor(self,url):
+        try:
+            # Hacer una solicitud GET al servidor
+            response = requests.get(url)
 
-    def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
-        
+            # Verificar si el servidor está activo (código de estado 200 OK)
+            if response.status_code == 200:
+                return True
+            else:
+                print(f"El servidor no respondió con éxito: {response.status_code}")
+                return False
+        except requests.exceptions.RequestException as e:
+            print(f"Error al intentar conectar con el servidor: {e}")
+            return False
+    def guardar_prueba(self, event=None):
         if self.corrientes is not None and self.resultados is not None:
             # Obtener el título actual de la ventana como sugerencia de nombre
             proyecto_titulo = "test_"
 
-            file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")],initialfile=proyecto_titulo)
+            file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")], initialfile=proyecto_titulo)
 
             if file_path:  # Si el usuario no cancela la selección del archivo
                 with open(file_path, 'w') as file: 
                     file.write(f"fecha: {datetime.now().strftime('%d-%m-%Y')}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: \n")
-#                    file.write(f"fecha: {datetime.now().strftime("%d-%m-%Y")}\nIntervalo(A): {self._intervalo_simetrico.get()}, intervalos de corrientes(A): {self._intervalos_corriente.get()}, Tiempo entre mediciones(s): {self._tiempo_entre_mediciones.get()}\nR: {self._R.get()}\n")
-                    
                     file.write(f"Corriente (A),\tVoltaje (V), Resistencia (Ohm)\t\n\n")
-                    #
                     mediciones=[]
                     for corriente, voltaje in self.resultados:
-                        mediciones.append( {"corriente":corriente, "voltaje":voltaje})
-
-                        
+                        mediciones.append({"corriente":corriente, "voltaje":voltaje})
                         file.write(f"{corriente:.3f}\t\t{voltaje}\t\t{(voltaje/corriente):.6f}\n")
+                
                 messagebox.showinfo("Información", f"Datos guardados en: {file_path}")
+
+                # Verificar si el servidor está activo antes de enviar los datos
+                if self.verificar_servidor("http://127.0.0.1:8000"):
+                    # Llamar a enviar_datos_prueba si el servidor está activo
+                    self.enviar_datos_prueba(self._intervalos_corriente.get(), self._intervalo_simetrico.get(), proyecto_titulo, self._tiempo_entre_mediciones.get())
+                else:
+                    messagebox.showwarning("Advertencia", "El servidor no está disponible. No se enviarán los datos.")
+                    
             else:
                 print("Guardado cancelado.")
         else:
             messagebox.showwarning("Advertencia", "No hay datos para guardar. Realiza la medición primero.")
-    
     def borrar_grafico(self):
         # Limpiar el eje actual
         self.ax.clear()
@@ -441,3 +457,70 @@ class Ventana1:
             # Reestablecer la cuadrícula
         self.ax.grid(True)
         self.canvas.draw()
+    def enviar_datos_prueba(self,intervalo_corriente, intervalo_simetrico, nombre, tiempo_entre_mediciones):
+            url = "http://127.0.0.1:8000/caracterizacion/api_parametro/"
+
+            try:
+                intervalo_simetrico = float(intervalo_simetrico)
+                intervalo_corriente = float(intervalo_corriente)
+            except ValueError as e:
+                print(f"intervalo_simetrico: {intervalo_simetrico} (tipo: {type(intervalo_simetrico)})")
+                print(f"intervalo_corriente: {intervalo_corriente} (tipo: {type(intervalo_corriente)})")
+
+            #json
+            data = {
+                "perfil_parametro_name": nombre,
+                "intervalo_simetrico": intervalo_simetrico,
+                "intervalo_corriente": intervalo_corriente,
+                "delay": tiempo_entre_mediciones,
+                "bloqueado": False,
+                "pruebas": [
+                {
+                    "prueba_name": nombre,
+                    "tipo": "Electrica",
+                    "mediciones": []
+                },
+            ]
+
+        }
+                
+
+        # Generar mediciones según los intervalos
+            for prueba in data["pruebas"]:  
+
+                for corriente, voltaje in self.resultados:
+                    
+                    resistencia = round(voltaje / corriente, 6) if corriente != 0 else None
+    
+
+                    prueba["mediciones"].append({
+                        "corriente": round(corriente, 6),
+                        "voltaje": round(voltaje, 6),
+                        "resistencia": resistencia,
+                        "fecha": datetime.now().strftime('%d-%m-%Y %H:%M:%S'),
+                        "intervalo_corriente": intervalo_corriente,
+                        "intervalo_simetrico": intervalo_simetrico,
+                        "tiempo_entre_mediciones": tiempo_entre_mediciones
+
+                })
+
+            headers = {
+                "Content-Type": "application/json",
+            }        
+
+            try:
+                # Enviar el POST request con los datos
+                response = requests.post(url, json=data, headers=headers)
+
+                if response.status_code == 201:
+                    print("Perfil de Parámetro creado exitosamente!")
+                    print(json.dumps(data, indent=4))
+                    return response.json()
+                else:
+                    print(f"Error al crear el perfil: {response.status_code}")
+                    print("Detalle:", response.text)
+                    return None  # Retorna None en caso de error
+                
+            except requests.exceptions.RequestException as e:
+                    print(f"Error en la conexión: {e}")
+                    return None

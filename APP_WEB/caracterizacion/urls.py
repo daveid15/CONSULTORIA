@@ -3,7 +3,15 @@ from django.conf.urls import url, include
 from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from caracterizacion import views
-from .views import medir_iv_view
+from .views import (
+    medir_iv_view,
+    PerfilParametroCreateAPIView,
+    PerfilParametroListAPIView,
+    PruebaCreateAPIView,
+    PruebaListAPIView,
+    MedicionCreateAPIView,
+    MedicionListAPIView
+)
 
 caracterizacion_patterns = [
     path('caracterizacion_main', views.caracterizacion_main,name="caracterizacion_main"),
@@ -29,4 +37,15 @@ caracterizacion_patterns = [
     path('descargar_datos/<int:prueba_id>/', views.descargar_datos, name='descargar_datos'),
     path('pruebas/eliminar_prueba_bloqueado/<int:prueba_id>/', views.eliminar_prueba_bloqueada, name='eliminar_prueba_bloqueada'),
     path('perfil/<int:perfil_id>/pruebas/', views.listar_pruebas_perfil, name='listar_pruebas_perfil')
+    path('pruebas/eliminar_prueba_bloqueado/<int:prueba_id>/', views.eliminar_prueba_bloqueada, name='eliminar_prueba_bloqueada'),
+
+    #API
+    path('api_parametro/', PerfilParametroCreateAPIView.as_view(), name='perfil-parametro-create'),
+    path('api_parametros/', PerfilParametroListAPIView.as_view(), name='perfil-parametro-list'),
+    
+    path('api_prueba/', PruebaCreateAPIView.as_view(), name='prueba-create'),
+    path('api_pruebas/', PruebaListAPIView.as_view(), name='prueba-list'),
+
+    path('api_medicion/', MedicionCreateAPIView.as_view(), name='medicion-create'),
+    path('api_mediciones/', MedicionListAPIView.as_view(), name='medicion-list'),
 ]  
