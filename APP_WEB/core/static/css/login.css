@@ -9,7 +9,7 @@ body {
     text-align: center;
 }
 .login-container {
-    width: 401px;
+    max-width: 401px;
     margin: 0 auto;
     padding-top: 100px;
 }

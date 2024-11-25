@@ -57,11 +57,11 @@
         <tbody>
             {% for prueba in pruebas_bloqueadas_list %}
                 <tr>
-                    <td>{{ prueba.prueba_name }}</td>
-                    <td>{{ prueba.fecha }}</td>
-                    <td>{{ prueba.tipo }}</td>
-                    <td>{{ prueba.prueba_state }}</td>
-                    <td>
+                    <td data-label="Nombre Prueba:" >{{ prueba.prueba_name }}</td>
+                    <td data-label="Fecha y Hora:" >{{ prueba.fecha }}</td>
+                    <td data-label="Tipo:" >{{ prueba.tipo }}</td>
+                    <td data-label="Estado:" >{{ prueba.prueba_state }}</td>
+                    <td data-label="Acciones:">
                         <a href="#" class="user-action" onclick="confirmarCambio('{% url 'desbloquear_prueba' prueba.id %}')">
                             <i class="fa-solid fa-check"></i>
                         </a>

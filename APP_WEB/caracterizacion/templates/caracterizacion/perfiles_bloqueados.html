@@ -58,12 +58,16 @@
         <tbody>
             {% for perfil in perfiles_bloqueados_list %}
                 <tr>
-                    <td>{{ perfil.perfil_parametro_name }}</td>
-                    <td>{{ perfil.intervalo_simetrico }}</td>
-                    <td>{{ perfil.intervalo_corriente }}</td>
-                    <td>{{ perfil.delay }}</td>
-                    <td>{{ perfil.perfil_parametro_state }}</td>
-                    <td>
+                    <td data-label="Nombre Perfil:">{{ perfil.perfil_parametro_name }}</td>
+                    <td data-label="Intervalo Simétrico:">{{ perfil.intervalo_simetrico }}</td>
+                    <td data-label="Intervalo Corriente:">{{ perfil.intervalo_corriente }}</td>
+                    <td data-label="Delay:">{{ perfil.delay }}</td>
+                    <td data-label="Estado">{% if perfil.perfil_parametro_state == 't' %}
+                        Activa
+                    {% else %}
+                        Inactiva
+                    {% endif %}</td>
+                    <td data-label="Acciones:" >
                         <a href="#" class="user-action" onclick="confirmarCambio('{% url 'desbloquear_perfil' perfil.id %}')">
                             <i class="fa-solid fa-check"></i>
                         </a>

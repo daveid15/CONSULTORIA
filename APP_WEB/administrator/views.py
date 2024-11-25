@@ -33,21 +33,24 @@ num_elemento = num_pag()#desde core se importa el numero de elementos por págin
 @login_required
 def admin_main(request):
     profiles = Profile.objects.get(user_id = request.user.id)
-    pre_check_profile(request)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     return redirect('admin_dashboard')
-#Flujo usuarios
-@login_required
-def users_main(request):
-    profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
-    groups = Group.objects.all().exclude(pk=0).order_by('id')
-    template_name = 'administrator/users_main.html'
-    return render(request,template_name,{'groups':groups,'profiles':profiles})
+
 
 @login_required
 def new_user(request):
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     
     if request.method == 'POST':
         
@@ -114,19 +117,16 @@ def new_user(request):
     return render(request,template_name,{'groups':groups})
 
 
-@login_required
-def list_main2(request):
-    profiles = Profile.objects.get(user_id = request.user.id) 
-    check_profile_admin(request,profiles)
-    template_name = 'administrator/list_main2.html'
-    return render(request,template_name,{'profiles':profiles})
-
 
 @login_required
 def edit_user(request,user_id):
     profiles = Profile.objects.get(user_id = request.user.id)
-    
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     validar = True
     if request.method == 'POST':
         grupo = request.POST.get('grupo')
@@ -180,8 +180,13 @@ def edit_user(request,user_id):
 
 @login_required   
 def user_ver(request, user_id):
-    profiles = Profile.objects.get(user_id=request.user.id)
-    check_profile_admin(request,profiles)
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     user_data = User.objects.get(pk=user_id)
     profile_data = Profile.objects.get(user_id=user_id)
     groups = Group.objects.get(pk=profile_data.group_id) 
@@ -194,7 +199,12 @@ def user_ver(request, user_id):
 @login_required    
 def list_user_active2(request,page=None,search=None):
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     if page == None:
         page = request.GET.get('page')
     else:
@@ -226,7 +236,7 @@ def list_user_active2(request,page=None,search=None):
             name = us.first_name+' '+us.last_name
             #se guarda la información del usuario
             user_all.append({'id':us.id,'user_name':us.username,'name':name,'mail':us.email, 'profile':profile})
-        paginator = Paginator(user_all, 5)  
+        paginator = Paginator(user_all, num_elemento)  
         user_list = paginator.get_page(page)
         template_name = 'administrator/list_user_active2.html'
         return render(request,template_name,{'profiles':profiles,'user_list':user_list,'paginator':paginator,'page':page})
@@ -241,16 +251,20 @@ def list_user_active2(request,page=None,search=None):
             name = us.first_name+' '+us.last_name
             #se guarda la información del usuario
             user_all.append({'id':us.id,'user_name':us.username,'name':name,'mail':us.email, 'profile':profile})            
-    paginator = Paginator(user_all, 5)  
+    paginator = Paginator(user_all, num_elemento)  
     user_list = paginator.get_page(page)
     template_name = 'administrator/list_user_active2.html'
     return render(request,template_name,{'profiles':profiles,'user_list':user_list,'paginator':paginator,'page':page ,'search':search })
 
 @login_required    
 def list_user_block2(request,page=None,search=None):
-    
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     if page == None:
         page = request.GET.get('page')
     else:
@@ -281,7 +295,7 @@ def list_user_block2(request,page=None,search=None):
             name = us.first_name+' '+us.last_name
             #se guarda la información del usuario
             user_all.append({'id':us.id,'user_name':us.username,'name':name,'mail':us.email, 'profile':profile})
-        paginator = Paginator(user_all, 5)  
+        paginator = Paginator(user_all, num_elemento)  
         user_list = paginator.get_page(page)
         template_name = 'administrator/list_user_block2.html'
         return render(request,template_name,{'profiles':profiles,'user_list':user_list,'paginator':paginator,'page':page})
@@ -296,7 +310,7 @@ def list_user_block2(request,page=None,search=None):
             #se guarda la información del usuario
             user_all.append({'id':us.id,'user_name':us.username,'name':name,'mail':us.email, 'profile':profile})            
     
-    paginator = Paginator(user_all, 5)  
+    paginator = Paginator(user_all, num_elemento)  
     user_list = paginator.get_page(page)
     template_name = 'administrator/list_user_block2.html'
     return render(request,template_name,{'profiles':profiles,'user_list':user_list,'paginator':paginator,'page':page ,'search':search})
@@ -305,7 +319,12 @@ def list_user_block2(request,page=None,search=None):
 @login_required
 def user_block(request,user_id):
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
 
     user_data_count = User.objects.filter(pk=user_id).count()
     user_data = User.objects.get(pk=user_id)     
@@ -319,7 +338,12 @@ def user_block(request,user_id):
 @login_required
 def user_activate(request,user_id):
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     user_data_count = User.objects.filter(pk=user_id).count()
     user_data = User.objects.get(pk=user_id)     
     if user_data_count == 1:
@@ -333,7 +357,12 @@ def user_activate(request,user_id):
 @login_required
 def user_delete(request,user_id):
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
 
     user_data_count = User.objects.filter(pk=user_id).count()
     user_data = User.objects.get(pk=user_id)       
@@ -346,7 +375,7 @@ def user_delete(request,user_id):
         messages.error(request, 'Hubo un error al eliminar el Usuario '+user_data.first_name +' '+user_data.last_name)
         return redirect('list_user_block2')        
 
-def ejemplo_query_set(request):
+
     #los query set que estan acontinuación retornan elementos iterables
     #para obtener todos los datos de un modelo
     user_array =  User.objects.all()
@@ -393,7 +422,12 @@ def ejemplo_query_set(request):
 @login_required
 def carga_masiva(request):
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     template_name = 'administrator/carga_masiva.html' #administrado/administrador_carga_masiva
     return render(request,template_name,{'template_name':template_name,'profiles':profiles})
 
@@ -401,7 +435,12 @@ def carga_masiva(request):
 #se descarga el archivo el archivo
 def import_administrator(request):
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     response = HttpResponse(content_type='application/ms-excel') #bajo un archivo
     response['Content-Disposition'] = 'attachment; filename="archivo_carga_masiva.xls"' #  va a tomar un nombre en particular// carga masiva
     wb = xlwt.Workbook(encoding='utf-8') #creo el libro
@@ -436,8 +475,13 @@ def import_administrator(request):
 
 @login_required
 def carga_masiva_save(request):
-    profiles = Profile.objects.get(user_id=request.user.id)
-    check_profile_admin(request,profiles)
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
 
     if request.method == 'POST':
         if 'myfile' not in request.FILES:
@@ -507,7 +551,15 @@ def carga_masiva_save(request):
     
 @login_required
 def admin_dashboard(request):
-    pre_check_profile(request)
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
+
+    
     usuarios_count = User.objects.all().count()
     if usuarios_count == 0:
         usuarios_count = 1
@@ -557,7 +609,7 @@ def admin_dashboard(request):
         data_label_todos_los_cargos.append('Empleado'+str(i.group_id))
         data_set_todos_los_cargos.append(i.group_id) 
     #fin datos grafico 2  
-    paginador = Paginator(usuarios, 5)  # Mostrar X usuarios por página ! cambiar segun se necesite
+    paginador = Paginator(usuarios, num_elemento)  # Mostrar X usuarios por página ! cambiar segun se necesite
     numero_pagina = request.GET.get('page')
     pagina  = paginador.get_page(numero_pagina)
     template_name = 'administrator/admin_dashboard.html'

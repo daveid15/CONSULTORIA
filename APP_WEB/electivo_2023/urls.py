@@ -22,13 +22,16 @@ from django.urls import path, include
 from administrator import views
 from administrator.urls import administrator_patterns
 from caracterizacion.urls import caracterizacion_patterns
+from registration.views import CustomPasswordChangeDoneView
 urlpatterns = [
     path("administrator/", include(administrator_patterns)),
     path('', include(core_urlpatterns)),
     path('admin/',admin.site.urls),
+
+    path('auth/', include('registration.urls')),  # Rutas de registro personalizadas
+    path("caracterizacion/", include(caracterizacion_patterns)),
+    path('accounts/password_change/done/', CustomPasswordChangeDoneView.as_view(), name='password_change_done'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/', include('registration.urls')),
-    path("caracterizacion/", include(caracterizacion_patterns))
     
 ]
 admin.site.site_header = 'Administrador Bussiness_Solutions'

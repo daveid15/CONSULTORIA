@@ -140,7 +140,7 @@ STATIC_ROOT = '/core/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'core','static','core')
 
-LOGIN_REDIRECT_URL = 'pre_check_profile'
+LOGIN_REDIRECT_URL = 'check_profile'
 LOGOUT_REDIRECT_URL = 'login'
 
 

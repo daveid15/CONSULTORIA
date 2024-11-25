@@ -38,14 +38,19 @@ body {
   max-height: 50vh;
   flex-flow: row wrap;
   align-content: stretch;
+  justify-content: center;
   gap: 10px;
 }
 
 .flex__action__title {
-  width: 100vw;
 
 }
 
+.flex__action :first-child {
+  align-items: start;
+  justify-content: start;
+
+}
 
 .flex__action__btn {
   flex: 1;
@@ -975,7 +980,7 @@ body {
   background-color: #D3D3D3;
   border-radius: 15px;
   padding: 30px;
-  width: 500px;
+  max-width: 500px;
   margin: 100px auto;
   text-align: center;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
@@ -1007,4 +1012,10 @@ body {
 
 .back-btn:hover {
   background-color: #C9302C;
+}
+
+
+.flex__action__paginator{
+  justify-content: center;
+
 }

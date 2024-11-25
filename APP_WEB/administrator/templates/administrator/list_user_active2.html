@@ -3,7 +3,6 @@
 {% load mathfilters %}
 {% block content %}
 {% block extrahead %}
-<link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function confirmarCambio(url) {
@@ -52,57 +51,53 @@
         <a href="{% url 'carga_masiva' %}" class="button button--gray form-control custom-button" title="Carga masiva">
             <i class="fa-solid fa-folder"></i></a>
     </div>
-
-</header>
-
-
-<div class="flex__action cont-form-carac-responsive">
-    <table class="table-responsive table-user-responsive ">
-        <thead>
-            <tr>
-                <th width="1%" scope="col">Nombre Usuario</th>
-                <th width="1%" scope="col">Nombre Completo</th>
-                <th width="1%" scope="col">Correo</th>
-                <th width="1%" scope="col">Perfil</th>
-                {% if profiles.group_id == 1 %}
-                <th width="1%" scope="col">Funciones</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for s in user_list %}
-            <tr>
-                <td>{{ s.user_name }}</td>
-                <td>{{ s.name }}</td>
-                <td>{{ s.mail }}</td>
-                <td>{{ s.profile }}</td>
-                {% if profiles.group_id == 1 %}
-                <td>
-                    {% if s.id != request.user.id %}
-                    <a href="{% url 'user_ver' s.id %}" title="Ver Usuario" class="user-action">
-                        <i class="fa-solid fa-eye"></i>
-                    </a>
-                    &nbsp;
-                    <a href="{% url 'edit_user' s.id %}" title="Editar Usuario" class="user-action">
-                        <i class="fas fa-edit"></i>
-                    </a>
-
-
-                    <a href="#" onclick="confirmarCambio('{% url 'user_block' s.id %}')" title="Bloquear Usuario"
-                        class="user-action">
-                        <i class="fas fa-ban"></i>
-                    </a>
+    <div class="flex__action cont-form-carac-responsive">
+        <table class="table-responsive table-user-responsive ">
+            <thead>
+                <tr>
+                    <th width="1%" scope="col">Nombre Usuario</th>
+                    <th width="1%" scope="col">Nombre Completo</th>
+                    <th width="1%" scope="col">Correo</th>
+                    <th width="1%" scope="col">Perfil</th>
+                    {% if profiles.group_id == 1 %}
+                    <th width="1%" scope="col">Funciones</th>
                     {% endif %}
-                </td>
-                {% endif %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-<!-- Paginación -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in user_list %}
+                <tr>
+                    <td data-label="Nombre Usuario" >{{ s.user_name }}</td>
+                    <td data-label="Nombre Completo" >{{ s.name }}</td>
+                    <td data-label="Correo" >{{ s.mail }}</td>
+                    <td data-label="Perfil">{{ s.profile }}</td>
+                    {% if profiles.group_id == 1 %}
+                    <td data-label="Funciones">
+                        {% if s.id != request.user.id %}
+                        <a href="{% url 'user_ver' s.id %}" title="Ver Usuario" class="user-action">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                        &nbsp;
+                        <a href="{% url 'edit_user' s.id %}" title="Editar Usuario" class="user-action">
+                            <i class="fas fa-edit"></i>
+                        </a>
+    
+    
+                        <a href="#" onclick="confirmarCambio('{% url 'user_block' s.id %}')" title="Bloquear Usuario"
+                            class="user-action">
+                            <i class="fas fa-ban"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Paginación -->
 {% if paginator.num_pages > 1 %}
-<div class="d-flex">
+<div class="flex__action__paginator">
     <nav aria-label="Page navigation example" class="ms-auto">
         <ul class="pagination pagination-table">
             <!-- Botón para la página anterior -->
@@ -143,6 +138,9 @@
 </div>
 {% endif %}
 <!-- Fin de la paginación -->
+
+
+</header>
 
 
 {% block scripts %}
