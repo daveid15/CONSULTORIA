@@ -1,17 +1,16 @@
 {% extends 'core/base_admin.html' %}
 {% load static %}
 {% block content %}
-<script scr="{% static 'lib/highcharts-8.1.2/highcharts.js' %}"></script>
-<script scr="{% static 'lib/highcharts-8.1.2/modules/exporting.js' %}"></script>
-<script scr="{% static 'lib/highcharts-8.1.2/modules/export-data.js' %}"></script>
-<script scr="{% static 'lib/highcharts-8.1.2/modules/accessibility.js' %}"></script>
-
+<script src="{% static 'lib/highcharts-8.1.2/highcharts.js' %}"></script>
+<script src="{% static 'lib/highcharts-8.1.2/modules/exporting.js' %}"></script>
+<script src="{% static 'lib/highcharts-8.1.2/modules/export-data.js' %}"></script>
+<script src="{% static 'lib/highcharts-8.1.2/modules/accessibility.js' %}"></script>
 
 {% block extrahead %}
 <script>
     // Función para mostrar la alerta cuando se envía el formulario
     function mostrarAlerta() {
-        alert("¡El Usuario fue modificado con exito!");
+        alert("¡El Usuario fue modificado con éxito!");
     }
 </script>
 {% endblock %}
@@ -19,42 +18,49 @@
 <div class="flex__action flex__action__title">
     <h2 class='flex__action h2 medium text-blue'>Información de Usuario</h2>
 </div>
-<form class="flex__form" action="" method="post" onsubmit="mostrarAlerta()">
-    {% csrf_token %}
-    <input type="hidden" value="{{ user_data.id }}" name="user_id" id="user_id">
-    <input type="hidden" value="{{ groups.id }}" name="grupo" id="grupo">
-    <div class="flex__form__input">
-        <label for="rut" class="flex__form__label">Rut: </label>
-        <input type="text" name="rut" id="id_rut" value="{{user_data.username}}"
-            class="form-control border custom-input" readonly />
-    </div>
-    <div class="flex__form__input ">
-        <label for="name" class="flex__form__label">Nombre: </label>
-        <input type="text" id="name" name="name" value="{{user_data.first_name}}"
-            class="form-control border custom-input" required readonly />
-    </div>
-    <div class="flex__form__input ">
-        <label for="last_name" class="flex__form__label">Apellidos: </label>
-        <input type="text" id="last_name1" name="last_name1" value="{{user_data.last_name}}"
-            class="form-control border custom-input" required readonly />
-    </div>
-    <div class="flex__form__input ">
-        <label for="email" class="flex__form__label">Correo: </label>
-        <input type="email" id="email" name="email" value="{{user_data.email}}" class="form-control border custom-input"
-            required readonly />
-    </div>
-    <div class="flex__form__input ">
-        <label for="grupo" class="flex__form__label">Perfil: </label>
-        <input type="text" name="group" id="group" class="form-control border custom-input"
-            value="{% for p in profile_list %}{% if p.id == groups.id %}{{p.name}}{% endif %}{% endfor %}" readonly>
-        <input type="hidden" name="group_id" value="{{ groups.id }}">
-    </div>
-    <div class="flex__form__input flex__form__button ">
-        <a href="{% url 'list_user_active2' %}" class="button--white custom-button"
-            title="Volver a Lista">Volver</a>
 
+
+<form action="" method="post" onsubmit="mostrarAlerta()">
+    <div class="flex__form view--parameter">
+        {% csrf_token %}
+        <input type="hidden" value="{{ user_data.id }}" name="user_id" id="user_id">
+        <input type="hidden" value="{{ groups.id }}" name="grupo" id="grupo">
+
+        <div class="flex__form__input form--parameter">
+            <label for="rut" class="flex__form__label">Rut: </label>
+            <input type="text" name="rut" id="id_rut" value="{{user_data.username}}"
+                class="form-control border custom-input" readonly />
+        </div>
+
+        <div class="flex__form__input form--parameter">
+            <label for="name" class="flex__form__label">Nombre: </label>
+            <input type="text" id="name" name="name" value="{{user_data.first_name}}"
+                class="form-control border custom-input" readonly />
+        </div>
+
+        <div class="flex__form__input form--parameter">
+            <label for="last_name" class="flex__form__label">Apellidos: </label>
+            <input type="text" id="last_name1" name="last_name1" value="{{user_data.last_name}}"
+                class="form-control border custom-input" readonly />
+        </div>
+
+        <div class="flex__form__input form--parameter">
+            <label for="email" class="flex__form__label">Correo: </label>
+            <input type="email" id="email" name="email" value="{{user_data.email}}"
+                class="form-control border custom-input" readonly />
+        </div>
+
+        <div class="flex__form__input form--parameter">
+            <label for="grupo" class="flex__form__label">Perfil: </label>
+            <input type="text" name="group" id="group" class="form-control border custom-input"
+                value="{% for p in profile_list %}{% if p.id == groups.id %}{{p.name}}{% endif %}{% endfor %}" readonly />
+            <input type="hidden" name="group_id" value="{{ groups.id }}">
+        </div>
+
+        <div class="flex__form__input flex__form__button form--parameter">
+            <a href="{% url 'list_user_active2' %}" class="button--white custom-button" title="Volver a Lista">Volver</a>
+        </div>
     </div>
 </form>
-
 
 {% endblock %}

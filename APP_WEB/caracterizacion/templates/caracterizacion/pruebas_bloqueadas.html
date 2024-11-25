@@ -24,7 +24,7 @@
 
 <header class='flex__action'>
     <div class="flex__action flex__action__title">
-        <h2 class='flex__action h2 medium text-blue'>Pruebas Bloqueados</h2>
+        <h2 class='flex__action h2 medium text-blue'>Pruebas Bloqueadas</h2>
     </div>
     <div class="flex__action barra-busqueda">
         <form method="post" action="" class='col-12 col-lg-6 input-container-search my-auto me-3 redondeo'>
@@ -35,19 +35,17 @@
                     search
                 </span>
             </button>
-
-            <form>
+        </form>
     </div>
     <div class="flex__action flex__action__btn">
         <a href="{% url 'listar_pruebas' %}"
-            class="button button--gray form-control custom-button" title="Agregar Usuarios">
+            class="button button--gray form-control custom-button" title="Pruebas Activas">
             Activos</a>
     </div>
-
 </header>
 <div class="flex__action cont-form-carac-responsive">
     <table class="table-responsive table-user-responsive ">
-        <thead >
+        <thead>
             <tr>
                 <th width="1%" scope="col">Nombre Prueba</th>
                 <th width="1%" scope="col">Fecha y Hora</th>
@@ -57,7 +55,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for prueba in pruebas_bloqueadas %}
+            {% for prueba in pruebas_bloqueadas_list %}
                 <tr>
                     <td>{{ prueba.prueba_name }}</td>
                     <td>{{ prueba.fecha }}</td>
@@ -75,7 +73,50 @@
             {% endfor %}
         </tbody>
     </table>
-</div> 
+</div>
+
+<!-- Paginación -->
+{% if pruebas_bloqueadas_list.paginator.num_pages > 1 %}
+<div class="d-flex">
+    <nav aria-label="Page navigation example" class="ms-auto">
+        <ul class="pagination pagination-table">
+            <!-- Botón para la página anterior -->
+            {% if pruebas_bloqueadas_list.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ pruebas_bloqueadas_list.previous_page_number }}" aria-label="Previous">
+                    &laquo;
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">&laquo;</a>
+            </li>
+            {% endif %}
+
+            <!-- Números de página -->
+            {% for num in pruebas_bloqueadas_list.paginator.page_range %}
+            <li class="page-item {% if pruebas_bloqueadas_list.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+
+            <!-- Botón para la página siguiente -->
+            {% if pruebas_bloqueadas_list.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ pruebas_bloqueadas_list.next_page_number }}" aria-label="Next">
+                    &raquo;
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">&raquo;</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+
 {% block scripts %}
     {% if messages %}
         <script>
