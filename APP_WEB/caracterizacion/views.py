@@ -296,8 +296,21 @@ def bloquear_perfil(request, perfil_id):
 
 @login_required
 def listar_perfiles_bloqueados(request):
-    perfiles_bloqueados = Perfil_Parametro.objects.filter(perfil_parametro_state='f')  # Mostrar solo perfiles bloqueados
-    return render(request, 'caracterizacion/perfiles_bloqueados.html', {'perfiles_bloqueados': perfiles_bloqueados})
+    # Obtener solo los perfiles bloqueados
+    perfiles_bloqueados = Perfil_Parametro.objects.filter(perfil_parametro_state='f')
+    
+    # Configurar la paginación
+    page = request.GET.get('page', 1)  # Obtener la página actual desde la URL (por defecto, página 1)
+    paginator = Paginator(perfiles_bloqueados, 5)  # Limitar a 5 perfiles por página
+    perfiles_bloqueados_list = paginator.get_page(page)  # Obtener los perfiles para la página actual
+
+    # Contexto para el template
+    context = {
+        'perfiles_bloqueados_list': perfiles_bloqueados_list,  # Lista de perfiles bloqueados paginada
+        'paginator': paginator,  # El objeto del paginador
+    }
+
+    return render(request, 'caracterizacion/perfiles_bloqueados.html', context)
 
 @login_required
 def desbloquear_perfil(request, perfil_id):
@@ -367,7 +380,7 @@ def listar_pruebas(request, page=None, search=None):
                 'fecha': prueba.fecha
             })
 
-        paginator = Paginator(pruebas_all, 5)  # Definir `num_elemento` para paginar, aquí asumimos 10 por página
+        paginator = Paginator(pruebas_all, 5)  #5 por página
         pruebas_list = paginator.get_page(page)
         template_name = 'caracterizacion/listar_pruebas.html'
         return render(request, template_name, {
@@ -441,8 +454,21 @@ def bloquear_prueba(request, prueba_id):
     return redirect('listar_pruebas')  
 
 def listar_pruebas_bloqueadas(request):
-    pruebas_bloqueadas = Prueba.objects.filter(prueba_state='f')  # Mostrar solo pruebas bloqueados
-    return render(request, 'caracterizacion/pruebas_bloqueadas.html', {'pruebas_bloqueadas': pruebas_bloqueadas})
+    # Filtrar solo las pruebas bloqueadas
+    pruebas_bloqueadas = Prueba.objects.filter(prueba_state='f')  # Mostrar solo pruebas bloqueadas
+
+    # Configurar la paginación
+    page = request.GET.get('page', 1)  # Obtener el número de página desde la URL
+    paginator = Paginator(pruebas_bloqueadas, 5)  # Mostrar 5 pruebas por página
+    pruebas_bloqueadas_list = paginator.get_page(page)
+
+    # Pasar los datos al contexto
+    context = {
+        'pruebas_bloqueadas_list': pruebas_bloqueadas_list,
+        'paginator': paginator
+    }
+
+    return render(request, 'caracterizacion/pruebas_bloqueadas.html', context)
 
 
 @login_required
