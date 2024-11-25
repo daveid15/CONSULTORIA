@@ -67,12 +67,12 @@
             <tbody>
                 {% for s in user_list %}
                 <tr>
-                    <td>{{ s.user_name }}</td>
-                    <td>{{ s.name }}</td>
-                    <td>{{ s.mail }}</td>
-                    <td>{{ s.profile }}</td>
+                    <td data-label="Nombre Usuario" >{{ s.user_name }}</td>
+                    <td data-label="Nombre Completo" >{{ s.name }}</td>
+                    <td data-label="Correo" >{{ s.mail }}</td>
+                    <td data-label="Perfil">{{ s.profile }}</td>
                     {% if profiles.group_id == 1 %}
-                    <td>
+                    <td data-label="Funciones">
                         {% if s.id != request.user.id %}
                         <a href="{% url 'user_ver' s.id %}" title="Ver Usuario" class="user-action">
                             <i class="fa-solid fa-eye"></i>
