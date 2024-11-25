@@ -11,6 +11,7 @@ import threading
 from validacion import *
 import json
 import nidaqmx
+import requests
 from nidaqmx.errors import DaqError
 
 
@@ -539,22 +540,42 @@ class Ventana2:
 
 
 
-    def guardar_prueba(self, event=None):  #Accept the event argument from Tkinter
-        if self.array_prom_gauss_volts is not None and self.array_prom_gauss_volts is not None:
-            # Obtener el título actual de la ventana como sugerencia de nombre_v2
-            proyecto_titulo = "test_gauss_"
-            file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")],initialfile=proyecto_titulo)
-            m, b = self.cargar_ecuacion_del_dia()
-            if file_path:  # Si el usuario no cancela la selección del archivo
-                with open(file_path, 'w') as file:
-                    file.write(f"Ecuación:{m:.6f}x {b:.6f}, Saturación de campo:{self._saturacion_campo.get()}, tiempo entre mediciones:{self._tiempo_entre_mediciones_v2.get()}, Pasos:{self._pasos.get()}\n\n")
-                    file.write("Corriente Fija\t\tMedida Voltaje\t\tR\t\tDelta V\t\tGauss Teórico\t\tGauss Real\n\n")
-                    
-                    for start_current,V,deltaV, saturacion, field in self.array_prom_gauss_volts:
-                        file.write(f"{start_current}\t\t{V:.6f}\t\t{(V/start_current):.6f}\t\t{deltaV:.6f}\t\t{saturacion:.6f}\t\t{field}\n")
-                messagebox.showinfo("\tInformación", f"Datos guardados en: {file_path}")
-        else:
-            messagebox.showwarning("Advertencia", "No hay datos para guardar. Realiza la medición primero.")
+
+    def guardar_prueba(self,event=None):  # Accept the event argument from Tkinter
+            nombre_v2=self.nombre_v2
+            tiempo_entre_mediciones_v2=self.tiempo_entre_mediciones_v2
+            corriente_fija=self.corriente_fija
+            if self.array_prom_gauss_volts is not None and self.array_prom_gauss_volts is not None:
+                # Obtener el título actual de la ventana como sugerencia de nombre_v2
+                proyecto_titulo = "test_gauss_"
+                file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")], initialfile=proyecto_titulo)
+                
+                m, b = self.cargar_ecuacion_del_dia()
+                
+                if file_path:  # Si el usuario no cancela la selección del archivo
+                    with open(file_path, 'w') as file:
+                        file.write(f"Ecuación:{m:.6f}x {b:.6f}, Saturación de campo:{self._saturacion_campo.get()}, tiempo entre mediciones:{self._tiempo_entre_mediciones_v2.get()}, Pasos:{self._pasos.get()}\n\n")
+                        file.write("\tCorriente Fija\t\tMedida Voltaje\t\tR\t\tDelta V\t\tGauss Teórico\t\tGauss Real\n\n")
+
+                        for start_current, V, deltaV, saturacion, field in self.array_prom_gauss_volts:
+                            file.write(f"{start_current}\t\t{V:.6f}\t\t{(V/start_current):.6f}\t\t{deltaV:.6f}\t\t{saturacion:.6f}\t\t{field}\n")
+                    messagebox.showinfo("\tInformación", f"Datos guardados en: {file_path}")
+                
+                # Verificar si el servidor API está activo antes de ejecutar `enviar_datos_completos`
+                url_ping = "http://127.0.0.1:8000"  # Dirección base de tu servidor API (puedes cambiarla si es diferente)
+                try:
+                    response = requests.get(url_ping)
+                    if response.status_code == 200:
+                        print("Servidor API activo. Ejecutando `enviar_datos_completos`...")
+                        self.enviar_datos_completos(nombre_v2, tiempo_entre_mediciones_v2,corriente_fija)
+                    else:
+                        messagebox.showwarning("Advertencia", "El servidor API no está activo. Los datos no se enviarán.")
+                except requests.exceptions.RequestException as e:
+                    # Si el servidor no responde o hay problemas de conexión
+                    print(f"Error al intentar conectar con el servidor API: {e}")
+                    messagebox.showwarning("Advertencia", "No se puede conectar al servidor API. Los datos no se enviarán.")
+            else:
+                messagebox.showwarning("Advertencia", "No hay datos para guardar. Realiza la medición primero.")
 
 
 
@@ -631,5 +652,78 @@ class Ventana2:
         self.ax.grid(True)
         
         self.canvas.draw()
+
+    def enviar_datos_completos(self, nombre_v2, tiempo_entre_mediciones_v2,corriente_fija):
+        
+        url = "http://127.0.0.1:8000/caracterizacion/api_parametro/"
+
+        try:
+            # Convertir valores a flotantes
+            tiempo_entre_mediciones_v2 = float(tiempo_entre_mediciones_v2)
+        except ValueError:
+            print("Error: Asegúrese de ingresar valores numéricos válidos para los intervalos y el tiempo entre mediciones.")
+            return None
+        # Obtener pendiente e intercepto
+        m, b = self.cargar_ecuacion_del_dia()
+
+        pendiente, intercepto = m,b
+
+        # Construcción del JSON con los datos básicos
+        data = {
+            "perfil_parametro_name": nombre_v2,
+            "intervalo_simetrico": 0,
+            "intervalo_corriente": 0,
+            "delay": tiempo_entre_mediciones_v2,
+            "bloqueado": False,
+            "fija_corriente": corriente_fija,
+            "pruebas": []
+        }
+
+        # Generar las pruebas y mediciones
+        prueba = {
+            "prueba_name": nombre_v2,
+            "tipo": "Caracterización Magnetoeléctrica",
+            "pendiente": float(f"{pendiente:.6f}"),
+            "intercepto": float(f"{intercepto:.6f}"),
+            "mediciones": []
+        }
+
+        # Asegúrate de que `self.array_prom_gauss_volts` contiene las mediciones realizadas
+        if not getattr(self, "array_prom_gauss_volts", None):
+            print("Advertencia: No hay datos de medición disponibles para enviar.")
+            return None
+
+        for start_current, V, deltaV, saturacion, field in self.array_prom_gauss_volts:
+            resistencia = round(V / start_current, 6) if start_current != 0 else None
+            prueba["mediciones"].append({
+                "corriente": round(start_current, 6),
+                "voltaje": round(V, 6),
+                "resistencia": resistencia,
+                "delta_v": deltaV,
+                "campo": field,
+                "saturacion_campo": saturacion,
+                "fecha": datetime.now().strftime('%d-%m-%Y %H:%M:%S'),
+            })
+
+        # Agregar la prueba a los datos principales
+        data["pruebas"].append(prueba)
+
+        headers = {"Content-Type": "application/json"}
+
+        try:
+            # Enviar el POST request con los datos
+            response = requests.post(url, json=data, headers=headers)
+
+            if response.status_code == 201:
+                print("Perfil de Parámetro y pruebas creados exitosamente!")
+                print(json.dumps(data, indent=4))
+                return response.json()
+            else:
+                print(f"Error al crear el perfil: {response.status_code}")
+                print("Detalle:", response.text)
+                return None
+        except requests.exceptions.RequestException as e:
+            print(f"Error en la conexión: {e}")
+            return None
 
     
