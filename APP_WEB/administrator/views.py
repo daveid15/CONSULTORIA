@@ -226,7 +226,7 @@ def list_user_active2(request,page=None,search=None):
             name = us.first_name+' '+us.last_name
             #se guarda la información del usuario
             user_all.append({'id':us.id,'user_name':us.username,'name':name,'mail':us.email, 'profile':profile})
-        paginator = Paginator(user_all, 5)  
+        paginator = Paginator(user_all, num_elemento)  
         user_list = paginator.get_page(page)
         template_name = 'administrator/list_user_active2.html'
         return render(request,template_name,{'profiles':profiles,'user_list':user_list,'paginator':paginator,'page':page})
@@ -281,7 +281,7 @@ def list_user_block2(request,page=None,search=None):
             name = us.first_name+' '+us.last_name
             #se guarda la información del usuario
             user_all.append({'id':us.id,'user_name':us.username,'name':name,'mail':us.email, 'profile':profile})
-        paginator = Paginator(user_all, 5)  
+        paginator = Paginator(user_all, num_elemento)  
         user_list = paginator.get_page(page)
         template_name = 'administrator/list_user_block2.html'
         return render(request,template_name,{'profiles':profiles,'user_list':user_list,'paginator':paginator,'page':page})
