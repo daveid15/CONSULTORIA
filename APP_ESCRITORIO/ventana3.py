@@ -39,6 +39,7 @@ class Ventana3:
         # Lista para perfiles de parámetros (Ventana 3)
         self.perfiles_ventana3 = self.cargar_perfiles_desde_archivo()
         self.detener_medicion = False
+        self.array_prom_gauss_volts = []
 
         # Variable para almacenar la instancia de la ventana de relés (Validación)
         self.ventana_reles = None  
@@ -177,7 +178,8 @@ class Ventana3:
         tk.Entry(self.menuecu, textvariable=self._step_size).place(x=30, y=100, width=220)
         tk.Label(self.menuecu, text="Tiempo entre Mediciones(s)", bg="#A6C3FF").place(x=30, y=140)
         tk.Entry(self.menuecu, textvariable=self._delay).place(x=30, y=160, width=220)
-
+        self.menuecu.transient(self.menu)
+        self.menuecu.grab_set()
         #Botones
         self.boton_cerrar = tk.Button(self.menuecu, text="Cancelar", command=self.destroy)
         self.boton_cerrar.place(x=50, y=220)
@@ -460,7 +462,8 @@ class Ventana3:
 
         # Establecer la geometría de la ventana emergente
         self.popup.geometry(f"{popup_width}x{popup_height}+{x}+{y}")
-
+        self.popup.transient(self.menu)
+        self.popup.grab_set()
         # Etiqueta con el mensaje
         mensaje_label = tk.Label(self.popup, text="¿Deseas detener la medición?", padx=10, pady=10)
         mensaje_label.pack()
@@ -474,6 +477,7 @@ class Ventana3:
 
         # Ejecutar la medición en un hilo separado     
     def cerrar_popup(self):
+        self.popup.grab_release()
         self.popup.destroy()
         
     def configurar_fuente(self, fuente):
@@ -515,32 +519,6 @@ class Ventana3:
         else:
             raise ValueError("Tipo de sonda no reconocido")
         return gauss
-        """
-    def obtener_gauss(self):
-        num_samples = 10
-        sample_rate = 1000  # en Hz 
-        try:
-        
-            with nidaqmx.Task() as task:
-
-                task.ai_channels.add_ai_voltage_chan("Dev2/ai0")  # Se lee datos de canal 0 de Dev2
-                task.timing.cfg_samp_clk_timing(rate=sample_rate, samps_per_chan=num_samples)#se configura la obtención de datos de gauss
-                # Leer los datos
-                data = task.read(num_samples)
-                # Convertir los datos a un array de numpy
-                data_array_0 = np.array(data[0])  # Datos del canal 0
-                promedio_data_0 = np.mean(data_array_0)#Se promedian dato
-
-                # Usar la sonda ST
-                probe_type = 'ST'  
-                # Convertir a Gauss
-                promedio_data_0 = self.volts_a_gauss(promedio_data_0, probe_type)
-                # Mostrar los resultados
-                return promedio_data_0
-        except DaqError as e:
-            messagebox.showwarning("Advertencia",f"Ha ocurrido un error con el GaussMeter,{e}")
-            "
-        """
     
     def cargar_ecuacion_del_dia(self):
         ruta_archivo = 'utils/ecuaciones/ecuacion.json'
@@ -570,6 +548,7 @@ class Ventana3:
 
     def confirmar_detener_medicion(self):
         # Cambiar la variable de control para detener el hilo
+        
         self.detener_medicion = True
         self.popup.destroy()  # Cerrar la ventana emergente
 
@@ -660,12 +639,6 @@ class Ventana3:
         self.hilo_medicion.start()
 
 
-    """  def cambiar_estado_reles(self, estado):
-            for pin in relay_pins:
-                with nidaqmx.Task() as task:
-                    task.do_channels.add_do_chan(pin, line_grouping=LineGrouping.CHAN_PER_LINE)
-                    task.write(estado)
-                    time.sleep(0.5)"""
 
     def cambiar_estado_reles(self, estados):
         """
@@ -747,7 +720,7 @@ class Ventana3:
         return deltaV
 
     def guardar_prueba(self, event=None):
-        if self.array_prom_gauss_volts is not None:
+        if not (isinstance(self.array_prom_gauss_volts, np.ndarray) and self.array_prom_gauss_volts.size > 0 and not np.all(self.array_prom_gauss_volts == 0)) and self.array_prom_gauss_volts:
             # Obtener el título actual de la ventana como sugerencia de nombre
             proyecto_titulo = "test_gauss_"
             file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Archivos de texto", "*.txt")], initialfile=proyecto_titulo)
@@ -799,8 +772,6 @@ class Ventana3:
         try:
             if self.ventana_reles is not None and self.texto_estado.winfo_exists():
                 self.texto_estado.config(text=mensaje, fg=color)
-            else:
-                print(f"Estado: {mensaje}")  # Fallback a consola si la ventana no existe
         except AttributeError:
             print(f"Error mostrando estado: No se ha inicializado la ventana de relés.")
         except Exception as e:

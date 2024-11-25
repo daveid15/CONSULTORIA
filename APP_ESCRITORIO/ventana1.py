@@ -25,8 +25,8 @@ class Ventana1:
         self._tiempo_entre_mediciones = tk.StringVar()
         self.LineaTendencia = tk.BooleanVar()
         # Variable de control para el hilo
-        self. detener_medicion = False
-
+        self.detener_medicion = False
+        self.resultados =[]
         # Lista para perfiles de parámetros
         self.perfiles_parametros = self.cargar_perfiles_desde_archivo()
 
@@ -398,10 +398,14 @@ class Ventana1:
         try:
             # Hacer una solicitud GET al servidor
             response = requests.get(url)
+            return True
+        except:
+            return False
+        
 
 
     def guardar_prueba(self, event=None):
-        if self.corrientes is not None and self.resultados is not None:
+        if not (isinstance(self.corrientes, np.ndarray) and self.corrientes.size > 0 and not np.all(self.corrientes == 0)) and  self.resultados:
             # Obtener el título actual de la ventana como sugerencia de nombre
             proyecto_titulo = "test_"
 

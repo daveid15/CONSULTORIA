@@ -1,15 +1,11 @@
 from tkinter import *
 import tkinter as tk
-from PIL import ImageTk, Image
 from ventana1 import Ventana1
 from ventana2 import Ventana2
 from ventana3 import Ventana3
 from ventana4 import Ventana4
 import os            
-from ventana4 import Ventana4
-import os            
 from validacion import centrar_ventana
-
 class Menu:
     def __init__(self, main):
         global imagen_ruta
@@ -30,15 +26,6 @@ class Menu:
         left_frame = tk.Frame(self.main, bg="#A6C3FF")
         left_frame.place(x=10, y=45, relheight=0.90, relwidth=0.275)
 
-        #Imagenes
-        #imagen_fuente = Image.open(self.imagen_fuente)
-        #imagen_fuente = Image.open(self.imagen_fuente)
-
-
-
-
-
-
         #Botones
         boton1=tk.Button(left_frame, text='Caracterización Eléctrica',bg="#FDFDFD", font=bottonFont, width=24, height=4, command=self.abrir_ventana1)
         boton1.place(relx=0.13, rely=0.1)
@@ -46,8 +33,6 @@ class Menu:
         boton2.place(relx=0.13, rely=0.3)
         boton3=tk.Button(left_frame, text='Caracterización Magnetoeléctrica \n Invertida',bg="#FDFDFD", font=bottonFont, width=24, height=4, command=self.abrir_ventana3)
         boton3.place(relx=0.13, rely=0.5)
-        boton4=tk.Button(left_frame, text='Pruebas',bg="#FDFDFD", font=bottonFont, width=24, height=4, command=self.abrir_ventana4)
-        boton4.place(relx=0.13, rely=0.7)
     
     def abrir_ventana1(self):
         self.main.withdraw()
