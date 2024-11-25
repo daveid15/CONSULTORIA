@@ -35,9 +35,10 @@ caracterizacion_patterns = [
     path('pruebas/desbloquear/<int:prueba_id>/', views.desbloquear_prueba, name='desbloquear_prueba'),
     path('mostrar_grafico/<int:prueba_id>/', views.mostrar_grafico, name='mostrar_grafico'),
     path('descargar_datos/<int:prueba_id>/', views.descargar_datos, name='descargar_datos'),
+    #path('pruebas/eliminar_prueba_bloqueado/<int:prueba_id>/', views.eliminar_prueba_bloqueada, name='eliminar_prueba_bloqueada'),
+    path('perfil/<int:perfil_id>/pruebas/', views.listar_pruebas_perfil, name='listar_pruebas_perfil'),
     path('pruebas/eliminar_prueba_bloqueado/<int:prueba_id>/', views.eliminar_prueba_bloqueada, name='eliminar_prueba_bloqueada'),
-    path('perfil/<int:perfil_id>/pruebas/', views.listar_pruebas_perfil, name='listar_pruebas_perfil')
-    path('pruebas/eliminar_prueba_bloqueado/<int:prueba_id>/', views.eliminar_prueba_bloqueada, name='eliminar_prueba_bloqueada'),
+
 
     #API
     path('api_parametro/', PerfilParametroCreateAPIView.as_view(), name='perfil-parametro-create'),
