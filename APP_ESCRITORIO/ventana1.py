@@ -398,6 +398,10 @@ class Ventana1:
         try:
             # Hacer una solicitud GET al servidor
             response = requests.get(url)
+            return True
+        except:
+            return False
+        
 
 
     def guardar_prueba(self, event=None):
