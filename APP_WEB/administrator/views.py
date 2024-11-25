@@ -35,14 +35,7 @@ def admin_main(request):
     profiles = Profile.objects.get(user_id = request.user.id)
     pre_check_profile(request)
     return redirect('admin_dashboard')
-#Flujo usuarios
-@login_required
-def users_main(request):
-    profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
-    groups = Group.objects.all().exclude(pk=0).order_by('id')
-    template_name = 'administrator/users_main.html'
-    return render(request,template_name,{'groups':groups,'profiles':profiles})
+
 
 @login_required
 def new_user(request):
@@ -346,7 +339,7 @@ def user_delete(request,user_id):
         messages.error(request, 'Hubo un error al eliminar el Usuario '+user_data.first_name +' '+user_data.last_name)
         return redirect('list_user_block2')        
 
-def ejemplo_query_set(request):
+
     #los query set que estan acontinuación retornan elementos iterables
     #para obtener todos los datos de un modelo
     user_array =  User.objects.all()
