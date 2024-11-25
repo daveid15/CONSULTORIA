@@ -35,32 +35,18 @@ def num_pag():
 
 
 
+
+
 @login_required
 def pre_check_profile(request):
     profile = Profile.objects.filter(user_id=request.user.id).first()  # Obtener el perfil del usuario
-    
+    print("xde")
     if profile:  # Si el perfil existe
-        
+        print("xde2")
         if profile.first_session == 'Si':  # Si es la primera sesión
+            print("xde3")
             return render(request,'registration/password_change_form.html')
-        else:
-            # Si no es la primera sesión, redirigir al dashboard principal
-            # Verificar el atributo group_id para redirigir al usuario según su rol
-            if profile.group_id == 1:  # Administrador
-                print("hola")
-                return redirect('admin_main')
-            elif profile.group_id == 2:  # Usuario común
-                print("hola2")
-                return redirect('listar_perfiles')
-            else:
-                # Redirigir a una página por defecto si el group_id no coincide
-                messages.add_message(request, messages.WARNING, 'Grupo no reconocido.')
-                return redirect('login')
-    else:
-        messages.add_message(request, messages.INFO, 'Perfil no encontrado. Por favor, contacte al administrador.')
-        return redirect('login')
     
-    return redirect('login')  # Redirigir a una vista predeterminada si no se cumple ninguna condición
 
 
 def check_profile(request):
@@ -70,16 +56,16 @@ def check_profile(request):
         messages.add_message(request, messages.INFO, 'Hubo un error con su usuario, por favor contactese con los administradores')              
         return redirect('login')
     
-    if profile.group_id in [1]:        
+    if profile.group_id in [1, 2]:        
         return redirect('admin_main')
     else:
         messages.add_message(request, messages.WARNING, 'No tiene permisos suficientes para acceder a esta área.')
         return redirect('logout')
 
-
+@login_required
 def check_profile_admin(request,profiles):
     if profiles.group_id != 1:
-        messages.add_message(request, messages.INFO, 'Intenta ingresar a un área para la que no tiene permisos')
+        #messages.add_message(request, messages.INFO, 'Intenta ingresar a un área para la que no tiene permisos')
         return redirect('listar_perfiles')
         
 

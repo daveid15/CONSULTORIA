@@ -127,94 +127,14 @@ class PerfilParametroCreateAPIView(generics.CreateAPIView):
 
 num_elemento = num_pag()#desde core se importa el numero de elementos por página
 
-def ejecutar_medicion(start_current, step_size, delay, simular=False):
-    resultados = []
-
-    if simular:  # Modo de simulación
-        corrientes = np.linspace(start_current, -start_current, num=step_size)
-        for corriente in corrientes:
-            V = corriente*2
-            resultados.append((round(corriente,1), round(V,1)))
-            time.sleep(delay)  # Simula el tiempo de espera
-    else:
-        try:
-            rm = pyvisa.ResourceManager()
-            with rm.open_resource('GPIB0::9::INSTR') as multimetro:
-                # Configurar el multímetro
-                multimetro.write("*RST")
-                multimetro.write(":SOUR:FUNC CURR")
-                multimetro.write("CONF:VOLT:DC")
-                multimetro.write("OUTPUT ON")
-
-                # Calcular corrientes
-                corrientes = np.linspace(start_current, -start_current, num=step_size)
-
-                for corriente in corrientes:
-                    try:
-                        multimetro.write(f":SOUR:CURR {corriente}")
-                        time.sleep(delay)
-                        medida_voltaje = multimetro.query(":MEAS:VOLT:DC?")
-                        valores = medida_voltaje.strip().split(',')
-                        V = float(valores[0])
-                        resultados.append((corriente, V))
-                    except Exception:
-                        resultados.append((corriente, None))  # Guarda None si hay un error
-
-                multimetro.write("OUTPUT OFF")
-
-        except Exception as e:
-            return {'error': f"No se pudo conectar al multímetro: {str(e)}"}
-
-    return {'resultados': resultados}
-
-
-
-def medir_iv_view(request, id_medicion):
-    profiles = Profile.objects.get(user_id = request.user.id)
-    mediciones = Medicion.objects.filter(pk = id_medicion)
-    array_current = [0]
-    array_voltaje = [0]
-    if request.method == 'POST':
-        # Obtener parámetros del formulario
-        start_current = float(request.POST.get('start_current', 0))
-        step_size = int(request.POST.get('step_size', 1))
-        delay = float(request.POST.get('delay', 0))
-
-        # Ejecutar medición
-        resultado = ejecutar_medicion(start_current, step_size, delay, simular=True)  # Cambia a False si no es simulación
-        
-        current, voltaje  = zip(*resultado['resultados'])
-        array_current = list(current)
-        array_voltaje = list(voltaje)
-        print(resultado)
-    template_name = 'caracterizacion/medir_iv.html'
-    return render(request,template_name,{'profiles':profiles,
-                                        'currents': array_current, 
-                                        'volts': array_voltaje})
-@login_required
-def caracterizacion_main(request):
-    profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request, profiles)
-    template_name = 'caracterizacion/caracterizacion_main.html'
-    return render(request,template_name,{'profiles':profiles})
-#Flujo usuarios
-
-@login_required
-def grafico (request):
-    profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request, profiles)
-    array_voltaje = [0, 1.2, 2.4, 3.5, 4.9, 6.1, 7.3, 8.6, 9.8, 11]
-    array_current = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    
-    template_name = 'caracterizacion/grafico.html'
-    return render(request,template_name,{'profiles':profiles,
-                                        'currents': array_current, 
-                                        'volts': array_voltaje})
-
 
 
 @login_required
 def listar_perfiles(request):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     # Obtener el término de búsqueda desde POST (si existe)
     search = request.POST.get('search', None)
 
@@ -245,6 +165,10 @@ def listar_perfiles(request):
 # Crear un perfil de parámetros 
 @login_required
 def crear_perfil(request):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     if request.method == 'POST':
         nombre_perfil = request.POST.get('perfil_parametro_name')
         if Perfil_Parametro.objects.filter(perfil_parametro_name=nombre_perfil).exists():
@@ -264,6 +188,10 @@ def crear_perfil(request):
 # Editar un perfil de parámetros
 @login_required
 def editar_perfil(request, pk):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     if request.method == 'POST':
         form = PerfilParametroForm(request.POST, instance=perfil)
@@ -279,6 +207,10 @@ def editar_perfil(request, pk):
 # Eliminar un perfil de parámetros
 @login_required
 def eliminar_perfil(request, pk):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     if request.method == 'POST':
         perfil.delete()
@@ -289,11 +221,19 @@ def eliminar_perfil(request, pk):
 # Ver un perfil de parámetros
 @login_required
 def detalle_perfil(request, pk):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     perfil = get_object_or_404(Perfil_Parametro, pk=pk)
     return render(request, 'caracterizacion/detalle_perfil.html', {'perfil': perfil})
 
 @login_required
 def bloquear_perfil(request, perfil_id):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
     perfil.perfil_parametro_state = 'f'
     perfil.save()
@@ -307,6 +247,10 @@ def bloquear_perfil(request, perfil_id):
 
 @login_required
 def listar_perfiles_bloqueados(request):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     # Obtener el término de búsqueda desde POST (si existe)
     search = request.POST.get('search', None)
 
@@ -336,6 +280,10 @@ def listar_perfiles_bloqueados(request):
 
 @login_required
 def desbloquear_perfil(request, perfil_id):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
     perfil.perfil_parametro_state = 't'
     perfil.perfil_parametro_state = 't'  
@@ -351,13 +299,21 @@ def desbloquear_perfil(request, perfil_id):
 
 @login_required
 def eliminar_perfil_bloqueado(request, perfil_id):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     perfil = get_object_or_404(Perfil_Parametro, id=perfil_id)
     perfil.delete()
     return redirect('listar_perfiles_bloqueados')
 
 # Apartado prueba
-
+@login_required
 def listar_pruebas(request, page=None, search=None):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     # Obtenemos el perfil del usuario actual (en caso de necesitarlo para validación)
     profiles = Perfil_Parametro.objects.filter(perfil_parametro_state='t')  # Filtramos los perfiles activos
     # Comprobación para obtener el parámetro `page` de la URL o de la petición GET
@@ -441,7 +397,13 @@ def listar_pruebas(request, page=None, search=None):
         'search': search
     })
 
+
+@login_required
 def detalle_prueba(request, prueba_id, page=None):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     # Obtener la prueba y el perfil de parámetro asociado
     prueba = get_object_or_404(Prueba, id=prueba_id)
     perfil_parametro = prueba.id_perfil_parametro  # Suponiendo que la prueba tiene un perfil de parámetro relacionado
@@ -470,12 +432,22 @@ def detalle_prueba(request, prueba_id, page=None):
 
 @login_required
 def bloquear_prueba(request, prueba_id):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     prueba = get_object_or_404(Prueba, id=prueba_id)
     prueba.prueba_state = 'f'  
     prueba.save()
     return redirect('listar_pruebas')  
 
+
+@login_required
 def listar_pruebas_bloqueadas(request):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     # Filtrar solo las pruebas bloqueadas
     pruebas_bloqueadas = Prueba.objects.filter(prueba_state='f')  # Mostrar solo pruebas bloqueadas
 
@@ -495,6 +467,10 @@ def listar_pruebas_bloqueadas(request):
 
 @login_required
 def desbloquear_prueba(request, prueba_id):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     prueba = get_object_or_404(Prueba, id=prueba_id)
     prueba.prueba_state = 't'  
     prueba.save()
@@ -502,12 +478,20 @@ def desbloquear_prueba(request, prueba_id):
 
 @login_required
 def eliminar_prueba_bloqueada(request, prueba_id):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     prueba = get_object_or_404(Prueba, id=prueba_id)
     prueba.delete()
     return redirect('pruebas_bloqueadas')
 
 @login_required
 def mostrar_grafico(request, prueba_id):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     # Obtener la prueba, o mostrar un error 404 si no existe
     prueba = get_object_or_404(Prueba, id=prueba_id)
     perfil_parametro = prueba.id_perfil_parametro
@@ -534,6 +518,10 @@ def mostrar_grafico(request, prueba_id):
 
 @login_required
 def descargar_datos(request, prueba_id):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     prueba = Prueba.objects.get(id=prueba_id)
     mediciones = Medicion.objects.filter(id_prueba=prueba_id)
 
@@ -551,8 +539,12 @@ def descargar_datos(request, prueba_id):
     response['Content-Disposition'] = f'attachment; filename="detalle_prueba_{prueba.prueba_name}.txt"'
     return response
 
-
+@login_required
 def listar_pruebas_perfil(request, perfil_id):
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
     perfil = get_object_or_404(Perfil_Parametro, pk=perfil_id)
     pruebas = Prueba.objects.filter(id_perfil_parametro=perfil)
     

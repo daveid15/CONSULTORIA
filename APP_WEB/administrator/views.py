@@ -33,14 +33,24 @@ num_elemento = num_pag()#desde core se importa el numero de elementos por págin
 @login_required
 def admin_main(request):
     profiles = Profile.objects.get(user_id = request.user.id)
-    pre_check_profile(request)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     return redirect('admin_dashboard')
 
 
 @login_required
 def new_user(request):
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     
     if request.method == 'POST':
         
@@ -107,19 +117,16 @@ def new_user(request):
     return render(request,template_name,{'groups':groups})
 
 
-@login_required
-def list_main2(request):
-    profiles = Profile.objects.get(user_id = request.user.id) 
-    check_profile_admin(request,profiles)
-    template_name = 'administrator/list_main2.html'
-    return render(request,template_name,{'profiles':profiles})
-
 
 @login_required
 def edit_user(request,user_id):
     profiles = Profile.objects.get(user_id = request.user.id)
-    
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     validar = True
     if request.method == 'POST':
         grupo = request.POST.get('grupo')
@@ -173,8 +180,13 @@ def edit_user(request,user_id):
 
 @login_required   
 def user_ver(request, user_id):
-    profiles = Profile.objects.get(user_id=request.user.id)
-    check_profile_admin(request,profiles)
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     user_data = User.objects.get(pk=user_id)
     profile_data = Profile.objects.get(user_id=user_id)
     groups = Group.objects.get(pk=profile_data.group_id) 
@@ -187,7 +199,12 @@ def user_ver(request, user_id):
 @login_required    
 def list_user_active2(request,page=None,search=None):
     profiles = Profile.objects.get(user_id = request.user.id)
-    pre_check_profile(request)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     if page == None:
         page = request.GET.get('page')
     else:
@@ -241,9 +258,13 @@ def list_user_active2(request,page=None,search=None):
 
 @login_required    
 def list_user_block2(request,page=None,search=None):
-    
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     if page == None:
         page = request.GET.get('page')
     else:
@@ -298,7 +319,12 @@ def list_user_block2(request,page=None,search=None):
 @login_required
 def user_block(request,user_id):
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
 
     user_data_count = User.objects.filter(pk=user_id).count()
     user_data = User.objects.get(pk=user_id)     
@@ -312,7 +338,12 @@ def user_block(request,user_id):
 @login_required
 def user_activate(request,user_id):
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     user_data_count = User.objects.filter(pk=user_id).count()
     user_data = User.objects.get(pk=user_id)     
     if user_data_count == 1:
@@ -326,7 +357,12 @@ def user_activate(request,user_id):
 @login_required
 def user_delete(request,user_id):
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
 
     user_data_count = User.objects.filter(pk=user_id).count()
     user_data = User.objects.get(pk=user_id)       
@@ -386,7 +422,12 @@ def user_delete(request,user_id):
 @login_required
 def carga_masiva(request):
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     template_name = 'administrator/carga_masiva.html' #administrado/administrador_carga_masiva
     return render(request,template_name,{'template_name':template_name,'profiles':profiles})
 
@@ -394,7 +435,12 @@ def carga_masiva(request):
 #se descarga el archivo el archivo
 def import_administrator(request):
     profiles = Profile.objects.get(user_id = request.user.id)
-    check_profile_admin(request,profiles)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
     response = HttpResponse(content_type='application/ms-excel') #bajo un archivo
     response['Content-Disposition'] = 'attachment; filename="archivo_carga_masiva.xls"' #  va a tomar un nombre en particular// carga masiva
     wb = xlwt.Workbook(encoding='utf-8') #creo el libro
@@ -429,8 +475,13 @@ def import_administrator(request):
 
 @login_required
 def carga_masiva_save(request):
-    profiles = Profile.objects.get(user_id=request.user.id)
-    check_profile_admin(request,profiles)
+    profiles = Profile.objects.get(user_id = request.user.id)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
 
     if request.method == 'POST':
         if 'myfile' not in request.FILES:
@@ -501,7 +552,12 @@ def carga_masiva_save(request):
 @login_required
 def admin_dashboard(request):
     profiles = Profile.objects.get(user_id = request.user.id)
-    pre_check_profile(request)
+    response = pre_check_profile(request)
+    if response:
+        return response
+    response = check_profile_admin(request, profiles)
+    if response:
+        return response
 
     
     usuarios_count = User.objects.all().count()
