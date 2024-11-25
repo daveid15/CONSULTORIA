@@ -260,7 +260,6 @@ class Ventana1:
     def confirmar_detener_medicion(self):
         # Cambiar la variable de control para detener el hilo
         self.detener_medicion = True
-        print("Medición detenida desde el popup.")
         self.popup.destroy()  # Cerrar la ventana emergente
 
         
@@ -312,7 +311,7 @@ class Ventana1:
                                     
                                     V = float(valores[0])
                                     self.resultados.append((corriente, V))
-                                    #print(f"{corriente}, {V}")
+                                    #print(f"{corriente}, {V}") calmao la bateria, igual en la ventana 1 no se usa el gauss ahyaa
                             
 
                                 except pyvisa.errors.VisaIOError as e:
@@ -330,11 +329,11 @@ class Ventana1:
 
                     except pyvisa.errors.VisaIOError as e:
                         if 'VI_ERROR_LIBRARY_NFOUND' in str(e):
-                            print("Error: No se pudo localizar o cargar la biblioteca requerida por VISA. Verifique que los controladores VISA estén instalados correctamente.")
-                            print("Solución recomendada: Asegúrese de que el software NI-VISA (o su equivalente) esté instalado y correctamente configurado.")
+                            messagebox.showerror("'VI_ERROR_LIBRARY_NFOUND","Error: No se pudo localizar o cargar la biblioteca requerida por VISA. Verifique que los controladores VISA estén instalados correctamente y el software NI-VISA esté instalado." , parent=self.menu)
                         else:
-                            print(f"Error inesperado de VISA: {e}")
-
+                            messagebox.showerror("'Error inesperado de VISA",f"{e}" , parent=self.menu)
+                else:
+                    return
         # Ejecutar la medición en un hilo separado
         self.hilo_medicion = threading.Thread(target=ejecutar_medicion)
         self.hilo_medicion.start()
@@ -344,6 +343,7 @@ class Ventana1:
 
 
     def actualizar_interfaz_despues_de_medir(self):
+        self.confirmar_detener_medicion()
         self.menu.after(0, self.mostrar_grafico(), "Información", "Medición completada")
     
     def mostrar_mensaje(self, titulo, mensaje):
@@ -399,15 +399,7 @@ class Ventana1:
             # Hacer una solicitud GET al servidor
             response = requests.get(url)
 
-            # Verificar si el servidor está activo (código de estado 200 OK)
-            if response.status_code == 200:
-                return True
-            else:
-                print(f"El servidor no respondió con éxito: {response.status_code}")
-                return False
-        except requests.exceptions.RequestException as e:
-            print(f"Error al intentar conectar con el servidor: {e}")
-            return False
+
     def guardar_prueba(self, event=None):
         if self.corrientes is not None and self.resultados is not None:
             # Obtener el título actual de la ventana como sugerencia de nombre
