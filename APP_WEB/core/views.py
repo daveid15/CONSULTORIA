@@ -25,7 +25,9 @@ from django.contrib.auth import update_session_auth_hash, logout
 #from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+from django.contrib.auth.views import PasswordChangeView
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 
 
 def num_pag():
@@ -61,6 +63,7 @@ def pre_check_profile(request):
         return redirect('login')
     
     return redirect('login')  # Redirigir a una vista predeterminada si no se cumple ninguna condición
+
 
 def check_profile(request):
     try:
