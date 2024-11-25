@@ -13,6 +13,14 @@ body {
   overflow-x: hidden
 }
 
+.flex__form {
+    width: 100%; /* Ocupa todo el contenedor */
+    max-width: 700px; /* Ancho máximo para evitar exceso en pantallas grandes */
+    padding: 1rem; /* Espaciado interno */
+}
+
+
+
 .flex__container {
   display: flex;
   align-items: flex-start;

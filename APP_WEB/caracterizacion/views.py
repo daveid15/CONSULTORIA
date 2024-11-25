@@ -215,18 +215,29 @@ def grafico (request):
 
 # Listar perfiles de parámetros
 def listar_perfiles(request):
-    # Filtrar solo perfiles activos
-    perfiles = Perfil_Parametro.objects.filter(perfil_parametro_state='t').order_by('perfil_parametro_name')
+    # Obtener el término de búsqueda desde POST (si existe)
+    search = request.POST.get('search', None)
 
-    # Configuración de paginación: 10 perfiles por página
+    # Filtrar solo perfiles activos
+    perfiles = Perfil_Parametro.objects.filter(perfil_parametro_state='t')
+
+    # Si se ha introducido un término de búsqueda, se filtran los perfiles por nombre
+    if search:
+        perfiles = perfiles.filter(perfil_parametro_name__icontains=search)
+
+    # Ordenar los perfiles por nombre
+    perfiles = perfiles.order_by('perfil_parametro_name')
+
+    # Paginación: 5 perfiles por página
     page = request.GET.get('page', 1)  # Obtiene el número de página desde los parámetros GET
-    paginator = Paginator(perfiles, 5)  # Limitar a 10 perfiles por página
+    paginator = Paginator(perfiles, 5)  # Limitar a 5 perfiles por página
     perfiles_list = paginator.get_page(page)
 
     # Contexto para el template
     context = {
         'perfiles_list': perfiles_list,
         'paginator': paginator,
+        'search': search,  # Pasar el término de búsqueda al contexto para mostrarlo en el campo de búsqueda
     }
 
     return render(request, 'caracterizacion/listar_perfiles.html', context)
@@ -296,18 +307,29 @@ def bloquear_perfil(request, perfil_id):
 
 @login_required
 def listar_perfiles_bloqueados(request):
+    # Obtener el término de búsqueda desde POST (si existe)
+    search = request.POST.get('search', None)
+
     # Obtener solo los perfiles bloqueados
     perfiles_bloqueados = Perfil_Parametro.objects.filter(perfil_parametro_state='f')
-    
-    # Configurar la paginación
-    page = request.GET.get('page', 1)  # Obtener la página actual desde la URL (por defecto, página 1)
+
+    # Si se ha introducido un término de búsqueda, se filtran los perfiles por nombre
+    if search:
+        perfiles_bloqueados = perfiles_bloqueados.filter(perfil_parametro_name__icontains=search)
+
+    # Ordenar los perfiles bloqueados por nombre
+    perfiles_bloqueados = perfiles_bloqueados.order_by('perfil_parametro_name')
+
+    # Configurar la paginación: 5 perfiles por página
+    page = request.GET.get('page', 1)  # Obtener el número de página desde los parámetros GET
     paginator = Paginator(perfiles_bloqueados, 5)  # Limitar a 5 perfiles por página
-    perfiles_bloqueados_list = paginator.get_page(page)  # Obtener los perfiles para la página actual
+    perfiles_bloqueados_list = paginator.get_page(page)
 
     # Contexto para el template
     context = {
         'perfiles_bloqueados_list': perfiles_bloqueados_list,  # Lista de perfiles bloqueados paginada
         'paginator': paginator,  # El objeto del paginador
+        'search': search,  # Pasar el término de búsqueda al contexto
     }
 
     return render(request, 'caracterizacion/perfiles_bloqueados.html', context)

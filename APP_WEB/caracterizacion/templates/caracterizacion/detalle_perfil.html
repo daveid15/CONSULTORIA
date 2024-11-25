@@ -28,7 +28,7 @@
             readonly />
     </div>
     <div class="flex__form__input form--parameter">
-        <label for="delay" class="flex__form__label">Estado </label>
+        <label for="delay" class="flex__form__label">Estado: </label>
         <input type="text" name="delay" id="id_delay" value="{% if perfil.perfil_parametro_state == 't' %}Activo{% else %}Bloqueado{% endif %}" class="form-control border custom-input"
             readonly />
     </div>
@@ -37,7 +37,5 @@
     </div>
 </div>
 
-
-</div>
 
 {% endblock %}
