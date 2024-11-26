@@ -307,49 +307,59 @@ def guardar_txt(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_
 
 
 def comparar_perfiles_v2(perfil1, perfil2):
-    #compara dos perfiles ingresados en la ventana 2
     return (
-        perfil1['corriente_fija'] == perfil2['corriente_fija'] and
-        perfil1['saturacion_campo'] ==perfil2['saturacion_campo'] and
-        perfil1['tiempo_entre_mediciones_v2'] == perfil2['tiempo_entre_mediciones_v2']
+        perfil1['Corriente_fija'] == perfil2['Corriente_fija'] and
+        perfil1['Saturacion_de_campo'] == perfil2['Saturacion_de_campo'] and
+        perfil1['tiempo_entre_mediciones_v2'] == perfil2['tiempo_entre_mediciones_v2'] and
+        perfil1['Pasos'] == perfil2['Pasos']
     )
 
-def validar_perfil_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2):
-    json_path = os.path.join('perfiles_ventana2.json')
+def validar_perfil_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2, pasos):
+    json_path = os.path.join('APP_ESCRITORIO', 'perfiles_parametros2.json')
+    
     try:
         with open(json_path, 'r') as file:
             datos_perfiles = json.load(file)
-
+        
         perfil_nuevo = {
-            'corriente_fija_fija': str(corriente_fija),
-            'saturacion_campo_campo': str(saturacion_campo),
-            'tiempo_entre_mediciones_v2': str(tiempo_entre_mediciones_v2)
+            'Corriente_fija': str(corriente_fija),
+            'Saturacion_de_campo': str(saturacion_campo),
+            'tiempo_entre_mediciones_v2': str(tiempo_entre_mediciones_v2),
+            'Pasos': str(pasos)
         }
-
-        for nombres in datos_perfiles:
-            #compara los nombres existentes con el ingresado
-            if nombres != nombre:
-                for perfil in datos_perfiles.values():
-                    #compara el perfil ingresado don el que esta iterando
-                    if (comparar_perfiles_v2(perfil, perfil_nuevo)):
-                        print(comparar_perfiles_v2(perfil, perfil_nuevo))
-                        messagebox.showwarning('Advertencia','Ya existe un perfil con esos datos')
-                        return False
-                    return False
-            else:
+        
+        for nombre_existente, perfil_existente in datos_perfiles.items():
+            if comparar_perfiles_v2(perfil_existente, perfil_nuevo):
+                messagebox.showwarning('Advertencia', 'Ya existe un perfil con esos datos')
+                return False
+            elif nombre_existente == nombre:
                 messagebox.showwarning('Advertencia', 'Ya existe un perfil con ese nombre')
                 return False
-        guardar_txt(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2)
+
+        # Guardar nuevo perfil en el archivo JSON
+        datos_perfiles[nombre] = perfil_nuevo
+        with open(json_path, 'w') as file:
+            json.dump(datos_perfiles, file, indent=4)
+
+        # Guardar también en el archivo TXT
+        guardar_txt_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2, pasos)
+        
         return True
+
+    except (FileNotFoundError, json.JSONDecodeError):
+        # Si el archivo no existe o está corrupto, crearlo con el perfil actual
+        with open(json_path, 'w') as file:
+            json.dump({nombre: perfil_nuevo}, file, indent=4)
+        
+        guardar_txt_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2, pasos)
+        return True
+
     
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        messagebox.showerror('Error', f'Error al cargar los perfiles: {str(e)}')
-        return False
+def guardar_txt_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2, pasos):
+    ruta_archivo = os.path.join('APP_ESCRITORIO', 'v2_perfiles_parametros2.txt')
     
-def guardar_txt(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2):
-    f = open("v2_perfiles_parametros.txt", "a")
-    f.write(f"{nombre} | {corriente_fija} | {saturacion_campo} | {tiempo_entre_mediciones_v2} | \n")
-    f.close()
+    with open(ruta_archivo, 'a') as f:
+        f.write(f"{nombre} | {corriente_fija} | {saturacion_campo} | {tiempo_entre_mediciones_v2} | {pasos} |\n")
 
 
 def comparar_perfiles_v3(perfil1, perfil2):

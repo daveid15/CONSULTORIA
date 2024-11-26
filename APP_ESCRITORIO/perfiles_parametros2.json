@@ -1,0 +1,8 @@
+{
+    "hola": {
+        "Corriente_fija": "1",
+        "Saturacion_de_campo": "2",
+        "tiempo_entre_mediciones_v2": "3",
+        "Pasos": "4"
+    }
+}
