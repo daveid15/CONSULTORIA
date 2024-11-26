@@ -537,7 +537,7 @@ def carga_masiva_save(request):
                     
                     profile_save = Profile(
                         user=user_save,
-                        group_id=0,
+                        group_id=2,
                         first_session='Si',
                         token_app_session='Si'
                     )

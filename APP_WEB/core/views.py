@@ -31,7 +31,7 @@ from django.urls import reverse_lazy
 
 
 def num_pag():
-    return 1
+    return 5
 
 
 
@@ -40,11 +40,8 @@ def num_pag():
 @login_required
 def pre_check_profile(request):
     profile = Profile.objects.filter(user_id=request.user.id).first()  # Obtener el perfil del usuario
-    print("xde")
     if profile:  # Si el perfil existe
-        print("xde2")
         if profile.first_session == 'Si':  # Si es la primera sesión
-            print("xde3")
             return render(request,'registration/password_change_form.html')
     
 
