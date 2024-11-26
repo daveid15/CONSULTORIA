@@ -1,20 +1,8 @@
 {
-    "aaa": {
-        "corriente_fija": "11",
-        "saturacion_campo": "22",
+    "hola": {
+        "Corriente_fija": "1",
+        "Saturacion_de_campo": "2",
         "tiempo_entre_mediciones_v2": "3",
-        "pasos": "4"
-    },
-    "aaajjaa": {
-        "corriente_fija": "11",
-        "saturacion_campo": "22",
-        "tiempo_entre_mediciones_v2": "3",
-        "pasos": "44"
-    },
-    "aaa123": {
-        "Corriente_fija": "22",
-        "Saturacion_de_campo": "22",
-        "tiempo_entre_mediciones_v2": "3",
-        "Pasos": "33"
+        "Pasos": "4"
     }
 }

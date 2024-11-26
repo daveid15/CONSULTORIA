@@ -308,10 +308,10 @@ def guardar_txt(nombre, intervalo_simetrico, intervalos_corriente, tiempo_entre_
 
 def comparar_perfiles_v2(perfil1, perfil2):
     return (
-        perfil1['corriente_fija'] == perfil2['corriente_fija'] and
-        perfil1['saturacion_campo'] == perfil2['saturacion_campo'] and
+        perfil1['Corriente_fija'] == perfil2['Corriente_fija'] and
+        perfil1['Saturacion_de_campo'] == perfil2['Saturacion_de_campo'] and
         perfil1['tiempo_entre_mediciones_v2'] == perfil2['tiempo_entre_mediciones_v2'] and
-        perfil1['pasos'] == perfil2['pasos']
+        perfil1['Pasos'] == perfil2['Pasos']
     )
 
 def validar_perfil_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2, pasos):
@@ -322,10 +322,10 @@ def validar_perfil_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_med
             datos_perfiles = json.load(file)
         
         perfil_nuevo = {
-            'corriente_fija': str(corriente_fija),
-            'saturacion_campo': str(saturacion_campo),
+            'Corriente_fija': str(corriente_fija),
+            'Saturacion_de_campo': str(saturacion_campo),
             'tiempo_entre_mediciones_v2': str(tiempo_entre_mediciones_v2),
-            'pasos': str(pasos)
+            'Pasos': str(pasos)
         }
         
         for nombre_existente, perfil_existente in datos_perfiles.items():
@@ -353,6 +353,7 @@ def validar_perfil_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_med
         
         guardar_txt_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2, pasos)
         return True
+
     
 def guardar_txt_v2(nombre, corriente_fija, saturacion_campo, tiempo_entre_mediciones_v2, pasos):
     ruta_archivo = os.path.join('APP_ESCRITORIO', 'v2_perfiles_parametros2.txt')
